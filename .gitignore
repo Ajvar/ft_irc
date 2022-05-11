@@ -2,3 +2,5 @@
 .history
 ircserv
 *.o
+obj
+obj/

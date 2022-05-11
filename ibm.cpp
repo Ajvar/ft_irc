@@ -6,13 +6,18 @@
 #include <sys/time.h>
 #include <netinet/in.h>
 #include <errno.h>
+#include <unistd.h>
+#include <cstring>
+#include <iostream>
+#include <arpa/inet.h>
+
 
 #define SERVER_PORT  12345
 
 #define TRUE             1
 #define FALSE            0
 
-main (int argc, char *argv[])
+int main (int argc, char *argv[])
 {
   int    len, rc, on = 1;
   int    listen_sd = -1, new_sd = -1;
@@ -108,6 +113,9 @@ main (int argc, char *argv[])
   /* Loop waiting for incoming connects or for incoming data   */
   /* on any of the connected sockets.                          */
   /*************************************************************/
+  	char astring[4000];
+
+  std::cout << 	inet_ntop(AF_INET6, &(addr.sin6_addr), astring, INET6_ADDRSTRLEN) << std::endl;
   do
   {
     /***********************************************************/

@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/09 16:18:05 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/11 17:23:44 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,16 +33,18 @@
 
 struct s_channel {
 	std::string name;
-	std::vector<struct s_user> users;
+	std::vector<struct s_user *> users;
 	struct s_channel *next;
 };
 
 struct s_user {
 	int id;
 	std::string name;
-	std::vector<struct s_channel> channels;
+	std::vector<struct s_channel *> channels;
 	struct pollfd *fd;
 	struct s_user *next;
+	struct s_user *prev;
+
 };
 
 typedef struct s_user user;
