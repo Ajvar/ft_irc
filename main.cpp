@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/12 16:53:05 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/12 18:33:21 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,6 @@ int new_client(int id)
 		tmp->next = new_user;
 		new_user->prev = tmp;
 	}
-	std::cout << "new clien id: " << new_user->id << std::endl;
 	return 0;
 	
 }
@@ -108,6 +107,27 @@ void delete_client(int id)
 		tmp = tmp->next;
 	}
 
+}
+
+int new_channel(std::string name)
+{
+	channel *tmp = channels;
+	channel* new_channel = new channel();
+	if (new_channel == nullptr)
+		return -1;
+	new_channel->next = NULL;
+	new_channel->name = name;
+	if (!channels)
+		channels = new_channel;
+	else
+	{
+		while (tmp->next != NULL)
+			tmp = tmp->next;
+		tmp->next = new_channel;
+		new_channel->prev = tmp;
+	}
+	return 0;
+	
 }
 
 int main (int argc, char *argv[])
