@@ -115,7 +115,6 @@ int main (int argc, char *argv[])
   /*************************************************************/
   	char astring[4000];
 
-  std::cout << 	inet_ntop(AF_INET6, &(addr.sin6_addr), astring, INET6_ADDRSTRLEN) << std::endl;
   do
   {
     /***********************************************************/

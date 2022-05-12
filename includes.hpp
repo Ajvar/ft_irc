@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/11 17:23:44 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/12 15:02:50 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,23 +27,24 @@
 #include <vector>
 #include <cerrno>
 #include <string.h>
+#include <sys/ioctl.h>
 
 #define FALSE 0
 #define TRUE 1
 
 struct s_channel {
-	std::string name;
-	std::vector<struct s_user *> users;
-	struct s_channel *next;
+	std::string						name;
+	std::vector<struct s_user *>	users;
+	struct s_channel				*next;
 };
 
 struct s_user {
-	int id;
-	std::string name;
-	std::vector<struct s_channel *> channels;
-	struct pollfd *fd;
-	struct s_user *next;
-	struct s_user *prev;
+	int									id;
+	std::string							name;
+	std::vector<struct s_channel *> 	channels;
+	struct pollfd						*fd;
+	struct s_user						*next;
+	struct s_user						*prev;
 
 };
 

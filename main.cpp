@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/11 18:13:01 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/12 16:53:05 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,8 @@ void ft_exit(std::string s, int err, int *sock)
 {
 	if (err != 0)
 		std::cerr << "\033[1;31m" << "Error: " << s << "\033[0m" << std::endl;
-	close(*sock);
+	if (sock)
+		close(*sock);
 	exit(err);
 }
 
@@ -28,7 +29,7 @@ int check_args(int ac, char **av)
 	long int n;
 
 	if (ac != 3)
-		ft_exit("Wrong number of arguments\nHow to use: ./iretserv port password", 1, NULL);
+		ft_exit("Wrong number of arguments\nHow to use: ./ircserv port password", 1, NULL);
 	n = strtol(av[1], NULL, 10);
 	if (n < 0 || n > 65535 || errno == ERANGE)
 		ft_exit("Wrong port number, please pick a number between 0 and 65535.", errno == ERANGE ? errno : 1, NULL);
@@ -41,7 +42,7 @@ void destroy_vector(std::vector <T> v)
 	
 }
 
-void ft_free_exit(std::string s, int err, int *sock)
+void ft_free_exit(std::string s, int err, int *sock, pollfd *fds, int nfds)
 {
 	user *tmp_users;
 	channel *tmp_channels = channels;
@@ -59,6 +60,14 @@ void ft_free_exit(std::string s, int err, int *sock)
 		std::vector<user *>().swap(tmp_channels->users);
 		free(tmp_channels);
 	}
+	if (fds)
+	{
+		for (int i = 0; i < nfds; i++)
+		{
+			if(fds[i].fd >= 0)
+				close(fds[i].fd);
+		}
+	}
 	ft_exit(s, err, sock);
 }
 
@@ -69,9 +78,9 @@ int new_client(int id)
 	if (new_user == nullptr)
 		return -1;
 	new_user->next = NULL;
-	new_user->id = id - 1;
+	new_user->id = id;
 	if (!users)
-		users = tmp;
+		users = new_user;
 	else
 	{
 		while (tmp->next != NULL)
@@ -79,6 +88,7 @@ int new_client(int id)
 		tmp->next = new_user;
 		new_user->prev = tmp;
 	}
+	std::cout << "new clien id: " << new_user->id << std::endl;
 	return 0;
 	
 }
@@ -100,45 +110,111 @@ void delete_client(int id)
 
 }
 
-int main(int ac, char **av)
+int main (int argc, char *argv[])
 {
-	int server_socket, ret, nfds = 1, current_size, new_sd = -1, len;
-	short server_running = TRUE, close_conn, compress_array = FALSE;
-	sockaddr_in addr;
+	int    len, rc, on = 1, new_client_id = 0;
+	int    listen_sd = -1, new_sd = -1;
+	int    desc_ready, end_server = FALSE, compress_array = FALSE;
+	int    close_conn;
+	char   buffer[80];
+	struct sockaddr_in6   addr;
+	int    timeout;
 	struct pollfd fds[SOMAXCONN];
-	char buffer[4096];
-	
-	int port = check_args(ac, av);
-	//Creates socket (fd)
-	if ((server_socket = socket(AF_INET, SOCK_STREAM, 0)) == -1)
-		ft_exit("Couldn't create socket.", errno, NULL);
-	
-	addr.sin_family = AF_INET;
-    addr.sin_port = htons(port);
-    addr.sin_addr.s_addr = inet_addr("0.0.0.0");
-	//Binds socket to port
-	if ((bind(server_socket, (sockaddr *)&addr, sizeof(addr)) == -1))
-		ft_exit("Bind failed.", errno, &server_socket);
-	
-	//Listen for connections on a socket
-	if((listen(server_socket, SOMAXCONN)) == -1)
-		ft_exit("Listen failed.", errno, &server_socket);
+	int    nfds = 1, current_size = 0, i, j;
+
+	int port = check_args(argc, argv);
+
+	/*************************************************************/
+	/* Create an AF_INET6 stream socket to receive incoming      */
+	/* connections on                                            */
+	/*************************************************************/
+	if ( (listen_sd = socket(AF_INET6, SOCK_STREAM, 0)) == -1)
+		ft_exit(" socket creation failed.", errno, NULL);
+
+
+	/*************************************************************/
+	/* Allow socket descriptor to be reuseable                   */
+	/*************************************************************/
+	if ((rc = setsockopt(listen_sd, SOL_SOCKET,  SO_REUSEADDR,
+					(char *)&on, sizeof(on))) < 0)
+	ft_exit(" setsockopt failed.", errno, &listen_sd);
+
+
+	/*************************************************************/
+	/* Set socket to be nonblocking. All of the sockets for      */
+	/* the incoming connections will also be nonblocking since   */
+	/* they will inherit that state from the listening socket.   */
+	/*************************************************************/
+	if ( (rc = ioctl(listen_sd, FIONBIO, (char *)&on)) < 0)
+		ft_exit(" ioctl failed.", errno, &listen_sd);
+
+	/*************************************************************/
+	/* Bind the socket                                           */
+	/*************************************************************/
+	memset(&addr, 0, sizeof(addr));
+	addr.sin6_family      = AF_INET6;
+	memcpy(&addr.sin6_addr, &in6addr_any, sizeof(in6addr_any));
+	addr.sin6_port        = htons(port);
+	if ((rc = bind(listen_sd,
+			(struct sockaddr *)&addr, sizeof(addr))) < 0)
+		ft_exit(" bind failed.", errno, &listen_sd);
+
+	/*************************************************************/
+	/* Set the listen back log                                   */
+	/*************************************************************/
+	if ((rc = listen(listen_sd, SOMAXCONN)) < 0)
+		ft_exit(" listen failed.", errno, &listen_sd);
+
+	/*************************************************************/
+	/* Initialize the pollfd structure                           */
+	/*************************************************************/
 	memset(fds, 0 , sizeof(fds));
-	fds[0].fd = server_socket;
+
+	/*************************************************************/
+	/* Set up the initial listening socket                        */
+	/*************************************************************/
+	fds[0].fd = listen_sd;
 	fds[0].events = POLLIN;
+	/*************************************************************/
+	/* Initialize the timeout to 3 minutes. If no                */
+	/* activity after 3 minutes this program will end.           */
+	/* timeout value is based on milliseconds.                   */
+	/*************************************************************/
+	timeout = (3 * 60 * 1000);
+
+	/*************************************************************/
+	/* Loop waiting for incoming connects or for incoming data   */
+	/* on any of the connected sockets.                          */
+	/*************************************************************/
+	//char astring[4000];
+
 	do
 	{
-		ret = poll(fds, nfds, 3*60*1000);
-		if (ret < 0)
-    	  ft_exit("  poll() failed", 1, &server_socket);
+		/***********************************************************/
+		/* Call poll() and wait 3 minutes for it to complete.      */
+		/***********************************************************/
+		printf("Waiting on poll()...\n");
+		if ((rc = poll(fds, nfds, timeout)) < -1)
+			ft_exit(" poll failed.", errno, &listen_sd);
 
-
-		if (ret == 0)
-			ft_exit("", 0, &server_socket);
-		current_size = nfds;
-		//POLLIN = data to read
-		for (int i = 0; i < current_size; i++)
+		/***********************************************************/
+		/* Check to see if the 3 minute time out expired.          */
+		/***********************************************************/
+		if (rc == 0)
 		{
+			printf("  poll() timed out.  End program.\n");
+			break;
+		}
+
+
+		/***********************************************************/
+		/* One or more descriptors are readable.  Need to          */
+		/* determine which ones they are.                          */
+		/***********************************************************/
+		current_size = nfds;
+		for (i = 0; i < current_size; i++)
+		{
+			std::cout << "forloop" << std::endl;
 			/*********************************************************/
 			/* Loop through to find the descriptors that returned    */
 			/* POLLIN and determine whether it's the listening       */
@@ -152,9 +228,12 @@ int main(int ac, char **av)
 			/* log and end the server.                               */
 			/*********************************************************/
 			if(fds[i].revents != POLLIN)
-				ft_exit("revents " + fds[i].revents, fds[i].revents, &server_socket);
-
-			if (fds[i].fd == server_socket)
+			{
+				printf("  Error! revents = %d\n", fds[i].revents);
+				end_server = TRUE;
+				break;
+			}
+			if (fds[i].fd == listen_sd)
 			{
 				/*******************************************************/
 				/* Listening descriptor is readable.                   */
@@ -168,37 +247,40 @@ int main(int ac, char **av)
 				/*******************************************************/
 				do
 				{
-				/*****************************************************/
-				/* Accept each incoming connection. If               */
-				/* accept fails with EWOULDBLOCK, then we            */
-				/* have accepted all of them. Any other              */
-				/* failure on accept will cause us to end the        */
-				/* server.                                           */
-				/*****************************************************/
-				new_sd = accept(server_socket, NULL, NULL);
-				if (new_sd < 0)
-				{
-					if (errno != EWOULDBLOCK)
-						ft_free_exit(" accept failed", errno, &server_socket);
+					/*****************************************************/
+					/* Accept each incoming connection. If               */
+					/* accept fails with EWOULDBLOCK, then we            */
+					/* have accepted all of them. Any other              */
+					/* failure on accept will cause us to end the        */
+					/* server.                                           */
+					/*****************************************************/
+					new_sd = accept(listen_sd, NULL, NULL);
+					if (new_sd < 0)
+					{
+						if (errno != EWOULDBLOCK)
+						{
+							perror("  accept() failed");
+							end_server = TRUE;
+						}
+						break;
+					}
 
-				}
+					/*****************************************************/
+					/* Add the new incoming connection to the            */
+					/* pollfd structure                                  */
+					/*****************************************************/
+					printf("  New incoming connection - %d\n", new_sd);
+					fds[nfds].fd = new_sd;
+					fds[nfds].events = POLLIN;
+					nfds++;
+					if (new_client(new_client_id) == -1)
+						ft_free_exit(" user creation failed.", -1, &listen_sd, fds, nfds);
+					new_client_id++;
 
-				/*****************************************************/
-				/* Add the new incoming connection to the            */
-				/* pollfd structure                                  */
-				/*****************************************************/
-				printf("  New incoming connection - %d\n", new_sd);
-				fds[nfds].fd = new_sd;
-				fds[nfds].events = POLLIN;
-				nfds++;
-				if (new_client(nfds) == -1)
-					ft_free_exit(" client creation failed.", errno, &server_socket);
-				
-
-				/*****************************************************/
-				/* Loop back up and accept another incoming          */
-				/* connection                                        */
-				/*****************************************************/
+					/*****************************************************/
+					/* Loop back up and accept another incoming          */
+					/* connection                                        */
+					/*****************************************************/
 				} while (new_sd != -1);
 			}
 
@@ -215,17 +297,16 @@ int main(int ac, char **av)
 				/* Receive all incoming data on this socket            */
 				/* before we loop back and call poll again.            */
 				/*******************************************************/
-
-				do
-				{
+			do
+			{
 				/*****************************************************/
 				/* Receive data on this connection until the         */
 				/* recv fails with EWOULDBLOCK. If any other         */
 				/* failure occurs, we will close the                 */
 				/* connection.                                       */
 				/*****************************************************/
-				ret = recv(fds[i].fd, buffer, sizeof(buffer), 0);
-				if (ret < 0)
+				rc = recv(fds[i].fd, buffer, sizeof(buffer), 0);
+				if (rc < 0)
 				{
 					if (errno != EWOULDBLOCK)
 					{
@@ -239,7 +320,7 @@ int main(int ac, char **av)
 				/* Check to see if the connection has been           */
 				/* closed by the client                              */
 				/*****************************************************/
-				if (ret == 0)
+				if (rc == 0)
 				{
 					printf("  Connection closed\n");
 					close_conn = TRUE;
@@ -249,21 +330,22 @@ int main(int ac, char **av)
 				/*****************************************************/
 				/* Data was received                                 */
 				/*****************************************************/
-				len = ret;
+				len = rc;
 				printf("  %d bytes received\n", len);
 
 				/*****************************************************/
 				/* Echo the data back to the client                  */
 				/*****************************************************/
-				ret = send(fds[i].fd, buffer, len, 0);
-				if (ret < 0)
+				rc = send(fds[i].fd, buffer, len, 0);
+				if (rc < 0)
 				{
 					perror("  send() failed");
 					close_conn = TRUE;
 					break;
 				}
+				break;
 
-				} while(TRUE);
+			} while(TRUE);
 
 				/*******************************************************/
 				/* If the close_conn flag was turned on, we need       */
@@ -276,20 +358,35 @@ int main(int ac, char **av)
 					close(fds[i].fd);
 					fds[i].fd = -1;
 					compress_array = TRUE;
-					delete_client(i);
 				}
 
 
-		}  /* End of existing connection is readable             */
-    }
-		
-	} while (server_running == TRUE);
-	
-	// socklen_t addr_len = sizeof(addr);
-	// //Accept a connection on a socket
-	// if ((accept(server_socket, (sockaddr *)&addr, &addr_len) == -1))
-	// 	ft_exit("Listen failed.", errno, &server_socket);
-	
-	close(server_socket);
-	return 0;
+				}  /* End of existing connection is readable             */
+		} /* End of loop through pollable descriptors              */
+
+		/***********************************************************/
+		/* If the compress_array flag was turned on, we need       */
+		/* to squeeze together the array and decrement the number  */
+		/* of file descriptors. We do not need to move back the    */
+		/* events and revents fields because the events will always*/
+		/* be POLLIN in this case, and revents is output.          */
+		/***********************************************************/
+		if (compress_array)
+		{
+			compress_array = FALSE;
+			for (i = 0; i < nfds; i++)
+			{
+			if (fds[i].fd == -1)
+			{
+				for(j = i; j < nfds-1; j++)
+					fds[j].fd = fds[j+1].fd;
+				i--;
+				nfds--;
+			}
+			}
+		}
+
+	} while (end_server == FALSE); /* End of serving running.    */
+
+	ft_free_exit("0", 0, &listen_sd, fds, nfds);
 }
