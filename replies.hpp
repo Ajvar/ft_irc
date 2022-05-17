@@ -6,14 +6,14 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 14:02:54 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/17 14:03:24 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/17 14:53:50 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef REPLIES_HPP
 # define REPLIES_HPP
 
-#define	ERR_NOSUCHNICK 401
+#define	  ERR_NOSUCHNICK 401
 #define   ERR_NOSUCHSERVER	402
 #define   ERR_NOSUCHCHANNEL	403
 #define   ERR_CANNOTSENDTOCHAN	404

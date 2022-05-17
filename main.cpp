@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/17 14:35:07 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/17 15:05:30 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void ft_free_exit(std::string s, int err, int *sock, pollfd *fds, int nfds)
 		tmp_users = users;
 		users = users->next;
 		std::vector<channel *>().swap(tmp_users->channels);
-		free(tmp_users);
+		delete tmp_users;
 	}
 	while (channels)
 	{
@@ -194,7 +194,7 @@ int main (int argc, char *argv[])
 	/* activity after 3 minutes this program will end.           */
 	/* timeout value is based on milliseconds.                   */
 	/*************************************************************/
-	timeout = (3 * 60 * 1000);
+	timeout = (10 * 1000);
 
 	/*************************************************************/
 	/* Loop waiting for incoming connects or for incoming data   */
