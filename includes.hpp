@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/17 16:02:41 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/17 16:43:50 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,5 +53,7 @@ struct s_user {
 
 typedef struct s_user user;
 typedef struct s_channel channel;
+
+int pass(const char *server_password, const char *user_password, user *user);
 
 #endif

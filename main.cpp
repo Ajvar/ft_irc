@@ -6,11 +6,12 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/17 15:39:33 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/17 16:45:51 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes.hpp"
+
 
 user *users = NULL;
 channel *channels = NULL;
@@ -65,7 +66,7 @@ void ft_free_exit(std::string s, int err, int *sock, pollfd *fds, int nfds)
 	ft_exit(s, err, sock);
 }
 
-int new_client(int id)
+int new_client(int id, struct pollfd *fd)
 {
 	struct s_user *tmp = users;
 	struct s_user* new_user = new struct s_user();
@@ -82,6 +83,7 @@ int new_client(int id)
 		tmp->next = new_user;
 		new_user->prev = tmp;
 	}
+	new_user->fd = fd;
 	return 0;
 	
 }
@@ -285,9 +287,10 @@ int main (int argc, char *argv[])
 					printf("  New incoming connection - %d\n", new_sd);
 					fds[nfds].fd = new_sd;
 					fds[nfds].events = POLLIN;
-					nfds++;
-					if (new_client(new_client_id) == -1)
+					if (new_client(new_client_id, &fds[nfds]) == -1)
 						ft_free_exit(" user creation failed.", -1, &listen_sd, fds, nfds);
+					//pass(argv[2], "test", )
+					nfds++;
 					new_client_id++;
 
 					/*****************************************************/
