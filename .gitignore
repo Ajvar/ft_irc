@@ -1,5 +1,7 @@
 .vscode
 .history
+.vscode/
+.history/
 ircserv
 *.o
 obj

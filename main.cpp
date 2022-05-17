@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/12 18:33:21 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/17 14:35:07 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,12 +34,6 @@ int check_args(int ac, char **av)
 	if (n < 0 || n > 65535 || errno == ERANGE)
 		ft_exit("Wrong port number, please pick a number between 0 and 65535.", errno == ERANGE ? errno : 1, NULL);
 	return n;
-}
-
-template <typename T>
-void destroy_vector(std::vector <T> v)
-{
-	
 }
 
 void ft_free_exit(std::string s, int err, int *sock, pollfd *fds, int nfds)
@@ -136,7 +130,7 @@ int main (int argc, char *argv[])
 	int    listen_sd = -1, new_sd = -1;
 	int    desc_ready, end_server = FALSE, compress_array = FALSE;
 	int    close_conn;
-	char   buffer[80];
+	char   buffer[512];
 	struct sockaddr_in6   addr;
 	int    timeout;
 	struct pollfd fds[SOMAXCONN];
@@ -234,7 +228,6 @@ int main (int argc, char *argv[])
 		current_size = nfds;
 		for (i = 0; i < current_size; i++)
 		{
-			std::cout << "forloop" << std::endl;
 			/*********************************************************/
 			/* Loop through to find the descriptors that returned    */
 			/* POLLIN and determine whether it's the listening       */
@@ -352,6 +345,7 @@ int main (int argc, char *argv[])
 				/*****************************************************/
 				len = rc;
 				printf("  %d bytes received\n", len);
+				std::cout << buffer << std::endl;
 
 				/*****************************************************/
 				/* Echo the data back to the client                  */
