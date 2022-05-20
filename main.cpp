@@ -6,11 +6,11 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/17 16:45:51 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/20 20:26:14 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "includes.hpp"
+#include "includes/includes.hpp"
 
 
 user *users = NULL;
@@ -70,7 +70,7 @@ int new_client(int id, struct pollfd *fd)
 {
 	struct s_user *tmp = users;
 	struct s_user* new_user = new struct s_user();
-	if (new_user == nullptr)
+	if (new_user == NULL)
 		return -1;
 	new_user->next = NULL;
 	new_user->id = id;
@@ -84,6 +84,9 @@ int new_client(int id, struct pollfd *fd)
 		new_user->prev = tmp;
 	}
 	new_user->fd = fd;
+	new_user->nickname = "";
+	
+	
 	return 0;
 	
 }
@@ -109,7 +112,7 @@ int new_channel(std::string name)
 {
 	channel *tmp = channels;
 	channel* new_channel = new channel();
-	if (new_channel == nullptr)
+	if (new_channel == NULL)
 		return -1;
 	new_channel->next = NULL;
 	new_channel->name = name;
@@ -130,11 +133,10 @@ int main (int argc, char *argv[])
 {
 	int    len, rc, on = 1, new_client_id = 0;
 	int    listen_sd = -1, new_sd = -1;
-	int    desc_ready, end_server = FALSE, compress_array = FALSE;
+	int    end_server = FALSE, compress_array = FALSE;
 	int    close_conn;
 	char   buffer[512];
 	struct sockaddr_in6   addr;
-	int    timeout;
 	struct pollfd fds[SOMAXCONN];
 	int    nfds = 1, current_size = 0, i, j;
 
@@ -191,12 +193,7 @@ int main (int argc, char *argv[])
 	/*************************************************************/
 	fds[0].fd = listen_sd;
 	fds[0].events = POLLIN;
-	/*************************************************************/
-	/* Initialize the timeout to 3 minutes. If no                */
-	/* activity after 3 minutes this program will end.           */
-	/* timeout value is based on milliseconds.                   */
-	/*************************************************************/
-	timeout = (10 * 60 * 1000);
+
 
 	/*************************************************************/
 	/* Loop waiting for incoming connects or for incoming data   */
@@ -210,7 +207,7 @@ int main (int argc, char *argv[])
 		/* Call poll() and wait 3 minutes for it to complete.      */
 		/***********************************************************/
 		printf("Waiting on poll()...\n");
-		if ((rc = poll(fds, nfds, timeout)) < -1)
+		if ((rc = poll(fds, nfds, -1)) < -1)
 			ft_exit(" poll failed.", errno, &listen_sd);
 
 		/***********************************************************/
@@ -289,7 +286,6 @@ int main (int argc, char *argv[])
 					fds[nfds].events = POLLIN;
 					if (new_client(new_client_id, &fds[nfds]) == -1)
 						ft_free_exit(" user creation failed.", -1, &listen_sd, fds, nfds);
-					//pass(argv[2], "test", )
 					nfds++;
 					new_client_id++;
 

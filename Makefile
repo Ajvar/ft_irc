@@ -3,10 +3,13 @@ NAME = ircserv
 CC = c++
 CFLAGS = -Wall -Wextra -Werror -std=c++98 
 
-SRCS_FILES = main.cpp
-HEADER_FILES = 
+HEADER_PATH = ./includes
+SRCS_PATH = ./srcs
+
+SRCS_FILES = main.cpp $(SRCS_PATH)/commands.cpp $(SRCS_PATH)/utils.cpp
+HEADER_FILES = $(HEADER_PATH)/includes.hpp $(HEADER_PATH)/replies.hpp
 OBJS_PATH = ./obj/
-OBJS = ${addprefix ${OBJS_PATH}, ${SRCS_FILES:.cpp=.o}}
+OBJS = ${SRCS_FILES:.c=.o}
 
 all: ${NAME}
 

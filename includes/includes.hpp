@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/17 16:43:50 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/20 11:50:19 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 #include <cerrno>
 #include <string.h>
 #include <sys/ioctl.h>
+#include <cstddef>
 
 #define FALSE 0
 #define TRUE 1
@@ -44,6 +45,7 @@ struct s_user {
 	std::string							nickname;
 	std::string							username;
 	std::string							realname;
+	char								mode;
 	std::vector<struct s_channel *> 	channels;
 	struct pollfd						*fd;
 	struct s_user						*next;
@@ -54,6 +56,12 @@ struct s_user {
 typedef struct s_user user;
 typedef struct s_channel channel;
 
-int pass(const char *server_password, const char *user_password, user *user);
+//commands
+int PASS(const char *server_password, const char *user_password, user *user);
+int NICK(const char *nickname, user *user);
+
+
+//utils
+user *find_user(int fd);
 
 #endif
