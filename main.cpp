@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/20 20:26:14 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/20 21:52:23 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -345,6 +345,8 @@ int main (int argc, char *argv[])
 				len = rc;
 				printf("  %d bytes received\n", len);
 				std::cout << buffer << std::endl;
+				//PARSER
+				
 
 				/*****************************************************/
 				/* Echo the data back to the client                  */

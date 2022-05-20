@@ -6,3 +6,4 @@ ircserv
 *.o
 obj
 obj/
+a.out

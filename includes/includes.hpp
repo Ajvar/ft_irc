@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/20 11:50:19 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/20 21:48:11 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ struct s_channel {
 
 struct s_user {
 	int									id;
+	short								operator;
 	std::string							nickname;
 	std::string							username;
 	std::string							realname;
