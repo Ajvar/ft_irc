@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/20 21:48:11 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/21 12:26:27 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ struct s_channel {
 
 struct s_user {
 	int									id;
-	short								operator;
+	short								ope;
 	std::string							nickname;
 	std::string							username;
 	std::string							realname;
@@ -60,9 +60,13 @@ typedef struct s_channel channel;
 //commands
 int PASS(const char *server_password, const char *user_password, user *user);
 int NICK(const char *nickname, user *user);
+int USER(char *argv[2], user *user);
 
 
 //utils
 user *find_user(int fd);
+
+//debug
+void print_user(user *user);
 
 #endif

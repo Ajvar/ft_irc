@@ -6,12 +6,11 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/20 21:52:23 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/21 12:27:52 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/includes.hpp"
-
 
 user *users = NULL;
 channel *channels = NULL;
@@ -305,6 +304,7 @@ int main (int argc, char *argv[])
 			{
 				printf("  Descriptor %d is readable\n", fds[i].fd);
 				close_conn = FALSE;
+				print_user(find_user(fds[i].fd));
 				/*******************************************************/
 				/* Receive all incoming data on this socket            */
 				/* before we loop back and call poll again.            */
@@ -317,6 +317,7 @@ int main (int argc, char *argv[])
 				/* failure occurs, we will close the                 */
 				/* connection.                                       */
 				/*****************************************************/
+				memset(buffer, 0, sizeof(buffer));
 				rc = recv(fds[i].fd, buffer, sizeof(buffer), 0);
 				if (rc < 0)
 				{

@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 15:35:51 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/20 20:58:28 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/21 12:08:36 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,17 +59,17 @@ int NICK(const char *nickname, user *user)
 /* Gives username and real name to new user					 */
 /* argv[0] username - argv[1] realname						 */
 /*************************************************************/
-int USER(char *argv[2], user *user)
+int USER(char *username, char* realname, user *user)
 {
 	struct s_user *tmp = users;
 
 	while (tmp)
 	{
-		if (tmp->username == argv[0])
+		if (tmp->username == username)
 			return ERR_ALREADYREGISTRED;
 		tmp = tmp->next;
 	}
-	user->username = argv[0];
-	user->realname = argv[1];
+	user->username = username;
+	user->realname = realname;
 	return 0;
 }

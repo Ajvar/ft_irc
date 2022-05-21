@@ -6,7 +6,12 @@ CFLAGS = -Wall -Wextra -Werror -std=c++98
 HEADER_PATH = ./includes
 SRCS_PATH = ./srcs
 
-SRCS_FILES = main.cpp $(SRCS_PATH)/commands.cpp $(SRCS_PATH)/utils.cpp
+SRCS_FILES = \
+	main.cpp \
+	$(SRCS_PATH)/commands.cpp \
+	$(SRCS_PATH)/utils.cpp \
+	$(SRCS_PATH)/debug.cpp 
+
 HEADER_FILES = $(HEADER_PATH)/includes.hpp $(HEADER_PATH)/replies.hpp
 OBJS_PATH = ./obj/
 OBJS = ${SRCS_FILES:.c=.o}
