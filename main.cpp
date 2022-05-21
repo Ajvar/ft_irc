@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/21 12:27:52 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/21 19:27:41 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,8 +84,7 @@ int new_client(int id, struct pollfd *fd)
 	}
 	new_user->fd = fd;
 	new_user->nickname = "";
-	
-	
+	memset(new_user->modes, 0, sizeof(new_user->modes));
 	return 0;
 	
 }
@@ -124,6 +123,7 @@ int new_channel(std::string name)
 		tmp->next = new_channel;
 		new_channel->prev = tmp;
 	}
+	new_channel->password = "";
 	return 0;
 	
 }
@@ -205,7 +205,7 @@ int main (int argc, char *argv[])
 		/***********************************************************/
 		/* Call poll() and wait 3 minutes for it to complete.      */
 		/***********************************************************/
-		printf("Waiting on poll()...\n");
+		//printf("Waiting on poll()...\n");
 		if ((rc = poll(fds, nfds, -1)) < -1)
 			ft_exit(" poll failed.", errno, &listen_sd);
 
@@ -285,6 +285,8 @@ int main (int argc, char *argv[])
 					fds[nfds].events = POLLIN;
 					if (new_client(new_client_id, &fds[nfds]) == -1)
 						ft_free_exit(" user creation failed.", -1, &listen_sd, fds, nfds);
+					user * tmp = find_user(fds[nfds].fd);
+					OPER((char*)"nickname1", (char*)"password1", tmp);
 					nfds++;
 					new_client_id++;
 
@@ -304,7 +306,6 @@ int main (int argc, char *argv[])
 			{
 				printf("  Descriptor %d is readable\n", fds[i].fd);
 				close_conn = FALSE;
-				print_user(find_user(fds[i].fd));
 				/*******************************************************/
 				/* Receive all incoming data on this socket            */
 				/* before we loop back and call poll again.            */
@@ -392,13 +393,13 @@ int main (int argc, char *argv[])
 			compress_array = FALSE;
 			for (i = 0; i < nfds; i++)
 			{
-			if (fds[i].fd == -1)
-			{
-				for(j = i; j < nfds-1; j++)
-					fds[j].fd = fds[j+1].fd;
-				i--;
-				nfds--;
-			}
+				if (fds[i].fd == -1)
+				{
+					for(j = i; j < nfds-1; j++)
+						fds[j].fd = fds[j+1].fd;
+					i--;
+					nfds--;
+				}
 			}
 		}
 
