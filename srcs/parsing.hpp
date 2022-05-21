@@ -3,6 +3,7 @@
 
 # include "../includes/includes.hpp"
 # include "../includes/replies.hpp"
+# include <deque>
 
 //command format
 //:<Prefix> <Command> <Space Separated Args> :Optional trailing content here, like a chat message.
@@ -38,6 +39,6 @@ class Command
 		char*			_command;
 		char*			_trail;
 		std::deque<char*>	_args;
-}
+};
 
 #endif
