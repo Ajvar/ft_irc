@@ -10,6 +10,7 @@ SRCS_FILES = \
 	main.cpp \
 	$(SRCS_PATH)/commands.cpp \
 	$(SRCS_PATH)/utils.cpp \
+	$(SRCS_PATH)/exit.cpp \
 	$(SRCS_PATH)/debug.cpp 
 
 HEADER_FILES = $(HEADER_PATH)/includes.hpp $(HEADER_PATH)/replies.hpp

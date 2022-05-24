@@ -6,11 +6,13 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/21 12:23:57 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/21 12:25:41 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/24 12:31:25 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/includes.hpp"
+
+
 
 void print_user(user *user)
 {
