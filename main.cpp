@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/25 12:22:48 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/25 14:57:12 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -269,8 +269,6 @@ int main (int argc, char *argv[])
 						fds[nfds].events = POLLIN;
 						if (new_client(new_client_id, &fds[nfds]) == -1)
 							ft_free_exit(" user creation failed.", -1, fds, nfds);
-						user * tmp = find_user_by_id(fds[nfds].fd);
-						OPER((char*)"nickname1", (char*)"password1", tmp);
 						nfds++;
 						new_client_id++;
 
@@ -331,6 +329,13 @@ int main (int argc, char *argv[])
 					len = rc;
 					printf("  %d bytes received\n", len);
 					std::cout << buffer << std::endl;
+					user *tmp = find_user_by_fd(fds[i].fd);
+					tmp->nickname = "another";
+					if (std::string(buffer).find("AWAY") != std::string::npos)
+					{
+						AWAY("I'm away bitch", tmp);
+						//OPER("nickname1", "password1", tmp);
+					}
 					//PARSER
 					
 

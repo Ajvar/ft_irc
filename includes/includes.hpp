@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/25 12:15:39 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/25 17:24:34 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@
 
 #define FALSE 0
 #define TRUE 1
+# define PROTOCOL_VERSION "0210"
+#define VERSION "42IRC"
 
 //modes
 enum e_mode {
@@ -56,6 +58,7 @@ struct s_user {
 	std::string							nickname;
 	std::string							username;
 	std::string							realname;
+	std::string							hostname;
 	std::string							away_msg;
 	std::vector<struct s_channel *> 	channels;
 	struct pollfd						*fd;
@@ -86,10 +89,11 @@ int ISON(std::vector<std::string> nicknames, user *user);
 
 
 //utils
-user *find_user_by_id(int fd);
+user *find_user_by_fd(int fd);
 user *find_user_by_nickname(std::string nickname);
 int send_message(std::string s, user *user, int ret);
 void compress_array(pollfd *fds, int *nfds);
+std::string create_msg(std::string msg, int code, user *u);
 
 //exit
 void ft_exit(std::string s, int err, int *sock);

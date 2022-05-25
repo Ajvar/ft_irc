@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 15:35:51 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/25 12:19:29 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/25 17:27:17 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,7 @@ int USER(std::string username, char* realname, user *user)
  */
 int OPER(std::string username, std::string password, user *user)
 {
+	std::cout << "Inside oper sir user nick: " << user->nickname << std::endl;
 	
 	std::ifstream infile("conf");
 	std::string a, b;
@@ -112,7 +113,7 @@ int OPER(std::string username, std::string password, user *user)
 	    if (a == std::string(username) && b == std::string(password))
 		{
 			user->modes[OPERATOR_MODE] = TRUE;
-			return send_message("RPL_YOUREOPER", user , RPL_YOUREOPER);
+			return send_message(create_msg("You are now operator", RPL_YOUREOPER, user), user , RPL_YOUREOPER);
 		}
 	}
 	return send_message("ERR_PASSWDMISMATCH", user, ERR_PASSWDMISMATCH);
@@ -194,7 +195,7 @@ int AWAY(std::string away_msg, user *user)
 	{
 		user->modes[AWAY_MODE] = 1;
 		user->away_msg = std::string(away_msg);
-		send_message("RPL_NOWAYWAY", user, RPL_NOWAWAY);
+		send_message(create_msg("", RPL_NOWAWAY, user), user, RPL_NOWAWAY);
 	}
 	if (user && user->modes[AWAY_MODE] == 1)
 	{
