@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/24 17:46:40 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/25 12:15:39 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,27 +68,27 @@ typedef struct s_user user;
 typedef struct s_channel channel;
 
 //commands
-int PASS(const char *server_password, const char *user_password, user *user);
-int NICK(const char *nickname, user *user);
-int	USER(char *username, char* realname, user *user);
-int OPER(char *username, char *password, user *user);
-int MODE(char *nickname, char sign, char mode, user *user);
+int PASS(const std::string server_password, const std::string user_password, user *user);
+int NICK(const std::string nickname, user *user);
+int	USER(std::string username, char* realname, user *user);
+int OPER(std::string username, std::string password, user *user);
+int MODE(std::string nickname, char sign, char mode, user *user);
 int QUIT(pollfd *fds, int *nfds, user *u);
 
-int AWAY(char *away_msg, user *user);
+int AWAY(std::string away_msg, user *user);
 int	DIE(user *user);
 int RESTART(user *user, pollfd *fds, int nfds, int *restart);
-int WALLOPS(char *msg, user *u);
-int ISON(std::vector<char *> nicknames, user *user);
+int WALLOPS(std::string msg, user *u);
+int ISON(std::vector<std::string> nicknames, user *user);
 
 
-//int JOIN(char *channel ,user *user);
+//int JOIN(std::stringchannel ,user *user);
 
 
 //utils
 user *find_user_by_id(int fd);
-user *find_user_by_nickname(char *nickname);
-int send_message(char *s, user *user, int ret);
+user *find_user_by_nickname(std::string nickname);
+int send_message(std::string s, user *user, int ret);
 void compress_array(pollfd *fds, int *nfds);
 
 //exit

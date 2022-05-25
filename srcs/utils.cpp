@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 13:33:22 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/24 17:30:30 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/25 12:12:54 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,10 @@ extern struct s_channel *channels;
 /*****************************************************/
 /* Sends message to user's client		             */
 /*****************************************************/
-int send_message(char *s, user *user, int ret)
+int send_message(std::string s, user *user, int ret)
 {
-	if (s)
-		send(user->fd->fd, s, strlen(s) + 1, MSG_NOSIGNAL);
+	if (s.empty() == 0)
+		send(user->fd->fd, s.c_str(), s.size() + 1, MSG_NOSIGNAL);
 	return ret;
 }
 
@@ -42,7 +42,7 @@ user *find_user_by_id(int fd)
 	return NULL;
 }
 
-user *find_user_by_nickname(char *nickname)
+user *find_user_by_nickname(std::string nickname)
 {
 	user *tmp = users;
 
@@ -71,3 +71,4 @@ void compress_array(pollfd *fds, int *nfds)
 		}
 	}
 }
+

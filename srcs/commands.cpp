@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 15:35:51 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/24 20:55:28 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/25 12:19:29 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,12 @@ extern channel *channels;
  * @param user 
  * @return 0 on success, 1 on failure. 
  */
-int PASS(const char *server_password, const char *user_password, user *user)
+int PASS(const std::string server_password, const std::string user_password, user *user)
 {
-	if (!user_password)
+	if (user_password.empty())
 		return ERR_NEEDMOREPARAMS;
 	std::cout << "server pass : "<< server_password << " user pass :" << user_password << std::endl;
-	if (strcmp(user_password, server_password) != 0)
+	if (user_password != server_password)
 	{
 		send(user->fd->fd, "Wrong password", 16, 0);
 		return 1;
@@ -45,19 +45,19 @@ int PASS(const char *server_password, const char *user_password, user *user)
  * @param user 
  * @return int 
  */
-int NICK(const char *nickname, user *user)
+int NICK(const std::string nickname, user *user)
 {
 	s_user *tmp = users;
 	std::string buff;
 	
-	if (!(nickname))
-		return send_message((char *)"ERR_NONICKNAMEGIVEN", user, ERR_NONICKNAMEGIVEN);
+	if (nickname.empty())
+		return send_message("ERR_NONICKNAMEGIVEN", user, ERR_NONICKNAMEGIVEN);
 
 	buff = "You are now known as " + std::string(nickname);
 	while (tmp)
 	{
 		if (tmp->nickname == nickname && tmp->id != user->id)
-			return send_message((char *)"ERR_NICKNAMEINUSE", user, ERR_NICKNAMEINUSE);
+			return send_message("ERR_NICKNAMEINUSE", user, ERR_NICKNAMEINUSE);
 
 	}
 	if (user->nickname.empty() == false)
@@ -74,14 +74,14 @@ int NICK(const char *nickname, user *user)
  * @param user 
  * @return int 
  */
-int USER(char *username, char* realname, user *user)
+int USER(std::string username, char* realname, user *user)
 {
 	struct s_user *tmp = users;
 
 	while (tmp)
 	{
 		if (tmp->username == username)
-			return send_message((char *)"ERR_ALREADYREGISTRED", user, ERR_ALREADYREGISTRED);
+			return send_message("ERR_ALREADYREGISTRED", user, ERR_ALREADYREGISTRED);
 		tmp = tmp->next;
 	}
 	user->username = username;
@@ -97,14 +97,14 @@ int USER(char *username, char* realname, user *user)
  * @param user 
  * @return RPL_YOUREOPER on success 
  */
-int OPER(char *username, char *password, user *user)
+int OPER(std::string username, std::string password, user *user)
 {
 	
 	std::ifstream infile("conf");
 	std::string a, b;
 
-	if (!username || !password)
-		return send_message((char*)"Error: Too few parameters.\nUsage OPER nickname password.", user, ERR_NEEDMOREPARAMS);
+	if (username.empty() || password.empty())
+		return send_message("Error: Too few parameters.\nUsage OPER nickname password.", user, ERR_NEEDMOREPARAMS);
 	if (infile.is_open() == 0)
 		return -1;
 	while (infile >> a >> b)
@@ -112,10 +112,10 @@ int OPER(char *username, char *password, user *user)
 	    if (a == std::string(username) && b == std::string(password))
 		{
 			user->modes[OPERATOR_MODE] = TRUE;
-			return send_message((char*)"RPL_YOUREOPER", user , RPL_YOUREOPER);
+			return send_message("RPL_YOUREOPER", user , RPL_YOUREOPER);
 		}
 	}
-	return send_message((char*)"ERR_PASSWDMISMATCH", user, ERR_PASSWDMISMATCH);
+	return send_message("ERR_PASSWDMISMATCH", user, ERR_PASSWDMISMATCH);
 }
 
 /**
@@ -127,15 +127,15 @@ int OPER(char *username, char *password, user *user)
  * @param user 
  * @return 0 on success 
  */
-int MODE(char *nickname, char sign, char mode, user *user)
+int MODE(std::string nickname, char sign, char mode, user *user)
 {
 	short local_sign;
 
 	sign == '+' ? local_sign = 1 : local_sign = 0;
-	if (!nickname || !sign || !mode)
-		return send_message((char *)"ERR_NEEDMOREPARAMS", user, ERR_NEEDMOREPARAMS);
+	if (nickname.empty() || !sign || !mode)
+		return send_message("ERR_NEEDMOREPARAMS", user, ERR_NEEDMOREPARAMS);
 	if (std::string(nickname) != user->nickname)
-		return send_message((char *)"ERR_USERSDONTMATCH", user, ERR_USERSDONTMATCH);
+		return send_message("ERR_USERSDONTMATCH", user, ERR_USERSDONTMATCH);
 	switch (mode)
 	{
 	case 'i' :
@@ -156,7 +156,7 @@ int MODE(char *nickname, char sign, char mode, user *user)
 		break;
 	
 	default:
-		return send_message((char *)"ERR_UMODEUNKNOWNFLAG", user, ERR_UMODEUNKNOWNFLAG);
+		return send_message("ERR_UMODEUNKNOWNFLAG", user, ERR_UMODEUNKNOWNFLAG);
 		break;
 	}
 	return 0;
@@ -171,7 +171,7 @@ int MODE(char *nickname, char sign, char mode, user *user)
  * @param u
  * @return int
  */
-int QUIT(char *msg, pollfd *fds, int *nfds, user *u)
+int QUIT(std::string msg, pollfd *fds, int *nfds, user *u)
 {
 	send_message(msg, u, 0);
 	close(u->fd->fd);
@@ -188,19 +188,19 @@ int QUIT(char *msg, pollfd *fds, int *nfds, user *u)
  * @param user 
  * @return RPL_NOWAYWAY or RPL_UNAWAY on success, -1 on failure 
  */
-int AWAY(char *away_msg, user *user)
+int AWAY(std::string away_msg, user *user)
 {
 	if (user && user->modes[AWAY_MODE] == 0)
 	{
 		user->modes[AWAY_MODE] = 1;
 		user->away_msg = std::string(away_msg);
-		send_message((char*)"RPL_NOWAYWAY", user, RPL_NOWAWAY);
+		send_message("RPL_NOWAYWAY", user, RPL_NOWAWAY);
 	}
 	if (user && user->modes[AWAY_MODE] == 1)
 	{
 		user->modes[AWAY_MODE] = 0;
 		user->away_msg = "";
-		return send_message((char*)"RPL_UNAWAY", user, RPL_UNAWAY);
+		return send_message("RPL_UNAWAY", user, RPL_UNAWAY);
 	}
 	return -1;
 }
@@ -216,8 +216,8 @@ int AWAY(char *away_msg, user *user)
 int	DIE(user *user, pollfd *fds, int nfds)
 {
 	if (user->modes[OPERATOR_MODE] == 0)
-		return send_message((char*)"ERR_NOPRIVILEGES", user, ERR_NOPRIVILEGES);
-	send_message((char*)"Killing server.", user, 0);
+		return send_message("ERR_NOPRIVILEGES", user, ERR_NOPRIVILEGES);
+	send_message("Killing server.", user, 0);
 	ft_free_exit("Killing server", 0, fds, nfds);
 	return 0;
 }
@@ -235,7 +235,7 @@ int	DIE(user *user, pollfd *fds, int nfds)
 int RESTART(user *user, pollfd *fds, int nfds, int *restart)
 {
 	if (user->modes[OPERATOR_MODE] == 0)
-		return send_message((char*)"ERR_NOPRIVILEGES", user, ERR_NOPRIVILEGES);
+		return send_message("ERR_NOPRIVILEGES", user, ERR_NOPRIVILEGES);
 	free_users();
 	free_channels();
 	free_fds(fds, nfds);
@@ -252,11 +252,11 @@ int RESTART(user *user, pollfd *fds, int nfds, int *restart)
  * @param u the user sending the message
  * @return 0 on success, ERR_NEEDMOREPARAMS is msg is empty
  */
-int WALLOPS(char *msg, user *u)
+int WALLOPS(std::string msg, user *u)
 {
 	user *tmp = users;
-	if (!msg)
-		return send_message((char*)"ERR_NEEDMOREPARAMS", u, ERR_NEEDMOREPARAMS);
+	if (msg.empty())
+		return send_message("ERR_NEEDMOREPARAMS", u, ERR_NEEDMOREPARAMS);
 	while (tmp)
 	{
 		if (tmp != u && tmp->modes[WALLOPS_MODE] == 1)
@@ -276,16 +276,16 @@ int WALLOPS(char *msg, user *u)
  * @param user 
  * @return RPL_ISON on success 
  */
-int ISON(std::vector<char *> nicknames, user *user)
+int ISON(std::vector<std::string > nicknames, user *user)
 {
-	char *ret = NULL;
+	std::string ret = NULL;
 
 	if (nicknames.empty())
-		return send_message((char *)"ERR_NEEDMOREPARAMS", user, ERR_NEEDMOREPARAMS);
-	for (std::vector<char *>::iterator it = nicknames.begin(); it != nicknames.end(); it++)
+		return send_message("ERR_NEEDMOREPARAMS", user, ERR_NEEDMOREPARAMS);
+	for (std::vector<std::string >::iterator it = nicknames.begin(); it != nicknames.end(); it++)
 	{
 		if (find_user_by_nickname((*it)))
-			ret = strcat(ret, (*it));
+			ret = ret + (*it);
 	}
 	return send_message(ret, user, RPL_ISON);
 }

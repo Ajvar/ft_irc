@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/24 17:47:48 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/25 12:22:48 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,7 +137,7 @@ int main (int argc, char *argv[])
 		/* Allow socket descriptor to be reuseable                   */
 		/*************************************************************/
 		if ((rc = setsockopt(listen_sd, SOL_SOCKET,  SO_REUSEADDR,
-						(char *)&on, sizeof(on))) < 0)
+						(char*)&on, sizeof(on))) < 0)
 		ft_exit(" setsockopt failed.", errno, &listen_sd);
 
 
@@ -146,7 +146,7 @@ int main (int argc, char *argv[])
 		/* the incoming connections will also be nonblocking since   */
 		/* they will inherit that state from the listening socket.   */
 		/*************************************************************/
-		if ( (rc = ioctl(listen_sd, FIONBIO, (char *)&on)) < 0)
+		if ( (rc = ioctl(listen_sd, FIONBIO, (char*)&on)) < 0)
 			ft_exit(" ioctl failed.", errno, &listen_sd);
 
 		/*************************************************************/
