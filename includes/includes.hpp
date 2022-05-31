@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/25 17:24:34 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/31 15:19:04 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@
 #define VERSION "42IRC"
 
 //modes
-enum e_mode {
+enum e_user_mode {
 	AWAY_MODE,
 	INVISIBLE_MODE,
 	WALLOPS_MODE,
@@ -44,9 +44,29 @@ enum e_mode {
 	OPERATOR_MODE
 };
 
+enum e_chan_mode {
+	INVITE_ONLY_MODE,
+    MODERATED_MODE,
+	OUTSIDE_PRIVMSG_MODE,
+	PRIVATE_MODE,
+    TOPIC_LOCKED_MODE,
+    KEY_LOCKED_MODE,
+    USER_LIMIT_MODE	
+};
+
+typedef struct s_channel channel;
+typedef struct s_user user;
+
 struct s_channel {
 	std::string						name;
-	std::string 					password;
+	std::string 					key;
+	std::string						topic;
+	int								user_limit;
+	unsigned						modes[7];
+	user							*creator;
+	std::vector<std::string>		banned;
+	std::vector<std::string>		invites;
+	std::vector<struct s_user *>	operators;
 	std::vector<struct s_user *>	users;
 	struct s_channel				*next;
 	struct s_channel				*prev;
@@ -67,33 +87,34 @@ struct s_user {
 
 };
 
-typedef struct s_user user;
-typedef struct s_channel channel;
 
 //commands
+
+//client commands
 int PASS(const std::string server_password, const std::string user_password, user *user);
 int NICK(const std::string nickname, user *user);
-int	USER(std::string username, char* realname, user *user);
+int	USER(std::string username, std::string realname, user *user);
 int OPER(std::string username, std::string password, user *user);
 int MODE(std::string nickname, char sign, char mode, user *user);
-int QUIT(pollfd *fds, int *nfds, user *u);
+int QUIT(std::string msg, pollfd *fds, int *nfds, user *u);
 
+//optionnal commands
 int AWAY(std::string away_msg, user *user);
-int	DIE(user *user);
+int	DIE(user *user, pollfd *fds, int nfds);
 int RESTART(user *user, pollfd *fds, int nfds, int *restart);
 int WALLOPS(std::string msg, user *u);
 int ISON(std::vector<std::string> nicknames, user *user);
 
-
-//int JOIN(std::stringchannel ,user *user);
-
+//channel commands
+int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, int option, user *u);
 
 //utils
 user *find_user_by_fd(int fd);
 user *find_user_by_nickname(std::string nickname);
+channel *find_channel_by_name(std::string name);
 int send_message(std::string s, user *user, int ret);
 void compress_array(pollfd *fds, int *nfds);
-std::string create_msg(std::string msg, int code, user *u);
+std::string create_msg(int code, user *u, std::string arg1, std::string arg2, std::string arg3, std::string arg4);
 
 //exit
 void ft_exit(std::string s, int err, int *sock);

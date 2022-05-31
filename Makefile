@@ -1,7 +1,7 @@
 NAME = ircserv
 
 CC = c++
-CFLAGS = -Wall -Wextra -Werror -std=c++98 
+CFLAGS = -Wall -Wextra -Werror -std=c++98 -fsanitize=address
 
 HEADER_PATH = ./includes
 SRCS_PATH = ./srcs
@@ -29,7 +29,7 @@ ${OBJS_PATH}%.o: %.cpp
 	${CC} ${CFLAGS} -c $< -o $@
 
 clean:
-	rm -rf ${OBJS}
+	rm -rf ${OBJS_PATH}
 
 fclean: clean
 	rm -rf $(NAME)

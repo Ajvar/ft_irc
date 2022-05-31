@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 15:35:51 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/25 17:27:17 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/31 16:14:31 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,18 +51,18 @@ int NICK(const std::string nickname, user *user)
 	std::string buff;
 	
 	if (nickname.empty())
-		return send_message("ERR_NONICKNAMEGIVEN", user, ERR_NONICKNAMEGIVEN);
+		return send_message(create_msg(ERR_NONICKNAMEGIVEN, user,"", "", "", ""), user, ERR_NONICKNAMEGIVEN);
 
-	buff = "You are now known as " + std::string(nickname);
 	while (tmp)
 	{
 		if (tmp->nickname == nickname && tmp->id != user->id)
 			return send_message("ERR_NICKNAMEINUSE", user, ERR_NICKNAMEINUSE);
-
+		tmp = tmp->next;
 	}
 	if (user->nickname.empty() == false)
 		send(user->fd->fd, buff.c_str(), buff.size(), 0);
 	user->nickname = nickname;
+	std::cout << "out nick" << std::endl;
 	return 0;
 }
 
@@ -74,7 +74,7 @@ int NICK(const std::string nickname, user *user)
  * @param user 
  * @return int 
  */
-int USER(std::string username, char* realname, user *user)
+int USER(std::string username, std::string realname, user *user)
 {
 	struct s_user *tmp = users;
 
@@ -113,7 +113,7 @@ int OPER(std::string username, std::string password, user *user)
 	    if (a == std::string(username) && b == std::string(password))
 		{
 			user->modes[OPERATOR_MODE] = TRUE;
-			return send_message(create_msg("You are now operator", RPL_YOUREOPER, user), user , RPL_YOUREOPER);
+			return send_message(create_msg(RPL_YOUREOPER, user,"", "", "", ""), user , RPL_YOUREOPER);
 		}
 	}
 	return send_message("ERR_PASSWDMISMATCH", user, ERR_PASSWDMISMATCH);
@@ -191,17 +191,18 @@ int QUIT(std::string msg, pollfd *fds, int *nfds, user *u)
  */
 int AWAY(std::string away_msg, user *user)
 {
+	std::cout << "in away" << std::endl;
 	if (user && user->modes[AWAY_MODE] == 0)
 	{
 		user->modes[AWAY_MODE] = 1;
 		user->away_msg = std::string(away_msg);
-		send_message(create_msg("", RPL_NOWAWAY, user), user, RPL_NOWAWAY);
+		send_message(create_msg(RPL_NOWAWAY, user,"", "", "", ""), user, RPL_NOWAWAY);
 	}
 	if (user && user->modes[AWAY_MODE] == 1)
 	{
 		user->modes[AWAY_MODE] = 0;
 		user->away_msg = "";
-		return send_message("RPL_UNAWAY", user, RPL_UNAWAY);
+		return send_message(create_msg(RPL_UNAWAY, user,"", "", "", ""), user, RPL_UNAWAY);
 	}
 	return -1;
 }
@@ -216,8 +217,9 @@ int AWAY(std::string away_msg, user *user)
  */
 int	DIE(user *user, pollfd *fds, int nfds)
 {
+	std::cout << "ine DIE" << std::endl;
 	if (user->modes[OPERATOR_MODE] == 0)
-		return send_message("ERR_NOPRIVILEGES", user, ERR_NOPRIVILEGES);
+		return send_message(create_msg(ERR_NOPRIVILEGES, user,"", "", "", ""), user, ERR_NOPRIVILEGES);
 	send_message("Killing server.", user, 0);
 	ft_free_exit("Killing server", 0, fds, nfds);
 	return 0;
@@ -236,7 +238,7 @@ int	DIE(user *user, pollfd *fds, int nfds)
 int RESTART(user *user, pollfd *fds, int nfds, int *restart)
 {
 	if (user->modes[OPERATOR_MODE] == 0)
-		return send_message("ERR_NOPRIVILEGES", user, ERR_NOPRIVILEGES);
+		return send_message(create_msg(ERR_NOPRIVILEGES, user,"", "", "", ""), user, ERR_NOPRIVILEGES);
 	free_users();
 	free_channels();
 	free_fds(fds, nfds);
@@ -257,7 +259,7 @@ int WALLOPS(std::string msg, user *u)
 {
 	user *tmp = users;
 	if (msg.empty())
-		return send_message("ERR_NEEDMOREPARAMS", u, ERR_NEEDMOREPARAMS);
+		return send_message(create_msg(ERR_NEEDMOREPARAMS, u, "WALLOPS","", "", ""), u, ERR_NEEDMOREPARAMS);
 	while (tmp)
 	{
 		if (tmp != u && tmp->modes[WALLOPS_MODE] == 1)
@@ -282,11 +284,57 @@ int ISON(std::vector<std::string > nicknames, user *user)
 	std::string ret = NULL;
 
 	if (nicknames.empty())
-		return send_message("ERR_NEEDMOREPARAMS", user, ERR_NEEDMOREPARAMS);
+		return send_message(create_msg(ERR_NEEDMOREPARAMS, user, "ISON","", "", ""), user, ERR_NEEDMOREPARAMS);
 	for (std::vector<std::string >::iterator it = nicknames.begin(); it != nicknames.end(); it++)
 	{
 		if (find_user_by_nickname((*it)))
 			ret = ret + (*it);
 	}
 	return send_message(ret, user, RPL_ISON);
+}
+
+int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, int option, user *u)
+{
+	if (chan.empty() || !u)
+		return (send_message(create_msg(ERR_NEEDMOREPARAMS, u, "JOIN","", "", ""), u, ERR_NEEDMOREPARAMS));
+	std::vector<std::string>::iterator it = chan.begin();
+	std::vector<std::string>::iterator ite = chan.end();
+	std::vector<std::string>::iterator k = keys.begin();
+	//std::vector<std::string>::iterator ke = keys.end();
+	channel *tmp = NULL;
+	
+	for (; it != ite; it++)
+	{
+		if ((tmp = find_channel_by_name((*it))))
+		{
+			if (tmp->modes[INVITE_ONLY_MODE])
+			{
+				for (std::vector<std::string>::iterator inv = tmp->invites.begin(); inv != tmp->invites.end(); inv++)
+				{
+					if ((*inv) == u->nickname)
+						break;
+					else if (inv == tmp->invites.end() && (*inv) != u->nickname)
+						return send_message(create_msg(ERR_INVITEONLYCHAN, u, tmp->name,"", "", ""), u, ERR_INVITEONLYCHAN);
+				}
+			}
+			if (tmp->modes[USER_LIMIT_MODE])
+			{
+				if ((int)tmp->users.size() >= tmp->user_limit)
+					return send_message(create_msg(ERR_CHANNELISFULL, u, tmp->name,"", "", ""), u, ERR_CHANNELISFULL);
+			}
+			for (std::vector<std::string>::iterator ban = tmp->banned.begin(); ban != tmp->banned.end(); ban++)
+				if ((*ban) == u->nickname)
+					return send_message(create_msg(ERR_BANNEDFROMCHAN, u, tmp->name,"", "", ""), u, ERR_BANNEDFROMCHAN);
+			if (tmp->key.empty() == 1 && tmp->key != (*k))
+				return send_message(create_msg(ERR_BADCHANNELKEY, u, tmp->name,"", "", ""), u, ERR_BADCHANNELKEY);
+			k++;
+			tmp->users.push_back(u);
+			u->channels.push_back(tmp);
+			return send_message(create_msg(tmp->topic.empty() ? RPL_NOTOPIC : RPL_TOPIC, u, tmp->name, tmp->topic,"", ""), u, RPL_TOPIC);
+		}
+		else
+		(void)option;
+		
+	}
+	return 0;
 }

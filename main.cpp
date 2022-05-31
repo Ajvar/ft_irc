@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/25 14:57:12 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/31 16:06:37 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,9 @@ int new_channel(std::string name)
 		tmp->next = new_channel;
 		new_channel->prev = tmp;
 	}
-	new_channel->password = "";
+	new_channel->key = "";
+	memset(new_channel->modes, 0, sizeof(new_channel->modes));
+
 	return 0;
 	
 }
@@ -322,7 +324,9 @@ int main (int argc, char *argv[])
 						close_conn = TRUE;
 						break;
 					}
-
+					std::vector<std::string> nicknames;
+					nicknames.push_back("test1");
+					nicknames.push_back("test2");
 					/*****************************************************/
 					/* Data was received                                 */
 					/*****************************************************/
@@ -331,11 +335,34 @@ int main (int argc, char *argv[])
 					std::cout << buffer << std::endl;
 					user *tmp = find_user_by_fd(fds[i].fd);
 					tmp->nickname = "another";
+					std::vector<std::string> chanz;
+					std::vector<std::string> keys;
+					chanz.push_back("test");
 					if (std::string(buffer).find("AWAY") != std::string::npos)
-					{
-						AWAY("I'm away bitch", tmp);
-						//OPER("nickname1", "password1", tmp);
-					}
+						AWAY("I'm away", tmp);
+					else if (std::string(buffer).find("OPER") != std::string::npos)
+						OPER("nickname1", "password1", tmp);
+					else if (std::string(buffer).find("PASS") != std::string::npos)
+						PASS(argv[2], "lol", tmp);
+					else if (std::string(buffer).find("NICK") != std::string::npos)
+						NICK("testttt", tmp);
+					else if (std::string(buffer).find("USER") != std::string::npos)
+						USER("usertest", "realtest", tmp);
+					else if (std::string(buffer).find("MODE") != std::string::npos)
+						MODE(tmp->nickname, '+',  'i', tmp);
+					else if (std::string(buffer).find("QUIT") != std::string::npos)
+						QUIT("bye", fds, &nfds, tmp);
+					else if (std::string(buffer).find("DIE") != std::string::npos)
+						DIE(tmp, fds, nfds);
+					else if (std::string(buffer).find("RESTART") != std::string::npos)
+						RESTART(tmp, fds, nfds, &restart);
+					else if (std::string(buffer).find("WALLOPS") != std::string::npos)
+						WALLOPS("wallopstest", tmp);
+					else if (std::string(buffer).find("ISON") != std::string::npos)
+						ISON(nicknames, tmp);
+					else if (std::string(buffer).find("JOIN") != std::string::npos)
+						JOIN(chanz, keys, 0, tmp);
+					
 					//PARSER
 					
 
