@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 15:35:51 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/01 13:31:00 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/01 21:06:19 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -217,7 +217,6 @@ int AWAY(std::string away_msg, user *user)
  */
 int	DIE(user *user, pollfd *fds, int nfds)
 {
-	std::cout << "ine DIE" << std::endl;
 	if (user->modes[OPERATOR_MODE] == 0)
 		return send_message(create_msg(ERR_NOPRIVILEGES, user,"", "", "", ""), user, ERR_NOPRIVILEGES);
 	send_message("Killing server.", user, 0);
@@ -271,14 +270,6 @@ int WALLOPS(std::string msg, user *u)
 	return 0;
 }
 
-std::string join_message(const std::string &msg, user *u)
-{
-	std::string				full_msg;
-
-	full_msg = ":" + u->nickname + "!" + u->username +
-				"@" + u->hostname + " " + msg + "\r\n";
-	return full_msg;
-}
 
 /**
  * * @brief Take a list of nicknames
@@ -302,6 +293,16 @@ int ISON(std::vector<std::string > nicknames, user *user)
 	return send_message(ret, user, RPL_ISON);
 }
 
+std::string channel_message(const std::string &msg, user *u)
+{
+	std::string				full_msg;
+
+	// full_msg = ":" + u->nickname + "!" + u->username +
+	// 			"@" + u->hostname + " " + msg + "\r\n";
+	full_msg = ":" + u->nickname + " " + msg;
+	return full_msg;
+}
+
 int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, int option, user *u, pollfd *fds, int nfds)
 {
 	if (chan.empty() || !u)
@@ -309,53 +310,56 @@ int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, int optio
 	std::vector<std::string>::iterator it = chan.begin();
 	std::vector<std::string>::iterator ite = chan.end();
 	std::vector<std::string>::iterator k = keys.begin();
-	//std::vector<std::string>::iterator ke = keys.end();
+	std::string							nicks;
 	channel *tmp = NULL;
 	
 	for (; it != ite; it++)
 	{
-		if ((tmp = find_channel_by_name((*it))))
+		if (!(tmp = find_channel_by_name((*it))))
 		{
-			if (tmp->modes[INVITE_ONLY_MODE])
-			{
-				for (std::vector<std::string>::iterator inv = tmp->invites.begin(); inv != tmp->invites.end(); inv++)
-				{
-					if ((*inv) == u->nickname)
-						break;
-					else if (inv == tmp->invites.end() && (*inv) != u->nickname)
-						return send_message(create_msg(ERR_INVITEONLYCHAN, u, tmp->name,"", "", ""), u, ERR_INVITEONLYCHAN);
-				}
-			}
-			if (tmp->modes[USER_LIMIT_MODE])
-			{
-				if (tmp->users.empty() == 1)
-					if ((int)tmp->users.size() >= tmp->user_limit)
-						return send_message(create_msg(ERR_CHANNELISFULL, u, tmp->name,"", "", ""), u, ERR_CHANNELISFULL);
-			}
-			for (std::vector<std::string>::iterator ban = tmp->banned.begin(); ban != tmp->banned.end(); ban++)
-				if ((*ban) == u->nickname)
-					return send_message(create_msg(ERR_BANNEDFROMCHAN, u, tmp->name,"", "", ""), u, ERR_BANNEDFROMCHAN);
-
-			if (tmp->key != "" && tmp->key != (*k))
-				return send_message(create_msg(ERR_BADCHANNELKEY, u, tmp->name,"", "", ""), u, ERR_BADCHANNELKEY);
-				
-			k++;
-			tmp->users.push_back(u);
-			u->channels.push_back(tmp);
-			return send_message(create_msg(tmp->topic.empty() ? RPL_NOTOPIC : RPL_TOPIC, u, tmp->name, tmp->topic,"", ""), u, RPL_TOPIC);
-		}
-		else
-		{
-			channel *new_chan = new_channel((*it));
-			if (!new_chan)
+			tmp = new_channel((*it));
+			if (!tmp)
 			{
 				send_message("Error while creating new channel", u, -1);
 				ft_free_exit("Error creating channel", -1, fds, nfds);
 			}
-			new_chan->creator = u;
-			new_chan->users.push_back(u);
-			return send_message(create_msg(RPL_CREATIONTIME, u, new_chan->name, ft_to_string(new_chan->creation) , "", ""), u, 0);
+			tmp->name = (*it);
+			tmp->creator = u;
 		}
+		if (tmp->modes[INVITE_ONLY_MODE])
+		{
+			for (std::vector<std::string>::iterator inv = tmp->invites.begin(); inv != tmp->invites.end(); inv++)
+			{
+				if ((*inv) == u->nickname)
+					break;
+				else if (inv == tmp->invites.end() && (*inv) != u->nickname)
+					return send_message(create_msg(ERR_INVITEONLYCHAN, u, tmp->name,"", "", ""), u, ERR_INVITEONLYCHAN);
+			}
+		}
+		if (tmp->modes[USER_LIMIT_MODE])
+		{
+			if (tmp->users.empty() == 1)
+				if ((int)tmp->users.size() >= tmp->user_limit)
+					return send_message(create_msg(ERR_CHANNELISFULL, u, tmp->name,"", "", ""), u, ERR_CHANNELISFULL);
+		}
+		for (std::vector<std::string>::iterator ban = tmp->banned.begin(); ban != tmp->banned.end(); ban++)
+			if ((*ban) == u->nickname)
+				return send_message(create_msg(ERR_BANNEDFROMCHAN, u, tmp->name,"", "", ""), u, ERR_BANNEDFROMCHAN);
+		if (tmp->key != "" && tmp->key != (*k))
+			return send_message(create_msg(ERR_BADCHANNELKEY, u, tmp->name,"", "", ""), u, ERR_BADCHANNELKEY);	
+		k++;
+		tmp->users.push_back(u);
+		u->channels.push_back(tmp);
+		send_message(channel_message("JOIN " + tmp->name, u), u, 0);
+		if (tmp->topic != "")
+			send_message(create_msg(RPL_TOPIC, u, tmp->topic, "", "", ""), u, 0);
+		for (std::vector<user *>::iterator uz = tmp->users.begin(); uz !=  tmp->users.end(); uz++)
+			nicks = nicks + (nicks == "" ? "" : " ") + (*uz)->nickname;
+		
+		std::cout << create_msg(RPL_NAMREPLY, u, tmp->name, nicks, "", "") << std::endl;
+		send_message(create_msg(RPL_NAMREPLY, u, tmp->name, nicks, "", ""), u, 0);
+		send_message(create_msg(RPL_ENDOFNAMES, u, tmp->name, "", "", ""), u, 0);
+		
 		(void)option;
 		
 	}

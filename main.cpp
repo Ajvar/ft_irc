@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/01 16:45:10 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/01 20:06:08 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ int new_client(int id, struct pollfd *fd)
 	new_user->fd = fd;
 	new_user->nickname = "";
 	memset(new_user->modes, 0, sizeof(new_user->modes));
+	new_user->hostname = "42irc.com";
 	return 0;
 	
 }
@@ -339,7 +340,7 @@ int main (int argc, char *argv[])
 						tmp->nickname = "another";
 						std::vector<std::string> chanz;
 						std::vector<std::string> keys;
-						chanz.push_back("test");
+						chanz.push_back("#test");
 						if (std::string(buffer).find("AWAY") != std::string::npos)
 							AWAY("I'm away", tmp);
 						else if (std::string(buffer).find("OPER") != std::string::npos)
