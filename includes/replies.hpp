@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 14:02:54 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/25 16:45:28 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/31 20:37:34 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@
 #define	ERR_USERSDONTMATCH	502
 
 #define	RPL_NONE	300
+#define	RPL_CREATIONTIME 329
 #define	RPL_USERHOST	302
 #define	RPL_ISON	303
 #define	RPL_AWAY	301

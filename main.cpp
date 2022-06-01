@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/31 16:06:37 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/01 16:45:10 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 user *users = NULL;
 channel *channels = NULL;
 
-int check_args(int ac, char **av)
+static int check_args(int ac, char **av)
 {
 	long int n;
 
@@ -87,12 +87,12 @@ void delete_channel(std::string name)
 
 }
 
-int new_channel(std::string name)
+channel *new_channel(std::string name)
 {
 	channel *tmp = channels;
 	channel* new_channel = new channel();
 	if (new_channel == NULL)
-		return -1;
+		return NULL;
 	new_channel->next = NULL;
 	new_channel->name = name;
 	if (!channels)
@@ -106,8 +106,8 @@ int new_channel(std::string name)
 	}
 	new_channel->key = "";
 	memset(new_channel->modes, 0, sizeof(new_channel->modes));
-
-	return 0;
+	time(&new_channel->creation);
+	return new_channel;
 	
 }
 
@@ -121,7 +121,7 @@ int main (int argc, char *argv[])
 		int    listen_sd = -1, new_sd = -1;
 		int    end_server = FALSE, compress = FALSE;
 		int    close_conn;
-		char   buffer[512];
+		char   buffer[513];
 		struct sockaddr_in6   addr;
 		struct pollfd fds[SOMAXCONN];
 		int    nfds = 1, current_size = 0, i;
@@ -294,91 +294,93 @@ int main (int argc, char *argv[])
 					/* Receive all incoming data on this socket            */
 					/* before we loop back and call poll again.            */
 					/*******************************************************/
-				do
-				{
-					/*****************************************************/
-					/* Receive data on this connection until the         */
-					/* recv fails with EWOULDBLOCK. If any other         */
-					/* failure occurs, we will close the                 */
-					/* connection.                                       */
-					/*****************************************************/
-					memset(buffer, 0, sizeof(buffer));
-					rc = recv(fds[i].fd, buffer, sizeof(buffer), 0);
-					if (rc < 0)
+					do
 					{
-						if (errno != EWOULDBLOCK)
+						/*****************************************************/
+						/* Receive data on this connection until the         */
+						/* recv fails with EWOULDBLOCK. If any other         */
+						/* failure occurs, we will close the                 */
+						/* connection.                                       */
+						/*****************************************************/
+
+						memset(buffer, 0, sizeof(buffer));
+						rc = recv(fds[i].fd, buffer, sizeof(buffer) - 1, 0);
+						buffer[512] = '\0';
+						if (rc < 0)
 						{
-							perror("  recv() failed");
+							if (errno != EWOULDBLOCK)
+							{
+								perror("  recv() failed");
+								close_conn = TRUE;
+							}
+							break;
+						}
+
+						/*****************************************************/
+						/* Check to see if the connection has been           */
+						/* closed by the client                              */
+						/*****************************************************/
+						if (rc == 0)
+						{
+							printf("  Connection closed\n");
 							close_conn = TRUE;
+							break;
+						}
+						std::vector<std::string> nicknames;
+						nicknames.push_back("test1");
+						nicknames.push_back("test2");
+						/*****************************************************/
+						/* Data was received                                 */
+						/*****************************************************/
+						len = rc;
+						printf("  %d bytes received\n", len);
+						std::cout << buffer << std::endl;
+						user *tmp = find_user_by_fd(fds[i].fd);
+						tmp->nickname = "another";
+						std::vector<std::string> chanz;
+						std::vector<std::string> keys;
+						chanz.push_back("test");
+						if (std::string(buffer).find("AWAY") != std::string::npos)
+							AWAY("I'm away", tmp);
+						else if (std::string(buffer).find("OPER") != std::string::npos)
+							OPER("nickname1", "password1", tmp);
+						else if (std::string(buffer).find("PASS") != std::string::npos)
+							PASS(argv[2], "lol", tmp);
+						else if (std::string(buffer).find("NICK") != std::string::npos)
+							NICK("testttt", tmp);
+						else if (std::string(buffer).find("USER") != std::string::npos)
+							USER("usertest", "realtest", tmp);
+						else if (std::string(buffer).find("MODE") != std::string::npos)
+							MODE(tmp->nickname, '+',  'i', tmp);
+						else if (std::string(buffer).find("QUIT") != std::string::npos)
+							QUIT("bye", fds, &nfds, tmp);
+						else if (std::string(buffer).find("DIE") != std::string::npos)
+							DIE(tmp, fds, nfds);
+						else if (std::string(buffer).find("RESTART") != std::string::npos)
+							RESTART(tmp, fds, nfds, &restart);
+						else if (std::string(buffer).find("WALLOPS") != std::string::npos)
+							WALLOPS("wallopstest", tmp);
+						else if (std::string(buffer).find("ISON") != std::string::npos)
+							ISON(nicknames, tmp);
+						else if (std::string(buffer).find("JOIN") != std::string::npos)
+							JOIN(chanz, keys, 0, tmp, fds, nfds);
+						
+						//PARSER
+						
+
+						/*****************************************************/
+						/* Echo the data back to the client                  */
+						/*****************************************************/
+						rc = send(fds[i].fd, buffer, len, 0);
+						if (rc < 0)
+						{
+							perror("  send() failed");
+							close_conn = TRUE;
+							break;
 						}
 						break;
-					}
 
-					/*****************************************************/
-					/* Check to see if the connection has been           */
-					/* closed by the client                              */
-					/*****************************************************/
-					if (rc == 0)
-					{
-						printf("  Connection closed\n");
-						close_conn = TRUE;
-						break;
-					}
-					std::vector<std::string> nicknames;
-					nicknames.push_back("test1");
-					nicknames.push_back("test2");
-					/*****************************************************/
-					/* Data was received                                 */
-					/*****************************************************/
-					len = rc;
-					printf("  %d bytes received\n", len);
-					std::cout << buffer << std::endl;
-					user *tmp = find_user_by_fd(fds[i].fd);
-					tmp->nickname = "another";
-					std::vector<std::string> chanz;
-					std::vector<std::string> keys;
-					chanz.push_back("test");
-					if (std::string(buffer).find("AWAY") != std::string::npos)
-						AWAY("I'm away", tmp);
-					else if (std::string(buffer).find("OPER") != std::string::npos)
-						OPER("nickname1", "password1", tmp);
-					else if (std::string(buffer).find("PASS") != std::string::npos)
-						PASS(argv[2], "lol", tmp);
-					else if (std::string(buffer).find("NICK") != std::string::npos)
-						NICK("testttt", tmp);
-					else if (std::string(buffer).find("USER") != std::string::npos)
-						USER("usertest", "realtest", tmp);
-					else if (std::string(buffer).find("MODE") != std::string::npos)
-						MODE(tmp->nickname, '+',  'i', tmp);
-					else if (std::string(buffer).find("QUIT") != std::string::npos)
-						QUIT("bye", fds, &nfds, tmp);
-					else if (std::string(buffer).find("DIE") != std::string::npos)
-						DIE(tmp, fds, nfds);
-					else if (std::string(buffer).find("RESTART") != std::string::npos)
-						RESTART(tmp, fds, nfds, &restart);
-					else if (std::string(buffer).find("WALLOPS") != std::string::npos)
-						WALLOPS("wallopstest", tmp);
-					else if (std::string(buffer).find("ISON") != std::string::npos)
-						ISON(nicknames, tmp);
-					else if (std::string(buffer).find("JOIN") != std::string::npos)
-						JOIN(chanz, keys, 0, tmp);
-					
-					//PARSER
-					
-
-					/*****************************************************/
-					/* Echo the data back to the client                  */
-					/*****************************************************/
-					rc = send(fds[i].fd, buffer, len, 0);
-					if (rc < 0)
-					{
-						perror("  send() failed");
-						close_conn = TRUE;
-						break;
-					}
-					break;
-
-				} while(TRUE);
+					} while(TRUE);
 
 					/*******************************************************/
 					/* If the close_conn flag was turned on, we need       */

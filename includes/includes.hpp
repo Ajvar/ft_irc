@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/31 15:19:04 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/05/31 20:43:45 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 #include <poll.h>
 
 #include <stdlib.h>
+#include <time.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <iostream>
@@ -61,6 +62,7 @@ struct s_channel {
 	std::string						name;
 	std::string 					key;
 	std::string						topic;
+	time_t							creation;
 	int								user_limit;
 	unsigned						modes[7];
 	user							*creator;
@@ -88,7 +90,11 @@ struct s_user {
 };
 
 
-//commands
+//create / delete
+int		new_client(int id, struct pollfd *fd);
+void	delete_client(int id);
+channel	*new_channel(std::string name);
+void	delete_channel(std::string name);
 
 //client commands
 int PASS(const std::string server_password, const std::string user_password, user *user);
@@ -106,13 +112,14 @@ int WALLOPS(std::string msg, user *u);
 int ISON(std::vector<std::string> nicknames, user *user);
 
 //channel commands
-int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, int option, user *u);
+int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, int option, user *u, pollfd *fds, int nfds);
 
 //utils
 user *find_user_by_fd(int fd);
 user *find_user_by_nickname(std::string nickname);
 channel *find_channel_by_name(std::string name);
 int send_message(std::string s, user *user, int ret);
+std::string		ft_to_string(int value);
 void compress_array(pollfd *fds, int *nfds);
 std::string create_msg(int code, user *u, std::string arg1, std::string arg2, std::string arg3, std::string arg4);
 
