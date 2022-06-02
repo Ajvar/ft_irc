@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 13:33:22 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/02 18:52:01 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/02 20:59:06 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ extern struct s_channel *channels;
 /*****************************************************/
 /* Sends message to user's client		             */
 /*****************************************************/
-int send_message(std::string s, user *user, int ret)
+int send_message(const std::string &s, user *user, int ret)
 {
 	if (s.empty() == 0)
 		send(user->fd->fd, s.c_str(), s.size() + 1, MSG_NOSIGNAL);
@@ -43,7 +43,7 @@ user *find_user_by_fd(int fd)
 	return NULL;
 }
 
-user *find_user_by_nickname(std::string nickname)
+user *find_user_by_nickname(const std::string &nickname)
 {
 	user *tmp = users;
 
@@ -58,7 +58,7 @@ user *find_user_by_nickname(std::string nickname)
 	return NULL;
 }
 
-channel *find_channel_by_name(std::string name)
+channel *find_channel_by_name(const std::string &name)
 {
 	channel *tmp = channels;
 
@@ -110,7 +110,7 @@ std::string		ft_to_string(int value)
 	return (sign + output);
 }
 
-user *find_u_in_chan(std::string nickname, channel *c)
+user *find_u_in_chan(const std::string &nickname, channel *c)
 {
 	std::vector<user *>::iterator it = c->users.begin();
 	std::vector<user *>::iterator ite = c->users.end();
@@ -122,7 +122,7 @@ user *find_u_in_chan(std::string nickname, channel *c)
 	return NULL;
 }
 
-std::string create_msg(int code, user *u, std::string arg1, std::string arg2, std::string arg3, std::string arg4)
+std::string create_msg(int code, user *u, const std::string &arg1, const std::string &arg2, const std::string &arg3, const std::string &arg4)
 {
 	std::string code_str;
 	std::string reply;

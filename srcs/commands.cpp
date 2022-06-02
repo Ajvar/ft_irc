@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 15:35:51 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/02 19:01:50 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/02 21:01:51 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ extern channel *channels;
  * @param user 
  * @return 0 on success, 1 on failure. 
  */
-int PASS(const std::string server_password, const std::string user_password, user *user)
+int PASS(const std::string &server_password, const std::string &user_password, user *user)
 {
 	if (user_password.empty())
 		return ERR_NEEDMOREPARAMS;
@@ -45,7 +45,7 @@ int PASS(const std::string server_password, const std::string user_password, use
  * @param user 
  * @return int 
  */
-int NICK(const std::string nickname, user *user)
+int NICK(const std::string &nickname, user *user)
 {
 	s_user *tmp = users;
 	std::string buff;
@@ -74,7 +74,7 @@ int NICK(const std::string nickname, user *user)
  * @param user 
  * @return int 
  */
-int USER(std::string username, std::string realname, user *user)
+int USER(const std::string &username, const std::string &realname, user *user)
 {
 	struct s_user *tmp = users;
 
@@ -97,7 +97,7 @@ int USER(std::string username, std::string realname, user *user)
  * @param user 
  * @return RPL_YOUREOPER on success 
  */
-int OPER(std::string username, std::string password, user *user)
+int OPER(const std::string &username, const std::string &password, user *user)
 {
 	std::cout << "Inside oper sir user nick: " << user->nickname << std::endl;
 	
@@ -128,7 +128,7 @@ int OPER(std::string username, std::string password, user *user)
  * @param user 
  * @return 0 on success 
  */
-int MODE(std::string nickname, char sign, char mode, user *user)
+int MODE(const std::string &nickname, char sign, char mode, user *user)
 {
 	short local_sign;
 
@@ -172,7 +172,7 @@ int MODE(std::string nickname, char sign, char mode, user *user)
  * @param u
  * @return int
  */
-int QUIT(std::string msg, pollfd *fds, int *nfds, user *u)
+int QUIT(const std::string &msg, pollfd *fds, int *nfds, user *u)
 {
 	send_message(msg, u, 0);
 	close(u->fd->fd);
@@ -189,7 +189,7 @@ int QUIT(std::string msg, pollfd *fds, int *nfds, user *u)
  * @param user 
  * @return RPL_NOWAYWAY or RPL_UNAWAY on success, -1 on failure 
  */
-int AWAY(std::string away_msg, user *user)
+int AWAY(const std::string &away_msg, user *user)
 {
 	std::cout << "in away" << std::endl;
 	if (user && user->modes[AWAY_MODE] == 0)
@@ -254,7 +254,7 @@ int RESTART(user *user, pollfd *fds, int nfds, int *restart)
  * @param u the user sending the message
  * @return 0 on success, ERR_NEEDMOREPARAMS is msg is empty
  */
-int WALLOPS(std::string msg, user *u)
+int WALLOPS(const std::string &msg, user *u)
 {
 	user *tmp = users;
 	if (msg.empty())
@@ -352,6 +352,7 @@ int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, int optio
 		k++;
 		tmp->users.push_back(u);
 		u->channels.push_back(tmp);
+		std::cout << "sg: " << channel_message("JOIN " + tmp->name, u) << std::endl;
 		send_message(channel_message("JOIN " + tmp->name, u), u, 0);
 		if (tmp->topic != "")
 			send_message(create_msg(RPL_TOPIC, u, tmp->topic, "", "", ""), u, 0);
