@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 15:35:51 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/01 21:06:19 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/02 19:01:50 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -297,9 +297,9 @@ std::string channel_message(const std::string &msg, user *u)
 {
 	std::string				full_msg;
 
-	// full_msg = ":" + u->nickname + "!" + u->username +
-	// 			"@" + u->hostname + " " + msg + "\r\n";
-	full_msg = ":" + u->nickname + " " + msg;
+	full_msg = ":" + u->nickname + "!" + u->username +
+	 			"@" + u->hostname + " " + msg + "\r\n";
+	//full_msg = ":" + u->nickname + " " + msg +"\r\n";
 	return full_msg;
 }
 
@@ -326,6 +326,8 @@ int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, int optio
 			tmp->name = (*it);
 			tmp->creator = u;
 		}
+		if ((find_u_in_chan(u->nickname, tmp)))
+				continue ;
 		if (tmp->modes[INVITE_ONLY_MODE])
 		{
 			for (std::vector<std::string>::iterator inv = tmp->invites.begin(); inv != tmp->invites.end(); inv++)
@@ -355,7 +357,6 @@ int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, int optio
 			send_message(create_msg(RPL_TOPIC, u, tmp->topic, "", "", ""), u, 0);
 		for (std::vector<user *>::iterator uz = tmp->users.begin(); uz !=  tmp->users.end(); uz++)
 			nicks = nicks + (nicks == "" ? "" : " ") + (*uz)->nickname;
-		
 		std::cout << create_msg(RPL_NAMREPLY, u, tmp->name, nicks, "", "") << std::endl;
 		send_message(create_msg(RPL_NAMREPLY, u, tmp->name, nicks, "", ""), u, 0);
 		send_message(create_msg(RPL_ENDOFNAMES, u, tmp->name, "", "", ""), u, 0);

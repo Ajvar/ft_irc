@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/31 20:43:45 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/02 18:54:13 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,7 @@ int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, int optio
 //utils
 user *find_user_by_fd(int fd);
 user *find_user_by_nickname(std::string nickname);
+user *find_u_in_chan(std::string nickname, channel *c);
 channel *find_channel_by_name(std::string name);
 int send_message(std::string s, user *user, int ret);
 std::string		ft_to_string(int value);
