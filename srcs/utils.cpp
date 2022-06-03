@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 13:33:22 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/02 20:59:06 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/03 14:28:22 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,6 +121,19 @@ user *find_u_in_chan(const std::string &nickname, channel *c)
 	}
 	return NULL;
 }
+
+channel *find_chan_in_u(const std::string &name, user *u)
+{
+	std::vector<channel *>::iterator it = u->channels.begin();
+	std::vector<channel *>::iterator ite = u->channels.end();
+	for (; it != ite; it++)
+	{
+		if ((*it)->name == name)
+			return (*it);
+	}
+	return NULL;
+}
+
 
 std::string create_msg(int code, user *u, const std::string &arg1, const std::string &arg2, const std::string &arg3, const std::string &arg4)
 {

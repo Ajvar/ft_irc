@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 14:02:54 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/31 20:37:34 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/03 14:33:42 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,7 +176,6 @@
 # define MSG_ERR_ERRONEUSNICKNAME(pseudo) (pseudo + " :Erroneus nickname\r\n")
 # define MSG_ERR_NICKNAMEINUSE(nick) (nick + " :Nickname is already in use\r\n")
 # define MSG_ERR_NICKCOLLISION(nick, user, host) (nick + " :Nickname collision KILL from " + user + "@" + host + "\r\n")
-//mssg originel claque au sol, du coup on modifie le mssg
 # define MSG_ERR_USERNOTINCHANNEL(pseudo, channel) (pseudo + " :Is not on channel " + channel + "\r\n")
 # define MSG_ERR_NOTONCHANNEL(channel) (channel + " :You're not on that channel\r\n")
 # define MSG_ERR_USERONCHANNEL(user, channel) (user + channel + " :User is already on that channel\r\n")
