@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/01 20:06:08 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/06 14:52:45 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -365,6 +365,8 @@ int main (int argc, char *argv[])
 							ISON(nicknames, tmp);
 						else if (std::string(buffer).find("JOIN") != std::string::npos)
 							JOIN(chanz, keys, 0, tmp, fds, nfds);
+						else if (std::string(buffer).find("PART") != std::string::npos)
+							PART(chanz, keys, tmp);
 						
 						//PARSER
 						

@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 00:03:44 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/03 14:32:00 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/06 14:33:26 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,7 @@ int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, int optio
 
 int PART(std::vector<std::string> chan, std::vector<std::string> reasons, user *u)
 {
+	(void)reasons;
 	if (chan.empty())
 		return send_message(create_msg(ERR_NEEDMOREPARAMS, u, "", "", "", ""), u, ERR_NEEDMOREPARAMS);
 	for (std::vector<std::string>::iterator it = chan.begin(); it != chan.end(); it++)
@@ -108,7 +109,9 @@ int PART(std::vector<std::string> chan, std::vector<std::string> reasons, user *
 		{
 			if (!(tmp = find_chan_in_u((*it), u)))
 				return send_message(create_msg(ERR_NOTONCHANNEL, u, (*it), "", "", ""), u, ERR_NOTONCHANNEL);
-			u->channels
+			delete_chan_in_u(*it, u);
+			send_message(channel_message("PART " + (*it), u), u, 0);
 		}
 	}
+	return 0;
 }
