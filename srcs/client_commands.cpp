@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 15:35:51 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/03 00:04:07 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/07 15:47:21 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -262,9 +262,7 @@ int WALLOPS(const std::string &msg, user *u)
 	while (tmp)
 	{
 		if (tmp != u && tmp->modes[WALLOPS_MODE] == 1)
-		{
 			send_message(msg, u, 0);
-		}
 		tmp = tmp->next;
 	}
 	return 0;

@@ -9,7 +9,7 @@ SRCS_PATH = ./srcs
 SRCS_FILES = \
 	main.cpp \
 	$(SRCS_PATH)/client_commands.cpp \
-	$(SRCS_PATH)/server_commands.cpp \
+	$(SRCS_PATH)/channel_commands.cpp \
 	$(SRCS_PATH)/utils.cpp \
 	$(SRCS_PATH)/exit.cpp \
 	$(SRCS_PATH)/debug.cpp \
