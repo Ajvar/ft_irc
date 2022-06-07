@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/06 14:14:40 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/08 00:41:45 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,8 +112,9 @@ int WALLOPS(const std::string &msg, user *u);
 int ISON(std::vector<std::string> nicknames, user *user);
 
 //channel commands
-int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, int option, user *u, pollfd *fds, int nfds);
+int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, const int &option, user *u, pollfd *fds, int nfds);
 int PART(std::vector<std::string> channels, std::vector<std::string> reasons, user *u);
+int TOPIC(std::string &topic, const std::string &chan, user *u);
 
 //utils
 user 		*find_user_by_fd(int fd);
@@ -126,6 +127,7 @@ int 		send_message(const std::string &s, user *user, int ret);
 void 		compress_array(pollfd *fds, int *nfds);
 std::string create_msg(int code, user *u, const std::string &arg1, const std::string &arg2, const std::string &arg3, const std::string &arg4);
 std::string	ft_to_string(int value);
+int			is_chan_ope(channel *c, user *u);
 
 //exit
 void ft_exit(std::string s, int err, int *sock);

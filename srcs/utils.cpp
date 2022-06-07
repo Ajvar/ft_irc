@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 13:33:22 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/06 14:14:08 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/08 01:17:18 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,14 @@
 extern struct s_user *users;
 extern struct s_channel *channels;
 
-/*****************************************************/
-/* Sends message to user's client		             */
-/*****************************************************/
+/**
+ * @brief Sends message to client
+ * 
+ * @param s message to be sent
+ * @param user user to send message to
+ * @param ret return value
+ * @return int 
+ */
 int send_message(const std::string &s, user *user, int ret)
 {
 	if (s.empty() == 0)
@@ -26,9 +31,12 @@ int send_message(const std::string &s, user *user, int ret)
 	return ret;
 }
 
-/*****************************************************/
-/* Find the user by its fd				             */
-/*****************************************************/
+/**
+ * @brief Find user by it's fd inside the global users linked list
+ * 
+ * @param fd 
+ * @return user* 
+ */
 user *find_user_by_fd(int fd)
 {
 	user *tmp = users;
@@ -43,6 +51,12 @@ user *find_user_by_fd(int fd)
 	return NULL;
 }
 
+/**
+ * @brief Find user by name in the global user linked list
+ * 
+ * @param nickname user to find
+ * @return user* 
+ */
 user *find_user_by_nickname(const std::string &nickname)
 {
 	user *tmp = users;
@@ -58,6 +72,12 @@ user *find_user_by_nickname(const std::string &nickname)
 	return NULL;
 }
 
+/**
+ * @brief Find a channel by it's name
+ * 
+ * @param name channel to find
+ * @return channel* 
+ */
 channel *find_channel_by_name(const std::string &name)
 {
 	channel *tmp = channels;
@@ -73,6 +93,12 @@ channel *find_channel_by_name(const std::string &name)
 	return NULL;
 }
 
+/**
+ * @brief Reduce array size after suppressing a socket
+ * 
+ * @param fds the array of socket descriptors
+ * @param nfds the number of socket descriptors inside fds
+ */
 void compress_array(pollfd *fds, int *nfds)
 {
 	int j = 0;
@@ -88,6 +114,12 @@ void compress_array(pollfd *fds, int *nfds)
 	}
 }
 
+/**
+ * @brief Converts int into std::string
+ * 
+ * @param value the value to convert
+ * @return std::string 
+ */
 std::string		ft_to_string(int value)
 {
 	std::string output;
@@ -110,6 +142,13 @@ std::string		ft_to_string(int value)
 	return (sign + output);
 }
 
+/**
+ * @brief Check if user is joined to the channel
+ * 
+ * @param nickname name of the user to find
+ * @param c channel to check
+ * @return user* 
+ */
 user *find_u_in_chan(const std::string &nickname, channel *c)
 {
 	std::vector<user *>::iterator it = c->users.begin();
@@ -122,6 +161,13 @@ user *find_u_in_chan(const std::string &nickname, channel *c)
 	return NULL;
 }
 
+/**
+ * @brief Search channel inside user's channel list
+ * 
+ * @param name name of the channel to search
+ * @param u user to search in
+ * @return channel* 
+ */
 channel *find_chan_in_u(const std::string &name, user *u)
 {
 	std::vector<channel *>::iterator it = u->channels.begin();
@@ -134,6 +180,12 @@ channel *find_chan_in_u(const std::string &name, user *u)
 	return NULL;
 }
 
+/**
+ * @brief Delete channel from user's channel list
+ * 
+ * @param name name of channel to delete
+ * @param u user to suppress channel from
+ */
 void delete_chan_in_u(const std::string &name, user *u)
 {
 	std::vector<channel *>::iterator it = u->channels.begin();
@@ -143,6 +195,33 @@ void delete_chan_in_u(const std::string &name, user *u)
 			u->channels.erase(it);
 }
 
+/**
+ * @brief Check if user u is operator on channel c
+ * 
+ * @param c the channel
+ * @param u the user
+ * @return int 
+ */
+int is_chan_ope(channel *c, user *u)
+{
+	std::vector<user *>::iterator it = c->operators.begin();
+	for( ; it != c->operators.end(); it++)
+		if (u == (*it))
+			return 1;
+	return 0;
+}
+
+/**
+ * @brief Create a message string according to numeric reply
+ * 
+ * @param code the numeric reply
+ * @param u 
+ * @param arg1 
+ * @param arg2 
+ * @param arg3 
+ * @param arg4 
+ * @return std::string 
+ */
 std::string create_msg(int code, user *u, const std::string &arg1, const std::string &arg2, const std::string &arg3, const std::string &arg4)
 {
 	std::string code_str;

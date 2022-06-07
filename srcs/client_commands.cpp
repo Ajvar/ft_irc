@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 15:35:51 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/07 15:47:21 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/07 16:26:04 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,6 @@ int NICK(const std::string &nickname, user *user)
 	if (user->nickname.empty() == false)
 		send(user->fd->fd, buff.c_str(), buff.size(), 0);
 	user->nickname = nickname;
-	std::cout << "out nick" << std::endl;
 	return 0;
 }
 
