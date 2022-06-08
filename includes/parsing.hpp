@@ -23,13 +23,15 @@
 // - quit
 // - who
 
+# define GEN_USE	1
+
 class Command
 {
 	public:
 		Command() : _command(NULL), _trail(NULL);
 		Command(const std::string cmd)
 		{
-			splitandsort(cmd);
+			splitandsort(cmd, " ", _args, GEN_USE);
 			if (!checkCommand())
 				;//senderror?
 			if (!checkArgs())
@@ -37,26 +39,24 @@ class Command
 		}
 		~Command();
 
-		bool	splitandsort(std::string cmd)
+		std::vector<std::string>	splitandsort(std::string cmd, std::string delim, std::vector<std::string>	cont, int opt)
 		{
-			while ((pos = cmd.find(" ")) != std::string::npos)
+			while ((pos = cmd.find(delim)) != std::string::npos)
 			{
-				if (cmp[0] != ":")
-					std::string tmp = cmd.substr(0, pos);
-				else if (_command)
+				if (cmd[0] == ":" && _command && opt)
 				{
-					tmp = cmd;
-					tmp.erase(0, 1);
-					_args.append(tmp);
-					break;
+					cmd.erase(0, 1);
+					cont.append(cmd);
+					return (cont);
 				}
-				if (!_command)
-					_command = tmp;
+				std::string token = cmd.substr(0, pos);
+				if (!_command && opt)
+					_command = token;
 				else
-					_args.append(tmp);
+					cont.append(token);
 				cmd.erase(0, pos + 1);
 			}
-			return (true);
+			return (cont);
 		}
 		bool	checkCommand()
 		{
@@ -69,45 +69,90 @@ class Command
 			// check length
 			// check syntax
 		}
-		void	parse(user* user)
+		void	parse(pollfd *fds, int *nfds, user* user)
 		{
 			switch (_command)
 			{
 				//****client cmds
 				case "PASS":
 					if (_args.size() < 1)
+					{
 						PASS(NULL, NULL, user);
+						break;
+					}
 					PASS(_args[0], /*pswd*/, user);
 					break;
 				case "NICK":
-					//check nb of args
+					if (_args.size() < 1)
+					{
+						NICK(NULL, user);
+						break;
+					}
 					NICK(_args[0] , user);
 					break;
 				case "USER":
-					//check args
-					USER();
+					if (_args.size() < 4)
+					{
+						USER(NULL, NULL, user);
+						break;
+					}
+					USER(_args[0], _args[3], user);
 					break;
 				case "OPER":
-					//args
-					OPER();
+					if (_args.size() < 2)
+					{
+						OPER(NULL, NULL, user);
+						break;
+					}
+					OPER(_args[0], _args[1]);
 					break;
 				case "MODE":
-					//args
-					MODE();
+					if (_args.size() < 3)
+					{
+						MODE(NULL, NULL, NULL, user);
+						break;
+					}
+					MODE(_args[0], _args[1], _args[2], user);
 					break;
 				case "QUIT":
-					//args
-					QUIT();
+					if (_args.size() < 1)
+					{
+						QUIT(NULL, fds, nfds, user);
+						break;
+					}
+					QUIT(_args[0], fds, nfds, user);
 					break;
 				case "AWAY":
+					if (_args.size() < 1)
+					{
+						AWAY(NULL, user);
+						break;
+					}
+					AWAY(_args[0], user);
+					break;
 				//*****channel cmds
 				case "DIE":
+					if ()
 				case "RESTART":
 				case "WALLOPS":
 				case "ISON":
 				case "JOIN":
-					//check args: chan & pass
-					JOIN();
+					std::vector<std::string>	v1, v2;
+					if (_args.size() < 1)
+					{
+						JOIN(NULL, NULL, NULL, user, fds, nfds);
+						break;
+					}
+					if (_args.size() < 2)
+					{
+						JOIN(splitandsort(_args[0], ",", v1, 0), NULL, NULL, user, fds, nfds);
+						break;
+					}
+					if (_args.size() < 3)
+					{
+						JOIN(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), NULL, user, fds, nfds);
+					}
+					JOIN(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), _args[2], user, fds, nfds);
 					break;
 				case "PART":
 					//check args
@@ -121,7 +166,8 @@ class Command
 				//****msg cmd
 				case "NOTICE":
 				case "PRIVMSG":
-
+				default:
+					//err unknown command
 			}
 			//case command sort
 			// check nb of args (case sensitive)
@@ -131,6 +177,11 @@ class Command
 	private:
 		std::string					_command;
 		std::vector<std::string>	_args;
+
+		std::pair< <std::vector<std::string>, std::vector<std::string> >	_join_sort(int opt)
+		{
+			return(std::make_pair< <std::vector<std::string>, std::vector<std::string> >(v1, v1));
+		}
 };
 
 #endif
