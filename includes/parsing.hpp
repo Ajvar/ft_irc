@@ -41,14 +41,8 @@ class Command
 
 		std::vector<std::string>	splitandsort(std::string cmd, std::string delim, std::vector<std::string>	cont, int opt)
 		{
-			while ((pos = cmd.find(delim)) != std::string::npos)
+			while ((pos = cmd.find(delim)) != std::string::npos) //ca inclut le dernier maillon?
 			{
-				if (cmd[0] == ":" && _command && opt)
-				{
-					cmd.erase(0, 1);
-					cont.append(cmd);
-					return (cont);
-				}
 				std::string token = cmd.substr(0, pos);
 				if (!_command && opt)
 					_command = token;
@@ -56,6 +50,13 @@ class Command
 					cont.append(token);
 				cmd.erase(0, pos + 1);
 			}
+			if (cmd[0] == ":" && opt)
+			{
+				cmd.erase(0, 1);
+				cont.append(cmd);
+				return (cont);
+			}
+			cont.append(cmd);
 			return (cont);
 		}
 		bool	checkCommand()
@@ -132,10 +133,26 @@ class Command
 					break;
 				//*****channel cmds
 				case "DIE":
-					if ()
+					DIE(user, fds, nfds);
+					break;
 				case "RESTART":
+					RESTART(user, fds, nfds); //restart in missing?
+					break;
 				case "WALLOPS":
+					if (_args.size() < 1)
+					{
+						WALLOPS(NULL, user);
+						break;
+					}
+					WALLOPS(_args[0], user);
+					break;
 				case "ISON":
+					if (_args.size() < 1)
+					{
+						ISON(NULL, user);
+						break;
+					}
+					ISON(splitandsort(_args[0], ",", ))
 				case "JOIN":
 					std::vector<std::string>	v1, v2;
 					if (_args.size() < 1)
@@ -151,37 +168,112 @@ class Command
 					if (_args.size() < 3)
 					{
 						JOIN(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), NULL, user, fds, nfds);
+						break;
 					}
 					JOIN(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), _args[2], user, fds, nfds);
 					break;
 				case "PART":
-					//check args
-					PART();
+					std::vector<std::string>	v1, v2;
+					if (_args.size() < 1)
+					{
+						PART(NULL, NULL, user);
+						break;
+					}
+					if (_args.size() < 2)
+					{
+						PART(splitandsort(_args[0], ",", v1, 0), NULL, user);
+						break;
+					}
+					PART(splitandsort(_args[0], ",", v1, 0), _args[1], user);
 					break;
 				case "TOPIC":
-				case "NAME":
+					if (_args.size() < 1)
+					{
+						TOPIC(NULL, NULL, user);
+						break;
+					}
+					if (_args.size() < 2)
+					{
+						TOPIC(_args[0], NULL, user);
+						break;
+					}
+					TOPIC(_args[0], _args[1], user);
+					break;
+				case "NAMES":
+					if (_args.size() < 1)
+					{
+						NAMES(NULL, user);
+						break;
+					}
+					std::vector<std::string>	v1;
+					NAMES(splitandsort(_args[0], ",", v1, 0), user);
+					break;
 				case "LIST":
+					std::vector<std::string>	v1, v2;
+					if (_args.size() < 1)
+					{
+						LIST(NULL, NULL, user);
+						break;
+					}
+					if (_args.size() < 2)
+					{
+						LIST(splitandsort(_args[0], ",", v1, 0), NULL, user);
+						break;
+					}
+					LIST(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), user);
+					break;
 				case "INVITE":
+					if (_args.size() < 1)
+					{
+						INVITE(NULL, NULL, user);
+						break;
+					}
+					if (_args.size() < 2)
+					{
+						INVITE(_args[0], NULL, user);
+						break;
+					}
+					INVITE(_args[0], _args[1], user);
+					break;
 				case "KICK":
+					std::vector<std::string>	v1, v2;
+					if (_args.size() < 2)
+					{
+						KICK(NULL, NULL, NULL, user);
+						break;
+					}
+					if (_args.size() < 3)
+					{
+						KICK(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), NULL, user);
+						break;
+					}
+					KICK(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), _args[2], user);
+					break;
 				//****msg cmd
 				case "NOTICE":
+					if (_args.size() < 2)
+					{
+						NOTICE(NULL, NULL, user);
+						break;
+					}
+					NOTICE(_args[0], _args[1], user);
+					break;
 				case "PRIVMSG":
+					if (_args.size() < 2)
+					{
+						PRIVMSG(NULL, NULL, user);
+						break;
+					}
+					PRIVMSG(_args[0], _args[1], user);
+					break;
 				default:
 					//err unknown command
 			}
-			//case command sort
-			// check nb of args (case sensitive)
-			// send to fct
 		}
 
 	private:
 		std::string					_command;
 		std::vector<std::string>	_args;
-
-		std::pair< <std::vector<std::string>, std::vector<std::string> >	_join_sort(int opt)
-		{
-			return(std::make_pair< <std::vector<std::string>, std::vector<std::string> >(v1, v1));
-		}
 };
 
 #endif
