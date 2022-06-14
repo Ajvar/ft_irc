@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/08 17:35:36 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/14 11:02:24 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static int check_args(int ac, char **av)
 		ft_exit("Wrong number of arguments\nHow to use: ./ircserv port password", 1, NULL);
 	n = strtol(av[1], NULL, 10);
 	if (n < 0 || n > 65535 || errno == ERANGE)
-		ft_exit("Wrong port number, please pick a number between 0 and 65535.", errno == ERANGE ? errno : 1, NULL);
+		ft_exit("Wrong port number.", errno == ERANGE ? errno : 1, NULL);
 	return n;
 }
 
@@ -107,6 +107,7 @@ channel *new_channel(std::string name)
 		new_channel->prev = tmp;
 	}
 	new_channel->key = "";
+	new_channel->topic = "No topic"; 
 	memset(new_channel->modes, 0, sizeof(new_channel->modes));
 	time(&new_channel->creation);
 	return new_channel;
@@ -339,8 +340,10 @@ int main (int argc, char *argv[])
 						std::cout << buffer << std::endl;
 						user *tmp = find_user_by_fd(fds[i].fd);
 						tmp->nickname = "another";
+						std::string topic = ":";
 						std::vector<std::string> chanz;
 						std::vector<std::string> keys;
+						int ret = 0é;
 						chanz.push_back("#test");
 						if (std::string(buffer).find("AWAY") != std::string::npos)
 							AWAY("I'm away", tmp);
@@ -365,12 +368,13 @@ int main (int argc, char *argv[])
 						else if (std::string(buffer).find("ISON") != std::string::npos)
 							ISON(nicknames, tmp);
 						else if (std::string(buffer).find("JOIN") != std::string::npos)
-							JOIN(chanz, keys, 0, tmp, fds, nfds);
+							JOIN(chanz, keys, "", tmp, fds, nfds);
 						else if (std::string(buffer).find("PART") != std::string::npos)
-							PART(chanz, keys, tmp);
+							PART(chanz, "I'm leaviiiing", tmp);
 						else if (std::string(buffer).find("TOPIC") != std::string::npos)
-							TOPIC(tmp->nickname, "test", tmp);
-						
+							ret = TOPIC(topic, "#test", tmp);
+						std::cout << "ret: " << ret << std::endl;
+
 						//PARSER
 						
 

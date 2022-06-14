@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 13:33:22 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/08 01:17:18 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/14 17:46:30 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,19 +196,43 @@ void delete_chan_in_u(const std::string &name, user *u)
 }
 
 /**
+ * @brief Deletes user from channel
+ * 
+ * @param nickname user to delete from channel 
+ * @param c channel to delete user from
+ */
+void delete_u_in_chan(const std::string &nickname, channel *c)
+{
+	std::vector<user *>::iterator it = c->users.begin();
+	std::vector<user *>::iterator ite = c->users.end();
+	for (; it != ite; it++)
+		if ((*it)->nickname == nickname)
+			c->users.erase(it);
+}
+
+/**
  * @brief Check if user u is operator on channel c
  * 
  * @param c the channel
  * @param u the user
  * @return int 
  */
-int is_chan_ope(channel *c, user *u)
+const int is_chan_ope(const channel *c, const user *u)
 {
 	std::vector<user *>::iterator it = c->operators.begin();
 	for( ; it != c->operators.end(); it++)
 		if (u == (*it))
-			return 1;
-	return 0;
+			return TRUE;
+	return FALSE;
+}
+
+const int is_chan_voice(const channel* c, const user *u)
+{
+	std::vector<user *>::const_iterator it = c->voice.begin();
+	for( ; it != c->voice.end(); it++)
+		if (u == (*it))
+			return TRUE;
+	return FALSE;	
 }
 
 /**

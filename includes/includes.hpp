@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/08 00:41:45 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/14 17:47:08 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,19 +47,20 @@ enum e_user_mode {
 
 enum e_chan_mode {
 	INVITE_ONLY_MODE,
+	BAN_MODE,
     MODERATED_MODE,
 	OUTSIDE_PRIVMSG_MODE,
-	PRIVATE_MODE,
+	SECRET_MODE,
     TOPIC_LOCKED_MODE,
     KEY_LOCKED_MODE,
-    USER_LIMIT_MODE	
+    USER_LIMIT_MODE
 };
 
 typedef struct s_channel channel;
 typedef struct s_user user;
 
 struct s_channel {
-	std::string						name;
+	std::string						name; //includes #, &, !
 	std::string 					key;
 	std::string						topic;
 	time_t							creation;
@@ -69,7 +70,9 @@ struct s_channel {
 	std::vector<std::string>		banned;
 	std::vector<std::string>		invites;
 	std::vector<struct s_user *>	operators;
+	std::vector<struct s_user *>	voice;
 	std::vector<struct s_user *>	users;
+	
 	struct s_channel				*next;
 	struct s_channel				*prev;
 };
@@ -112,22 +115,26 @@ int WALLOPS(const std::string &msg, user *u);
 int ISON(std::vector<std::string> nicknames, user *user);
 
 //channel commands
-int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, const int &option, user *u, pollfd *fds, int nfds);
-int PART(std::vector<std::string> channels, std::vector<std::string> reasons, user *u);
+int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, const std::string &option, user *u, pollfd *fds, int nfds);
+int PART(std::vector<std::string> channels, const std::string &reason, user *u);
 int TOPIC(std::string &topic, const std::string &chan, user *u);
+int LIST(const std::vector<std::string> c, user *u);
+int INVITE(const std::string &us, const std::string &c, user *u);
 
 //utils
 user 		*find_user_by_fd(int fd);
 user 		*find_user_by_nickname(const std::string &nickname);
-user 		*find_u_in_chan(const std::string &nickname, channel *c);
+user 		*find_u_in_chan(const std::string &nickname, const channel *c);
 channel		*find_chan_in_u(const std::string &name, user *u);
 channel		*find_channel_by_name(const std::string &name);
 void		delete_chan_in_u(const std::string &name, user *u);
+void		delete_u_in_chan(const std::string &nickname, channel *c);
 int 		send_message(const std::string &s, user *user, int ret);
 void 		compress_array(pollfd *fds, int *nfds);
 std::string create_msg(int code, user *u, const std::string &arg1, const std::string &arg2, const std::string &arg3, const std::string &arg4);
 std::string	ft_to_string(int value);
-int			is_chan_ope(channel *c, user *u);
+const int	is_chan_ope(const channel *c, const user *u);
+const int 	is_chan_voice(const channel* c, const user *u);
 
 //exit
 void ft_exit(std::string s, int err, int *sock);
@@ -138,5 +145,6 @@ void free_fds(pollfd *fds, int nfds);
 
 //debug
 void print_user(user *user);
+void print_channels();
 
 #endif
