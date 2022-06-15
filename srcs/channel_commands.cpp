@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 00:03:44 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/14 17:51:43 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/15 17:11:29 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,18 +81,11 @@ int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, const std
 				continue ;
 		if (tmp->modes[BAN_MODE])
 		{
-			std::vector<std::string>::iterator ban = tmp->banned.begin();
-			for (; ban != tmp->banned.end(); ban++)
+			if (is_banned(tmp, u))
 			{
-				if ((*ban) == u->nickname)
-				{
 					send_message(create_msg(ERR_BANNEDFROMCHAN, u, tmp->name, "", "", ""), u, ERR_BANNEDFROMCHAN);
-					break ;
-				}
-				if ((*ban) == u->nickname)
 					continue;
 			}	
-				
 		}
 		if (tmp->modes[INVITE_ONLY_MODE])
 		{
@@ -314,4 +307,37 @@ int KICK(const std::string &c, std::vector<std::string> us, const std::string &c
 		}
 	}
 	return 0;
+}
+
+int CHAN_PRIVMSG(const std::string& c, const std::string &text, user *u)
+{
+	channel *tmp = find_channel_by_name((c[0] == '@' || c[0] == '+') ? c.substr(1) : c);
+	
+	if (!tmp)
+		return send_message(create_msg(ERR_NOSUCHNICK, u, c, "", "", ""), u, ERR_NOSUCHNICK);
+	if (is_banned(tmp, u))
+		return send_message(create_msg(ERR_CANNOTSENDTOCHAN, u, c, "", "", ""), u, ERR_CANNOTSENDTOCHAN);
+	if (!(find_u_in_chan(u->nickname, tmp)) && tmp->modes[NO_EXTERN_MSG_MODE])
+		return send_message(create_msg(ERR_CANNOTSENDTOCHAN, u, c, "", "", ""), u, ERR_CANNOTSENDTOCHAN);
+
+	
+}
+
+int PRIVMSG(std::vector<std::string> targets, const std::string &text, user *u)
+{
+	std::vector<std::string>::iterator it = targets.begin();
+
+	if (targets.empty())
+		return send_message(create_msg(ERR_NORECIPIENT, u, "PRIVMSG ",  "", "", ""), u, ERR_NORECIPIENT);
+	if (text == "")
+		return send_message(create_msg(ERR_NOTEXTTOSEND, u, "", "", "", ""), u, ERR_NOTEXTTOSEND);
+	
+	for (; it != targets.end(); it++)
+	{
+		if ((*it)[0] == '#' || (*it)[0] == '&' || (*it)[1] == '#' || (*it)[1] == '&' )
+			CHAN_PRIVMSG((*it), text, u);
+		else
+			
+	}
+	
 }

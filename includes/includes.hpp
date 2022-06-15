@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/14 17:47:08 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/15 16:58:36 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,19 +53,20 @@ enum e_chan_mode {
 	SECRET_MODE,
     TOPIC_LOCKED_MODE,
     KEY_LOCKED_MODE,
-    USER_LIMIT_MODE
+    USER_LIMIT_MODE,
+	NO_EXTERN_MSG_MODE
 };
 
 typedef struct s_channel channel;
 typedef struct s_user user;
 
 struct s_channel {
-	std::string						name; //includes #, &, !
+	std::string						name; //includes #, &
 	std::string 					key;
 	std::string						topic;
 	time_t							creation;
 	int								user_limit;
-	unsigned						modes[7];
+	unsigned						modes[9];
 	user							*creator;
 	std::vector<std::string>		banned;
 	std::vector<std::string>		invites;
@@ -135,6 +136,7 @@ std::string create_msg(int code, user *u, const std::string &arg1, const std::st
 std::string	ft_to_string(int value);
 const int	is_chan_ope(const channel *c, const user *u);
 const int 	is_chan_voice(const channel* c, const user *u);
+const int 	is_banned(const channel *c, const user *u);
 
 //exit
 void ft_exit(std::string s, int err, int *sock);

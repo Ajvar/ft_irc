@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 13:33:22 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/14 17:46:30 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/15 13:18:20 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -233,6 +233,17 @@ const int is_chan_voice(const channel* c, const user *u)
 		if (u == (*it))
 			return TRUE;
 	return FALSE;	
+}
+
+const int is_banned(const channel *c, const user *u)
+{
+	std::vector<std::string>::const_iterator ban = c->banned.begin();
+	for (; ban != c->banned.end(); ban++)
+	{
+		if ((*ban) == u->nickname)
+			return TRUE;
+	}
+	return FALSE;
 }
 
 /**
