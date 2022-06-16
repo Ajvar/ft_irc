@@ -266,6 +266,8 @@ class Command
 					}
 					PRIVMSG(_args[0], _args[1], user);
 					break;
+				default:
+					send_message(create_msg(ERR_UNKNOWNCOMMAND, user, _command, "", "", ""), user, ERR_UNKNOWNCOMMAND);
 			}
 		}
 
