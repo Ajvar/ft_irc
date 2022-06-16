@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/14 11:02:24 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/16 23:09:07 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -341,10 +341,12 @@ int main (int argc, char *argv[])
 						user *tmp = find_user_by_fd(fds[i].fd);
 						tmp->nickname = "another";
 						std::string topic = ":";
+						//const std::string channel_name = "#test";
 						std::vector<std::string> chanz;
 						std::vector<std::string> keys;
-						int ret = 0é;
+						int ret = 0;
 						chanz.push_back("#test");
+						tmp->modes[INVISIBLE_MODE] = 1;
 						if (std::string(buffer).find("AWAY") != std::string::npos)
 							AWAY("I'm away", tmp);
 						else if (std::string(buffer).find("OPER") != std::string::npos)
@@ -373,6 +375,8 @@ int main (int argc, char *argv[])
 							PART(chanz, "I'm leaviiiing", tmp);
 						else if (std::string(buffer).find("TOPIC") != std::string::npos)
 							ret = TOPIC(topic, "#test", tmp);
+						else if (std::string(buffer).find("NAMES") != std::string::npos)
+							ret = NAMES(chanz, tmp);
 						std::cout << "ret: " << ret << std::endl;
 
 						//PARSER

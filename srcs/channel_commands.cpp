@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 00:03:44 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/15 17:11:29 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/16 21:37:34 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,7 +209,7 @@ int NAMES(std::vector<std::string>chan, user *u)
 	for (; it != chan.end(); it++)
 	{
 		if (!(c = find_channel_by_name((*it))))
-			send_message(create_msg(RPL_ENDOFNAMES, u, (*it), "", "", ""), u, RPL_ENDOFNAMES);
+			return send_message(create_msg(RPL_ENDOFNAMES, u, (*it), "", "", ""), u, RPL_ENDOFNAMES);
 		else
 		{
 			std::string name_list = "";
@@ -221,11 +221,11 @@ int NAMES(std::vector<std::string>chan, user *u)
 				continue ;
 			}
 			std::vector<user *>::iterator us = c->users.begin();
-			for (; us != c->users.begin(); us++)
+			for (; us != c->users.end(); us++)
 			{
 				if (!part_of_c && (*us)->modes[INVISIBLE_MODE])
 					continue ;
-				name_list += names_and_modes((*it), *us);
+				name_list += names_and_modes(c, *us);
 			}
 			send_message(create_msg(RPL_NAMREPLY, u, c->name, name_list, "", ""), u, RPL_NAMREPLY);
 			send_message(create_msg(RPL_ENDOFNAMES, u, c->name, "", "", ""), u, RPL_ENDOFNAMES);
@@ -303,7 +303,7 @@ int KICK(const std::string &c, std::vector<std::string> us, const std::string &c
 		{
 			delete_chan_in_u(tmp_chan->name, tmp_user);
 			delete_u_in_chan(tmp_user->nickname, tmp_chan);
-			send_message(channel_message("KICK ", u), tmp_user, 0);
+			send_message(channel_message("KICK " + comment, u), tmp_user, 0);
 		}
 	}
 	return 0;
@@ -319,8 +319,22 @@ int CHAN_PRIVMSG(const std::string& c, const std::string &text, user *u)
 		return send_message(create_msg(ERR_CANNOTSENDTOCHAN, u, c, "", "", ""), u, ERR_CANNOTSENDTOCHAN);
 	if (!(find_u_in_chan(u->nickname, tmp)) && tmp->modes[NO_EXTERN_MSG_MODE])
 		return send_message(create_msg(ERR_CANNOTSENDTOCHAN, u, c, "", "", ""), u, ERR_CANNOTSENDTOCHAN);
-
+	if (c[0] == '@' || c[0] == '+')
+	{
+		std::vector<user *>::iterator it = tmp->users.begin();
+		for (; it != tmp->users.end(); it++)
+		{
+			if ((c[0] == '+' && (is_chan_ope(tmp, (*it)) || is_chan_voice(tmp, (*it)))) || (c[0] == '@' && is_chan_ope(tmp, (*it))))
+			{
+				if ((*it)->modes[AWAY_MODE])
+					send_message(create_msg(RPL_AWAY, u, (*it)->nickname, (*it)->away_msg, "", ""), u, RPL_AWAY);
+				else
+					send_message(channel_message(text, u), (*it), 0);
+			}
+		}
+	}
 	
+	return 0;
 }
 
 int PRIVMSG(std::vector<std::string> targets, const std::string &text, user *u)
@@ -336,8 +350,8 @@ int PRIVMSG(std::vector<std::string> targets, const std::string &text, user *u)
 	{
 		if ((*it)[0] == '#' || (*it)[0] == '&' || (*it)[1] == '#' || (*it)[1] == '&' )
 			CHAN_PRIVMSG((*it), text, u);
-		else
+	//	else
 			
 	}
-	
+	return 0;
 }

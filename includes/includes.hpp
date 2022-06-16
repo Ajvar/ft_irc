@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/15 16:58:36 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/16 20:34:04 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,10 +57,10 @@ enum e_chan_mode {
 	NO_EXTERN_MSG_MODE
 };
 
-typedef struct s_channel channel;
+//typedef struct s_channel channel;
 typedef struct s_user user;
 
-struct s_channel {
+typedef struct s_channel {
 	std::string						name; //includes #, &
 	std::string 					key;
 	std::string						topic;
@@ -76,7 +76,9 @@ struct s_channel {
 	
 	struct s_channel				*next;
 	struct s_channel				*prev;
-};
+} channel;
+
+
 
 struct s_user {
 	int									id;
@@ -119,6 +121,7 @@ int ISON(std::vector<std::string> nicknames, user *user);
 int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, const std::string &option, user *u, pollfd *fds, int nfds);
 int PART(std::vector<std::string> channels, const std::string &reason, user *u);
 int TOPIC(std::string &topic, const std::string &chan, user *u);
+int NAMES(std::vector<std::string>chan, user *u);
 int LIST(const std::vector<std::string> c, user *u);
 int INVITE(const std::string &us, const std::string &c, user *u);
 
@@ -134,9 +137,9 @@ int 		send_message(const std::string &s, user *user, int ret);
 void 		compress_array(pollfd *fds, int *nfds);
 std::string create_msg(int code, user *u, const std::string &arg1, const std::string &arg2, const std::string &arg3, const std::string &arg4);
 std::string	ft_to_string(int value);
-const int	is_chan_ope(const channel *c, const user *u);
-const int 	is_chan_voice(const channel* c, const user *u);
-const int 	is_banned(const channel *c, const user *u);
+int	is_chan_ope(const channel *c, const user *u);
+int 	is_chan_voice(const channel* c, const user *u);
+int 	is_banned(const channel *c, const user *u);
 
 //exit
 void ft_exit(std::string s, int err, int *sock);

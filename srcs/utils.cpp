@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 13:33:22 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/15 13:18:20 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/16 20:34:27 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,10 +149,10 @@ std::string		ft_to_string(int value)
  * @param c channel to check
  * @return user* 
  */
-user *find_u_in_chan(const std::string &nickname, channel *c)
+user *find_u_in_chan(const std::string &nickname, const channel *c)
 {
-	std::vector<user *>::iterator it = c->users.begin();
-	std::vector<user *>::iterator ite = c->users.end();
+	std::vector<user *>::const_iterator it = c->users.begin();
+	std::vector<user *>::const_iterator ite = c->users.end();
 	for (; it != ite; it++)
 	{
 		if ((*it)->nickname == nickname)
@@ -217,16 +217,16 @@ void delete_u_in_chan(const std::string &nickname, channel *c)
  * @param u the user
  * @return int 
  */
-const int is_chan_ope(const channel *c, const user *u)
+int is_chan_ope(const channel *c, const user *u)
 {
-	std::vector<user *>::iterator it = c->operators.begin();
+	std::vector<user *>::const_iterator it = c->operators.begin();
 	for( ; it != c->operators.end(); it++)
 		if (u == (*it))
 			return TRUE;
 	return FALSE;
 }
 
-const int is_chan_voice(const channel* c, const user *u)
+int is_chan_voice(const channel* c, const user *u)
 {
 	std::vector<user *>::const_iterator it = c->voice.begin();
 	for( ; it != c->voice.end(); it++)
@@ -235,7 +235,7 @@ const int is_chan_voice(const channel* c, const user *u)
 	return FALSE;	
 }
 
-const int is_banned(const channel *c, const user *u)
+int is_banned(const channel *c, const user *u)
 {
 	std::vector<std::string>::const_iterator ban = c->banned.begin();
 	for (; ban != c->banned.end(); ban++)
