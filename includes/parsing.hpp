@@ -70,7 +70,7 @@ class Command
 			// check length
 			// check syntax
 		}
-		void	parse(pollfd *fds, int *nfds, user* user)
+		void	parse(pollfd *fds, int *nfds, user* user, std::string serv_pass, int *restart)
 		{
 			switch (_command)
 			{
@@ -81,7 +81,7 @@ class Command
 						PASS(NULL, NULL, user);
 						break;
 					}
-					PASS(_args[0], /*pswd*/, user);
+					PASS(serv_pass, _args[0], user);
 					break;
 				case "NICK":
 					if (_args.size() < 1)
@@ -136,7 +136,7 @@ class Command
 					DIE(user, fds, nfds);
 					break;
 				case "RESTART":
-					RESTART(user, fds, nfds); //restart in missing?
+					RESTART(user, fds, nfds, restart);
 					break;
 				case "WALLOPS":
 					if (_args.size() < 1)
@@ -266,8 +266,6 @@ class Command
 					}
 					PRIVMSG(_args[0], _args[1], user);
 					break;
-				default:
-					//err unknown command
 			}
 		}
 
