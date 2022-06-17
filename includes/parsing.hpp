@@ -72,203 +72,164 @@ class Command
 		}
 		void	parse(pollfd *fds, int *nfds, user* user, std::string serv_pass, int *restart)
 		{
-			switch (_command)
-			{
-				//****client cmds
-				case "PASS":
-					if (_args.size() < 1)
-					{
-						PASS(NULL, NULL, user);
-						break;
-					}
+			//****client cmds
+			if (_command == "PASS")
+			{		
+				if (_args.size() < 1)
+					PASS(NULL, NULL, user);
+				else
 					PASS(serv_pass, _args[0], user);
-					break;
-				case "NICK":
-					if (_args.size() < 1)
-					{
-						NICK(NULL, user);
-						break;
-					}
+			}
+			else if (_command == "NICK")
+			{	if (_args.size() < 1)
+					NICK(NULL, user);
+				else
 					NICK(_args[0] , user);
-					break;
-				case "USER":
-					if (_args.size() < 4)
-					{
-						USER(NULL, NULL, user);
-						break;
-					}
-					USER(_args[0], _args[3], user);
-					break;
-				case "OPER":
-					if (_args.size() < 2)
-					{
-						OPER(NULL, NULL, user);
-						break;
-					}
-					OPER(_args[0], _args[1]);
-					break;
-				case "MODE":
-					if (_args.size() < 3)
-					{
-						MODE(NULL, NULL, NULL, user);
-						break;
-					}
+			}
+			else if (_command == "USER")
+			{
+				if (_args.size() < 4)
+					USER(NULL, NULL, user);
+				else
+				USER(_args[0], _args[3], user);
+			}
+			else if (_command == "OPER")
+			{
+			if (_args.size() < 2)
+				OPER(NULL, NULL, user);
+			else
+				OPER(_args[0], _args[1]);
+			}
+
+			else if (_command == "MODE")
+			{
+				if (_args.size() < 3)
+					MODE(NULL, NULL, NULL, user);
+				else
 					MODE(_args[0], _args[1], _args[2], user);
-					break;
-				case "QUIT":
-					if (_args.size() < 1)
-					{
-						QUIT(NULL, fds, nfds, user);
-						break;
-					}
+			}
+			else if (_command == "QUIT")
+			{
+				if (_args.size() < 1)
+					QUIT(NULL, fds, nfds, user);
+				else
 					QUIT(_args[0], fds, nfds, user);
-					break;
-				case "AWAY":
-					if (_args.size() < 1)
-					{
-						AWAY(NULL, user);
-						break;
-					}
+			}
+			else if (_command == "AWAY")
+			{
+				if (_args.size() < 1)
+					AWAY(NULL, user);
+				else
 					AWAY(_args[0], user);
-					break;
-				//*****channel cmds
-				case "DIE":
-					DIE(user, fds, nfds);
-					break;
-				case "RESTART":
-					RESTART(user, fds, nfds, restart);
-					break;
-				case "WALLOPS":
-					if (_args.size() < 1)
-					{
-						WALLOPS(NULL, user);
-						break;
-					}
+			}
+			//*****channel cmds
+			else if (_command == "DIE")
+				DIE(user, fds, nfds);
+
+			else if (_command == "RESTART")
+				RESTART(user, fds, nfds, restart);
+
+			else if (_command == "WALLOPS")
+				if (_args.size() < 1)
+					WALLOPS(NULL, user);
+				else
 					WALLOPS(_args[0], user);
-					break;
-				case "ISON":
-					if (_args.size() < 1)
-					{
-						ISON(NULL, user);
-						break;
-					}
+
+			else if (_command == "ISON")
+			{
+				if (_args.size() < 1)
+					ISON(NULL, user);
+				else
 					ISON(splitandsort(_args[0], ",", ))
-				case "JOIN":
-					std::vector<std::string>	v1, v2;
-					if (_args.size() < 1)
-					{
-						JOIN(NULL, NULL, NULL, user, fds, nfds);
-						break;
-					}
-					if (_args.size() < 2)
-					{
-						JOIN(splitandsort(_args[0], ",", v1, 0), NULL, NULL, user, fds, nfds);
-						break;
-					}
-					if (_args.size() < 3)
-					{
-						JOIN(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), NULL, user, fds, nfds);
-						break;
-					}
+			}
+			else if (_command == "JOIN")
+			{
+				std::vector<std::string>	v1, v2;
+				if (_args.size() < 1)
+					JOIN(NULL, NULL, NULL, user, fds, nfds);
+				else if (_args.size() < 2)
+					JOIN(splitandsort(_args[0], ",", v1, 0), NULL, NULL, user, fds, nfds);
+				else if (_args.size() < 3)
+					JOIN(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), NULL, user, fds, nfds);
+				else
 					JOIN(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), _args[2], user, fds, nfds);
-					break;
-				case "PART":
-					std::vector<std::string>	v1, v2;
-					if (_args.size() < 1)
-					{
-						PART(NULL, NULL, user);
-						break;
-					}
-					if (_args.size() < 2)
-					{
-						PART(splitandsort(_args[0], ",", v1, 0), NULL, user);
-						break;
-					}
+			}
+			else if (_command == "PART")
+			{
+				std::vector<std::string>	v1, v2;
+				if (_args.size() < 1)
+					PART(NULL, NULL, user);
+				else if (_args.size() < 2)
+					PART(splitandsort(_args[0], ",", v1, 0), NULL, user);
+				else
 					PART(splitandsort(_args[0], ",", v1, 0), _args[1], user);
-					break;
-				case "TOPIC":
-					if (_args.size() < 1)
-					{
-						TOPIC(NULL, NULL, user);
-						break;
-					}
-					if (_args.size() < 2)
-					{
-						TOPIC(_args[0], NULL, user);
-						break;
-					}
+			}
+
+			else if (_command == "TOPIC")
+				if (_args.size() < 1)
+					TOPIC(NULL, NULL, user);
+				else if (_args.size() < 2)
+					TOPIC(_args[0], NULL, user);
+				else
 					TOPIC(_args[0], _args[1], user);
-					break;
-				case "NAMES":
-					if (_args.size() < 1)
-					{
-						NAMES(NULL, user);
-						break;
-					}
+
+			else if (_command == "NAMES")
+				if (_args.size() < 1)
+					NAMES(NULL, user);
+				else
+				{
 					std::vector<std::string>	v1;
 					NAMES(splitandsort(_args[0], ",", v1, 0), user);
-					break;
-				case "LIST":
-					std::vector<std::string>	v1, v2;
-					if (_args.size() < 1)
-					{
-						LIST(NULL, NULL, user);
-						break;
-					}
-					if (_args.size() < 2)
-					{
-						LIST(splitandsort(_args[0], ",", v1, 0), NULL, user);
-						break;
-					}
-					LIST(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), user);
-					break;
-				case "INVITE":
-					if (_args.size() < 1)
-					{
-						INVITE(NULL, NULL, user);
-						break;
-					}
-					if (_args.size() < 2)
-					{
-						INVITE(_args[0], NULL, user);
-						break;
-					}
-					INVITE(_args[0], _args[1], user);
-					break;
-				case "KICK":
-					std::vector<std::string>	v1, v2;
-					if (_args.size() < 2)
-					{
-						KICK(NULL, NULL, NULL, user);
-						break;
-					}
-					if (_args.size() < 3)
-					{
-						KICK(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), NULL, user);
-						break;
-					}
-					KICK(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), _args[2], user);
-					break;
-				//****msg cmd
-				case "NOTICE":
-					if (_args.size() < 2)
-					{
-						NOTICE(NULL, NULL, user);
-						break;
-					}
-					NOTICE(_args[0], _args[1], user);
-					break;
-				case "PRIVMSG":
-					if (_args.size() < 2)
-					{
-						PRIVMSG(NULL, NULL, user);
-						break;
-					}
-					PRIVMSG(_args[0], _args[1], user);
-					break;
-				default:
-					send_message(create_msg(ERR_UNKNOWNCOMMAND, user, _command, "", "", ""), user, ERR_UNKNOWNCOMMAND);
+				}
+
+			else if (_command == "LIST")
+			{
+				std::vector<std::string>	v1, v2;
+				if (_args.size() < 1)
+					LIST(NULL, NULL, user);
+				else if (_args.size() < 2)
+					LIST(splitandsort(_args[0], ",", v1, 0), NULL, user);
+			else
+				LIST(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), user);
 			}
+			else if (_command == "INVITE")
+			{
+				if (_args.size() < 1)
+					INVITE(NULL, NULL, user);
+				else if (_args.size() < 2)
+					INVITE(_args[0], NULL, user);
+				else
+					INVITE(_args[0], _args[1], user);
+			}
+
+			else if (_command == "KICK")
+			{
+				std::vector<std::string>	v1, v2;
+				if (_args.size() < 2)
+					KICK(NULL, NULL, NULL, user);
+	
+				else if (_args.size() < 3)
+					KICK(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), NULL, user);
+				else
+				KICK(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), _args[2], user);
+			}
+
+			//****msg cmd
+			else if (_command == "NOTICE")
+			{	if (_args.size() < 2)
+					NOTICE(NULL, NULL, user);
+				else
+				NOTICE(_args[0], _args[1], user);
+			}
+			else if (_command == "PRIVMSG")
+			{
+				if (_args.size() < 2)
+					PRIVMSG(NULL, NULL, user);
+				else
+					PRIVMSG(_args[0], _args[1], user);
+			}
+			else
+				send_message(create_msg(ERR_UNKNOWNCOMMAND, user, _command, "", "", ""), user, ERR_UNKNOWNCOMMAND);
 		}
 
 	private:
