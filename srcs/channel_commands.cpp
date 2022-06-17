@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 00:03:44 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/16 21:37:34 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/17 11:44:20 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -234,6 +234,13 @@ int NAMES(std::vector<std::string>chan, user *u)
 	return 0;
 }
 
+/**
+ * @brief Gives list of channels and their topics
+ * 
+ * @param c channel names list
+ * @param u 
+ * @return int 
+ */
 int LIST(const std::vector<std::string> c, user *u)
 {
 	channel *tmp;
@@ -261,6 +268,36 @@ int LIST(const std::vector<std::string> c, user *u)
 		}
 	}
 	return send_message(create_msg(RPL_LISTEND, u, "", "", "", ""), u, RPL_LISTEND);
+}
+
+/**
+ * @brief Queries list of users on a server or a single user
+ * 
+ * @param mask 
+ * @param u 
+ * @return int 
+ */
+int WHO(const std::string &mask, user *u)
+{
+	if (mask != "" && mask[0] == '#' || mask[0] == '&')
+	{
+		const channel *tmp = find_channel_by_name(mask);
+		if (!tmp)
+			return send_message(create_msg(ERR_NOSUCHSERVER, u, mask, "", "", ""), u, ERR_NOSUCHSERVER);
+		std::vector<user *>::const_iterator it = tmp->users.begin();
+		for (; it != tmp->users.end(); it++)
+			send_message(create_msg(RPL_WHOREPLY, u, (*it)->nickname, "", "", ""), u, RPL_WHOREPLY);
+
+	}
+	else
+	{
+		const user * tmp = find_user_by_nickname(mask);
+		if (!tmp)
+			return send_message(create_msg(ERR_NOSUCHSERVER, u, mask, "", "", ""), u, ERR_NOSUCHSERVER);
+		send_message(create_msg(RPL_WHOREPLY, u, tmp->nickname, "", "", ""), u, RPL_WHOREPLY);
+
+	}
+	return send_message(create_msg(RPL_ENDOFWHO, u, "", "", "", ""), u, RPL_ENDOFWHO);
 }
 
 int INVITE(const std::string &us, const std::string &c, user *u)
@@ -337,6 +374,18 @@ int CHAN_PRIVMSG(const std::string& c, const std::string &text, user *u)
 	return 0;
 }
 
+int USR_PRIVMSG(const std::string& us, const std::string &text, user *u)
+{
+	user *tmp = find_user_by_nickname(us);
+	
+	if (!tmp)
+		return send_message(create_msg(ERR_NOSUCHNICK, u, us, "", "", ""), u, ERR_NOSUCHNICK);
+	if (tmp->modes[AWAY_MODE])
+			send_message(create_msg(RPL_AWAY, u, tmp->nickname, tmp->away_msg, "", ""), u, RPL_AWAY);
+	else
+		send_message(channel_message(text, u), tmp, 0);
+}
+
 int PRIVMSG(std::vector<std::string> targets, const std::string &text, user *u)
 {
 	std::vector<std::string>::iterator it = targets.begin();
@@ -348,10 +397,12 @@ int PRIVMSG(std::vector<std::string> targets, const std::string &text, user *u)
 	
 	for (; it != targets.end(); it++)
 	{
-		if ((*it)[0] == '#' || (*it)[0] == '&' || (*it)[1] == '#' || (*it)[1] == '&' )
+		if ((*it)[0] == '#' || (*it)[0] == '&')
 			CHAN_PRIVMSG((*it), text, u);
-	//	else
-			
+		else if ((*it)[1] == '#' || (*it)[1] == '&' )
+			CHAN_PRIVMSG((*it).substr(1), text, u);
+	else
+		USR_PRIVMSG((*it), text, u);
 	}
 	return 0;
 }

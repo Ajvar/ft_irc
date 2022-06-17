@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 15:35:51 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/07 16:26:04 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/17 00:18:47 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -289,3 +289,4 @@ int ISON(std::vector<std::string > nicknames, user *user)
 	}
 	return send_message(ret, user, RPL_ISON);
 }
+
