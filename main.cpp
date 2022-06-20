@@ -6,11 +6,12 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/16 23:09:07 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/20 23:25:16 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/includes.hpp"
+#include "includes/parsing.hpp"
 
 user *users = NULL;
 channel *channels = NULL;
@@ -338,8 +339,12 @@ int main (int argc, char *argv[])
 						len = rc;
 						printf("  %d bytes received\n", len);
 						std::cout << buffer << std::endl;
-						user *tmp = find_user_by_fd(fds[i].fd);
-						tmp->nickname = "another";
+						user *tmp_user = find_user_by_fd(fds[i].fd);
+						const std::string cmd = buffer;
+					
+						Command tmp_cmd(cmd);
+						tmp_cmd.parse(fds, &nfds, tmp_user, argv[2], &restart);
+						/*tmp->nickname = "another";
 						std::string topic = ":";
 						//const std::string channel_name = "#test";
 						std::vector<std::string> chanz;
@@ -378,7 +383,7 @@ int main (int argc, char *argv[])
 						else if (std::string(buffer).find("NAMES") != std::string::npos)
 							ret = NAMES(chanz, tmp);
 						std::cout << "ret: " << ret << std::endl;
-
+*/
 						//PARSER
 						
 

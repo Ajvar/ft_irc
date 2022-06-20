@@ -28,20 +28,17 @@
 class Command
 {
 	public:
-		Command() : _command(NULL), _trail(NULL);
+		Command() : _command(NULL){}
 		Command(const std::string cmd)
 		{
 			splitandsort(cmd, " ", _args, GEN_USE);
-			if (!checkCommand())
-				;//senderror?
-			if (!checkArgs())
-				;
+			std::cout << "command" << _command << std::endl;
+			print_str_vec(_args, "args: ");
 		}
-		~Command();
-
+		~Command(){}
 		std::vector<std::string>	splitandsort(std::string cmd, std::string delim, std::vector<std::string>	cont, int opt)
 		{
-			int	pos;
+			std::size_t	pos;
 			while ((pos = cmd.find(delim)) != std::string::npos) //ca inclut le dernier maillon?
 			{
 				std::string token = cmd.substr(0, pos);
@@ -58,9 +55,11 @@ class Command
 				return (cont);
 			}
 			cont.push_back(cmd);
+			for (std::vector<std::string>::iterator it = cont.begin(); it != cont.end(); it++)
+				std::cout << "vecz " << (*it) << std::endl;
 			return (cont);
 		}
-		bool	checkCommand()
+		/*bool	checkCommand()
 		{
 			//check length
 			//check syntax
@@ -70,14 +69,18 @@ class Command
 			//while
 			// check length
 			// check syntax
-		}
+		}*/
 		void	parse(pollfd *fds, int *nfds, user* user, const std::string &serv_pass, int *restart)
 		{
 			//****client cmds
 			if (_command == "PASS")
 			{		
 				if (_args.size() < 1)
+				{
+					std::cout << "here " << std::endl;
 					PASS("", "", user);
+				
+				}
 				else
 					PASS(serv_pass, _args[0], user);
 			}
@@ -105,7 +108,7 @@ class Command
 			else if (_command == "MODE")
 			{
 				if (_args.size() < 3)
-					MODE("", NULL, NULL, user);
+					MODE("", 0, 0, user);
 				else
 					MODE(_args[0], _args[1][0], _args[2][0], user);
 			}
@@ -213,11 +216,11 @@ class Command
 				else
 				KICK(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), _args[2], user);
 			}
-
-			//****msg cmd
+/*
+			****msg cmd
 			else if (_command == "NOTICE")
 			{	if (_args.size() < 2)
-					NOTICE(NULL, NULL, user);
+					NOTICE(std::vector<std::string>(), NULL, user);
 				else
 				NOTICE(_args[0], _args[1], user);
 			}
@@ -230,7 +233,7 @@ class Command
 			}
 			else
 				send_message(create_msg(ERR_UNKNOWNCOMMAND, user, _command, "", "", ""), user, ERR_UNKNOWNCOMMAND);
-		}
+		*/}
 
 	private:
 		std::string					_command;

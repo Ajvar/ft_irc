@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 00:03:44 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/20 15:39:26 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/20 20:51:33 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,7 +163,7 @@ int PART(std::vector<std::string> chan, const std::string &reason, user *u)
  * @param u user launching the command
  * @return int 
  */
-int TOPIC(std::string &topic, const std::string &chan, user *u)
+int TOPIC(const std::string &topic, const std::string &chan, user *u)
 {
 	print_channels();
 	std::cout << "chan name is: "<< chan << std::endl;
@@ -182,7 +182,8 @@ int TOPIC(std::string &topic, const std::string &chan, user *u)
 	}
 	if (c->modes[TOPIC_LOCKED_MODE] && !is_chan_ope(c, u))
 		return send_message(create_msg(ERR_CHANOPRIVSNEEDED, u, c->name, "", "", ""), u, ERR_CHANOPRIVSNEEDED);
-	c->topic = topic.erase(0,1);
+	c->topic = topic;
+	c->topic = c->topic.erase(0,1);
 	std::vector<user *>::iterator it = c->users.begin();
 	for (; it != c->users.end(); it++)
 		send_message(channel_message("TOPIC " + topic, u), (*it), 0);
@@ -279,7 +280,7 @@ int LIST(const std::vector<std::string> c, user *u)
  */
 int WHO(const std::string &mask, user *u)
 {
-	if (mask != "" && mask[0] == '#' || mask[0] == '&')
+	if (mask != "" && (mask[0] == '#' || mask[0] == '&'))
 	{
 		const channel *tmp = find_channel_by_name(mask);
 		if (!tmp)
