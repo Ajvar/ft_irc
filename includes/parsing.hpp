@@ -41,22 +41,23 @@ class Command
 
 		std::vector<std::string>	splitandsort(std::string cmd, std::string delim, std::vector<std::string>	cont, int opt)
 		{
+			int	pos;
 			while ((pos = cmd.find(delim)) != std::string::npos) //ca inclut le dernier maillon?
 			{
 				std::string token = cmd.substr(0, pos);
-				if (!_command && opt)
+				if (_command == "" && opt)
 					_command = token;
 				else
-					cont.append(token);
+					cont.push_back(token);
 				cmd.erase(0, pos + 1);
 			}
-			if (cmd[0] == ":" && opt)
+			if (cmd[0] == ':' && opt)
 			{
 				cmd.erase(0, 1);
-				cont.append(cmd);
+				cont.push_back(cmd);
 				return (cont);
 			}
-			cont.append(cmd);
+			cont.push_back(cmd);
 			return (cont);
 		}
 		bool	checkCommand()
@@ -70,43 +71,43 @@ class Command
 			// check length
 			// check syntax
 		}
-		void	parse(pollfd *fds, int *nfds, user* user, std::string serv_pass, int *restart)
+		void	parse(pollfd *fds, int *nfds, user* user, const std::string &serv_pass, int *restart)
 		{
 			//****client cmds
 			if (_command == "PASS")
 			{		
 				if (_args.size() < 1)
-					PASS(NULL, NULL, user);
+					PASS("", "", user);
 				else
 					PASS(serv_pass, _args[0], user);
 			}
 			else if (_command == "NICK")
 			{	if (_args.size() < 1)
-					NICK(NULL, user);
+					NICK("", user);
 				else
 					NICK(_args[0] , user);
 			}
 			else if (_command == "USER")
 			{
 				if (_args.size() < 4)
-					USER(NULL, NULL, user);
+					USER("", "", user);
 				else
 				USER(_args[0], _args[3], user);
 			}
 			else if (_command == "OPER")
 			{
 			if (_args.size() < 2)
-				OPER(NULL, NULL, user);
+				OPER("", "", user);
 			else
-				OPER(_args[0], _args[1]);
+				OPER(_args[0], _args[1], user);
 			}
 
 			else if (_command == "MODE")
 			{
 				if (_args.size() < 3)
-					MODE(NULL, NULL, NULL, user);
+					MODE("", NULL, NULL, user);
 				else
-					MODE(_args[0], _args[1], _args[2], user);
+					MODE(_args[0], _args[1][0], _args[2][0], user);
 			}
 			else if (_command == "QUIT")
 			{
@@ -124,10 +125,10 @@ class Command
 			}
 			//*****channel cmds
 			else if (_command == "DIE")
-				DIE(user, fds, nfds);
+				DIE(user, fds, *nfds);
 
 			else if (_command == "RESTART")
-				RESTART(user, fds, nfds, restart);
+				RESTART(user, fds, *nfds, restart);
 
 			else if (_command == "WALLOPS")
 				if (_args.size() < 1)
@@ -137,28 +138,29 @@ class Command
 
 			else if (_command == "ISON")
 			{
+				std::vector<std::string>	v1;
 				if (_args.size() < 1)
-					ISON(NULL, user);
+					ISON(std::vector<std::string>(), user);
 				else
-					ISON(splitandsort(_args[0], ",", ))
+					ISON(splitandsort(_args[0], ",", v1, 0 ), user);
 			}
 			else if (_command == "JOIN")
 			{
 				std::vector<std::string>	v1, v2;
 				if (_args.size() < 1)
-					JOIN(NULL, NULL, NULL, user, fds, nfds);
+					JOIN(std::vector<std::string>(), std::vector<std::string>(), "", user, fds, *nfds);
 				else if (_args.size() < 2)
-					JOIN(splitandsort(_args[0], ",", v1, 0), NULL, NULL, user, fds, nfds);
+					JOIN(splitandsort(_args[0], ",", v1, 0), std::vector<std::string>(), NULL, user, fds, *nfds);
 				else if (_args.size() < 3)
-					JOIN(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), NULL, user, fds, nfds);
+					JOIN(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), NULL, user, fds, *nfds);
 				else
-					JOIN(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), _args[2], user, fds, nfds);
+					JOIN(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), _args[2], user, fds, *nfds);
 			}
 			else if (_command == "PART")
 			{
 				std::vector<std::string>	v1, v2;
 				if (_args.size() < 1)
-					PART(NULL, NULL, user);
+					PART(std::vector<std::string>(), "", user);
 				else if (_args.size() < 2)
 					PART(splitandsort(_args[0], ",", v1, 0), NULL, user);
 				else
@@ -167,7 +169,7 @@ class Command
 
 			else if (_command == "TOPIC")
 				if (_args.size() < 1)
-					TOPIC(NULL, NULL, user);
+					TOPIC("", "", user);
 				else if (_args.size() < 2)
 					TOPIC(_args[0], NULL, user);
 				else
@@ -175,7 +177,7 @@ class Command
 
 			else if (_command == "NAMES")
 				if (_args.size() < 1)
-					NAMES(NULL, user);
+					NAMES(std::vector<std::string>(), user);
 				else
 				{
 					std::vector<std::string>	v1;
@@ -186,11 +188,9 @@ class Command
 			{
 				std::vector<std::string>	v1, v2;
 				if (_args.size() < 1)
-					LIST(NULL, NULL, user);
+					LIST(std::vector<std::string>(), user);
 				else if (_args.size() < 2)
-					LIST(splitandsort(_args[0], ",", v1, 0), NULL, user);
-			else
-				LIST(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), user);
+					LIST(splitandsort(_args[0], ",", v1, 0), user);
 			}
 			else if (_command == "INVITE")
 			{
@@ -206,7 +206,7 @@ class Command
 			{
 				std::vector<std::string>	v1, v2;
 				if (_args.size() < 2)
-					KICK(NULL, NULL, NULL, user);
+					KICK(std::vector<std::string>(), std::vector<std::string>(), "", user);
 	
 				else if (_args.size() < 3)
 					KICK(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), NULL, user);
@@ -224,7 +224,7 @@ class Command
 			else if (_command == "PRIVMSG")
 			{
 				if (_args.size() < 2)
-					PRIVMSG(NULL, NULL, user);
+					PRIVMSG(std::vector<std::string>(), "", user);
 				else
 					PRIVMSG(_args[0], _args[1], user);
 			}

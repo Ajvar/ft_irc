@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/16 20:34:04 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/20 15:39:50 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,12 @@ int TOPIC(std::string &topic, const std::string &chan, user *u);
 int NAMES(std::vector<std::string>chan, user *u);
 int LIST(const std::vector<std::string> c, user *u);
 int INVITE(const std::string &us, const std::string &c, user *u);
+int KICK(const std::vector<std::string> &c, std::vector<std::string> us, const std::string &comment ,user *u);
+int WHO(const std::string &mask, user *u);
+
+//messages
+int PRIVMSG(std::vector<std::string> targets, const std::string &text, user *u);
+int NOTICE(std::vector<std::string> targets, const std::string &text, user *u);
 
 //utils
 user 		*find_user_by_fd(int fd);

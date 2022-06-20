@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 00:03:44 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/17 11:44:20 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/20 15:39:26 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -319,29 +319,34 @@ int INVITE(const std::string &us, const std::string &c, user *u)
 	return send_message(create_msg(RPL_INVITING, u, tmp_chan->name, tmp_user->nickname, "", ""), u, RPL_INVITING);
 }
 
-int KICK(const std::string &c, std::vector<std::string> us, const std::string &comment ,user *u)
+int KICK(const std::vector<std::string> &c, std::vector<std::string> us, const std::string &comment ,user *u)
 {
-	channel *tmp_chan = find_channel_by_name(c);
-	user	*tmp_user;
-	if (c == "" || us.empty())
+	if (c.empty() || us.empty())
 		return send_message(create_msg(ERR_NEEDMOREPARAMS, u, "KICK ", "", "", ""), u, ERR_NEEDMOREPARAMS);
-	if (!tmp_chan)
-		return send_message(create_msg(ERR_NOSUCHCHANNEL, u, c, "", "", ""), u, ERR_NOSUCHCHANNEL);
-	if (!is_chan_ope(tmp_chan, u))
-		return send_message(create_msg(ERR_CHANOPRIVSNEEDED, u, tmp_chan->name, "", "", ""), u, ERR_CHANOPRIVSNEEDED);
-	std::vector<std::string>::iterator it = us.begin();
-	if (!find_u_in_chan(u->nickname, tmp_chan))
-		return send_message(create_msg(ERR_NOTONCHANNEL, u, tmp_chan->name, "", "", ""), u, ERR_NOTONCHANNEL);
-	for (; it != us.end(); it++)
+	std::vector<std::string>::const_iterator c_it = c.begin();
+	for (; c_it != c.end(); c_it++)
 	{
-		if (!(tmp_user = find_u_in_chan((*it), tmp_chan)))
-			send_message(create_msg(ERR_USERNOTINCHANNEL, u, (*it), tmp_chan->name, "", ""), u, ERR_USERNOTINCHANNEL);
-		else
+		channel *tmp_chan = find_channel_by_name((*c_it));
+		user	*tmp_user;
+		if (!tmp_chan)
+			return send_message(create_msg(ERR_NOSUCHCHANNEL, u, (*c_it), "", "", ""), u, ERR_NOSUCHCHANNEL);
+		if (!is_chan_ope(tmp_chan, u))
+			return send_message(create_msg(ERR_CHANOPRIVSNEEDED, u, tmp_chan->name, "", "", ""), u, ERR_CHANOPRIVSNEEDED);
+		std::vector<std::string>::iterator us_it = us.begin();
+		if (!find_u_in_chan(u->nickname, tmp_chan))
+			return send_message(create_msg(ERR_NOTONCHANNEL, u, tmp_chan->name, "", "", ""), u, ERR_NOTONCHANNEL);
+		for (; us_it != us.end(); us_it++)
 		{
-			delete_chan_in_u(tmp_chan->name, tmp_user);
-			delete_u_in_chan(tmp_user->nickname, tmp_chan);
-			send_message(channel_message("KICK " + comment, u), tmp_user, 0);
+			if (!(tmp_user = find_u_in_chan((*us_it), tmp_chan)))
+				send_message(create_msg(ERR_USERNOTINCHANNEL, u, (*us_it), tmp_chan->name, "", ""), u, ERR_USERNOTINCHANNEL);
+			else
+			{
+				delete_chan_in_u(tmp_chan->name, tmp_user);
+				delete_u_in_chan(tmp_user->nickname, tmp_chan);
+				send_message(channel_message("KICK " + comment, u), tmp_user, 0);
+			}
 		}
+		
 	}
 	return 0;
 }
@@ -384,6 +389,7 @@ int USR_PRIVMSG(const std::string& us, const std::string &text, user *u)
 			send_message(create_msg(RPL_AWAY, u, tmp->nickname, tmp->away_msg, "", ""), u, RPL_AWAY);
 	else
 		send_message(channel_message(text, u), tmp, 0);
+	return 0;
 }
 
 int PRIVMSG(std::vector<std::string> targets, const std::string &text, user *u)
@@ -403,6 +409,65 @@ int PRIVMSG(std::vector<std::string> targets, const std::string &text, user *u)
 			CHAN_PRIVMSG((*it).substr(1), text, u);
 	else
 		USR_PRIVMSG((*it), text, u);
+	}
+	return 0;
+}
+
+int CHAN_NOTICE(const std::string& c, const std::string &text, user *u)
+{
+	channel *tmp = find_channel_by_name((c[0] == '@' || c[0] == '+') ? c.substr(1) : c);
+	
+	if (!tmp)
+		return 0;
+	if (is_banned(tmp, u))
+		return 0;
+	if (!(find_u_in_chan(u->nickname, tmp)) && tmp->modes[NO_EXTERN_MSG_MODE])
+		return 0;
+	if (c[0] == '@' || c[0] == '+')
+	{
+		std::vector<user *>::iterator it = tmp->users.begin();
+		for (; it != tmp->users.end(); it++)
+		{
+			if ((c[0] == '+' && (is_chan_ope(tmp, (*it)) || is_chan_voice(tmp, (*it)))) || (c[0] == '@' && is_chan_ope(tmp, (*it))))
+			{
+				if ((*it)->modes[AWAY_MODE])
+					return 0;
+				else
+					send_message(channel_message(text, u), (*it), 0);
+			}
+		}
+	}
+	
+	return 0;
+}
+
+int USR_NOTICE(const std::string& us, const std::string &text, user *u)
+{
+	user *tmp = find_user_by_nickname(us);
+	
+	if (!tmp)
+		return 1;
+	if (tmp->modes[AWAY_MODE])
+			return 2;
+	else
+		return send_message(channel_message(text, u), tmp, 0);
+}
+
+int NOTICE(std::vector<std::string> targets, const std::string &text, user *u)
+{
+	std::vector<std::string>::iterator it = targets.begin();
+
+	if (targets.empty() || text == "")
+		return send_message(create_msg(ERR_NEEDMOREPARAMS, u, "NOTICE ",  "", "", ""), u, ERR_NEEDMOREPARAMS);
+
+	for (; it != targets.end(); it++)
+	{
+		if ((*it)[0] == '#' || (*it)[0] == '&')
+			CHAN_NOTICE((*it), text, u);
+		else if ((*it)[1] == '#' || (*it)[1] == '&' )
+			CHAN_NOTICE((*it).substr(1), text, u);
+	else
+		USR_NOTICE((*it), text, u);
 	}
 	return 0;
 }
