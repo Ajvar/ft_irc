@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/20 23:25:16 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/21 13:14:01 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -340,10 +340,17 @@ int main (int argc, char *argv[])
 						printf("  %d bytes received\n", len);
 						std::cout << buffer << std::endl;
 						user *tmp_user = find_user_by_fd(fds[i].fd);
-						const std::string cmd = buffer;
+						std::string cmd = buffer;
+						std::size_t	pos;
 					
-						Command tmp_cmd(cmd);
-						tmp_cmd.parse(fds, &nfds, tmp_user, argv[2], &restart);
+						while ((pos = cmd.find(13)) != std::string::npos) 
+						{
+				
+							std::cout << "------" << "\n" << cmd.substr(1, pos) << "-----" << std::endl;
+							Command tmp_cmd(cmd.substr(0, pos));
+							tmp_cmd.parse(fds, &nfds, tmp_user, argv[2], &restart);
+							cmd.erase(0, pos + 1);
+						}
 						/*tmp->nickname = "another";
 						std::string topic = ":";
 						//const std::string channel_name = "#test";

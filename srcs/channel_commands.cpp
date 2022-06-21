@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 00:03:44 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/20 20:51:33 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/21 12:01:55 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,11 +63,12 @@ int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, const std
 		}
 		return 0;
 	}
-	
+
 	for (; it != ite; it++)
 	{
 		if (!(tmp = find_channel_by_name((*it))))
 		{
+			std::cout << "no channel "  << std::endl;
 			tmp = new_channel((*it));
 			if (!tmp)
 			{
@@ -118,8 +119,7 @@ int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, const std
 			nicks = nicks + (nicks == "" ? "" : " ") + (*uz)->nickname;
 		std::cout << create_msg(RPL_NAMREPLY, u, tmp->name, nicks, "", "") << std::endl;
 		send_message(create_msg(RPL_NAMREPLY, u, tmp->name, nicks, "", ""), u, 0);
-		send_message(create_msg(RPL_ENDOFNAMES, u, tmp->name, "", "", ""), u, 0);
-		
+		send_message(create_msg(RPL_ENDOFNAMES, u, tmp->name, "", "", ""), u, 0);	
 	}
 	return 0;
 }

@@ -4,6 +4,7 @@
 # include "../includes/includes.hpp"
 # include "../includes/replies.hpp"
 # include <deque>
+# include <algorithm>
 
 //command format
 //:<Prefix> <Command> <Space Separated Args> :Optional trailing content here, like a chat message.
@@ -32,15 +33,17 @@ class Command
 		Command(const std::string cmd)
 		{
 			splitandsort(cmd, " ", _args, GEN_USE);
-			std::cout << "command" << _command << std::endl;
+			std::cout << "command " << _command << std::endl;
 			print_str_vec(_args, "args: ");
 		}
 		~Command(){}
-		std::vector<std::string>	splitandsort(std::string cmd, std::string delim, std::vector<std::string>	cont, int opt)
+		std::vector<std::string>	splitandsort(std::string cmd, std::string delim, std::vector<std::string>	&cont, int opt)
 		{
 			std::size_t	pos;
+  			cmd.erase(std::remove(cmd.begin(), cmd.end(), 13), cmd.end()); 
 			while ((pos = cmd.find(delim)) != std::string::npos) //ca inclut le dernier maillon?
 			{
+
 				std::string token = cmd.substr(0, pos);
 				if (_command == "" && opt)
 					_command = token;
@@ -55,8 +58,6 @@ class Command
 				return (cont);
 			}
 			cont.push_back(cmd);
-			for (std::vector<std::string>::iterator it = cont.begin(); it != cont.end(); it++)
-				std::cout << "vecz " << (*it) << std::endl;
 			return (cont);
 		}
 		/*bool	checkCommand()
@@ -72,17 +73,17 @@ class Command
 		}*/
 		void	parse(pollfd *fds, int *nfds, user* user, const std::string &serv_pass, int *restart)
 		{
+			printer("entering pasrer: " + this->_command);
 			//****client cmds
 			if (_command == "PASS")
-			{		
+			{
 				if (_args.size() < 1)
 				{
-					std::cout << "here " << std::endl;
 					PASS("", "", user);
-				
+					ft_free_exit("No password given", 1, fds, *nfds);
 				}
-				else
-					PASS(serv_pass, _args[0], user);
+				if (PASS(serv_pass, _args[0], user))
+					ft_free_exit("Wrong password ", 1, fds, *nfds);
 			}
 			else if (_command == "NICK")
 			{	if (_args.size() < 1)
@@ -153,9 +154,11 @@ class Command
 				if (_args.size() < 1)
 					JOIN(std::vector<std::string>(), std::vector<std::string>(), "", user, fds, *nfds);
 				else if (_args.size() < 2)
-					JOIN(splitandsort(_args[0], ",", v1, 0), std::vector<std::string>(), NULL, user, fds, *nfds);
+				{
+					JOIN(splitandsort(_args[0], ",", v1, 0), std::vector<std::string>(), "", user, fds, *nfds);
+				}
 				else if (_args.size() < 3)
-					JOIN(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), NULL, user, fds, *nfds);
+					JOIN(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), "", user, fds, *nfds);
 				else
 					JOIN(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), _args[2], user, fds, *nfds);
 			}
