@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 15:35:51 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/21 12:46:06 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/27 15:38:46 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ int NICK(const std::string &nickname, user *user)
 	s_user *tmp = users;
 	std::string buff;
 	
-	std::cout << "NIIIIIICK" << std::endl;
+	pp("IN NICK");
 
 	if (nickname.empty())
 		return send_message(create_msg(ERR_NONICKNAMEGIVEN, user,"", "", "", ""), user, ERR_NONICKNAMEGIVEN);
@@ -81,7 +81,8 @@ int NICK(const std::string &nickname, user *user)
 int USER(const std::string &username, const std::string &realname, user *user)
 {
 	struct s_user *tmp = users;
-
+	
+	pp("IN USER");
 	while (tmp)
 	{
 		if (tmp->username == username)

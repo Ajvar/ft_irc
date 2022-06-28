@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 13:33:22 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/16 20:34:27 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/28 15:20:52 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ extern struct s_channel *channels;
  */
 int send_message(const std::string &s, user *user, int ret)
 {
+	std::cout << "Send message: " << s << std::endl;
 	if (s.empty() == 0)
 		send(user->fd->fd, s.c_str(), s.size() + 1, MSG_NOSIGNAL);
 	return ret;

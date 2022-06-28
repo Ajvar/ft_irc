@@ -6,12 +6,13 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/21 13:14:01 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/28 13:44:10 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/includes.hpp"
 #include "includes/parsing.hpp"
+# include <sstream>
 
 user *users = NULL;
 channel *channels = NULL;
@@ -341,59 +342,76 @@ int main (int argc, char *argv[])
 						std::cout << buffer << std::endl;
 						user *tmp_user = find_user_by_fd(fds[i].fd);
 						std::string cmd = buffer;
-						std::size_t	pos;
+						/*std::size_t	pos;
 					
+						//Iterates through line return
 						while ((pos = cmd.find(13)) != std::string::npos) 
 						{
-				
-							std::cout << "------" << "\n" << cmd.substr(1, pos) << "-----" << std::endl;
+							std::string cmd_tmp = cmd.substr(1, pos);
+							std::cout << "------" << "\n" << cmd_tmp << "\n-----" << std::endl;
 							Command tmp_cmd(cmd.substr(0, pos));
 							tmp_cmd.parse(fds, &nfds, tmp_user, argv[2], &restart);
 							cmd.erase(0, pos + 1);
-						}
-						/*tmp->nickname = "another";
+						}*/
+
+						/*tmp_user->nickname = "another";
 						std::string topic = ":";
-						//const std::string channel_name = "#test";
+			
 						std::vector<std::string> chanz;
 						std::vector<std::string> keys;
 						int ret = 0;
 						chanz.push_back("#test");
-						tmp->modes[INVISIBLE_MODE] = 1;
-						if (std::string(buffer).find("AWAY") != std::string::npos)
-							AWAY("I'm away", tmp);
-						else if (std::string(buffer).find("OPER") != std::string::npos)
-							OPER("nickname1", "password1", tmp);
-						else if (std::string(buffer).find("PASS") != std::string::npos)
-							PASS(argv[2], "lol", tmp);
-						else if (std::string(buffer).find("NICK") != std::string::npos)
-							NICK("testttt", tmp);
-						else if (std::string(buffer).find("USER") != std::string::npos)
-							USER("usertest", "realtest", tmp);
-						else if (std::string(buffer).find("MODE") != std::string::npos)
-							MODE(tmp->nickname, '+',  'i', tmp);
-						else if (std::string(buffer).find("QUIT") != std::string::npos)
-							QUIT("bye", fds, &nfds, tmp);
-						else if (std::string(buffer).find("DIE") != std::string::npos)
-							DIE(tmp, fds, nfds);
-						else if (std::string(buffer).find("RESTART") != std::string::npos)
-							RESTART(tmp, fds, nfds, &restart);
-						else if (std::string(buffer).find("WALLOPS") != std::string::npos)
-							WALLOPS("wallopstest", tmp);
-						else if (std::string(buffer).find("ISON") != std::string::npos)
-							ISON(nicknames, tmp);
-						else if (std::string(buffer).find("JOIN") != std::string::npos)
-							JOIN(chanz, keys, "", tmp, fds, nfds);
-						else if (std::string(buffer).find("PART") != std::string::npos)
-							PART(chanz, "I'm leaviiiing", tmp);
-						else if (std::string(buffer).find("TOPIC") != std::string::npos)
-							ret = TOPIC(topic, "#test", tmp);
-						else if (std::string(buffer).find("NAMES") != std::string::npos)
-							ret = NAMES(chanz, tmp);
-						std::cout << "ret: " << ret << std::endl;
-*/
-						//PARSER
+						tmp_user->modes[INVISIBLE_MODE] = 1;*/
+					//	std::size_t	pos;
+						pp("Line parse");
+						/*while ((pos = cmd.find(13)) != std::string::npos) 
+						{
+							std::string cmd_tmp = cmd.substr(1, pos);
+							std::cout << "------" << "\n" << cmd_tmp << "\n-----" << std::endl;
+							Command tmp_cmd(cmd.substr(0, pos));
+							tmp_cmd.parse(fds, &nfds, tmp_user, argv[2], &restart);
+							cmd.erase(0, pos + 1);
+						}*/
 						
-
+						std::stringstream ss(buffer);
+						std::string token;
+						while (std::getline(ss, token, '\n')) {
+							Command tmp_cmd(token);
+							tmp_cmd.parse(fds, &nfds, tmp_user, argv[2], &restart);
+						}
+						pp("end line parse");
+						/*if (std::string(buffer).find("AWAY") != std::string::npos)
+							AWAY("I'm away", tmp_user);
+						else if (std::string(buffer).find("OPER") != std::string::npos)
+							OPER("nickname1", "password1", tmp_user);
+						else if (std::string(buffer).find("PASS") != std::string::npos)
+							PASS(argv[2], "lol", tmp_user);
+						else if (std::string(buffer).find("NICK") != std::string::npos)
+							NICK("testttt", tmp_user);
+						else if (std::string(buffer).find("USER") != std::string::npos)
+							USER("usertest", "realtest", tmp_user);
+						else if (std::string(buffer).find("MODE") != std::string::npos)
+							MODE(tmp_user->nickname, '+',  'i', tmp_user);
+						else if (std::string(buffer).find("QUIT") != std::string::npos)
+							QUIT("bye", fds, &nfds, tmp_user);
+						else if (std::string(buffer).find("DIE") != std::string::npos)
+							DIE(tmp_user, fds, nfds);
+						else if (std::string(buffer).find("RESTART") != std::string::npos)
+							RESTART(tmp_user, fds, nfds, &restart);
+						else if (std::string(buffer).find("WALLOPS") != std::string::npos)
+							WALLOPS("wallopstest", tmp_user);
+						else if (std::string(buffer).find("ISON") != std::string::npos)
+							ISON(nicknames, tmp_user);
+						else if (std::string(buffer).find("JOIN") != std::string::npos)
+							JOIN(chanz, keys, "", tmp_user, fds, nfds);
+						else if (std::string(buffer).find("PART") != std::string::npos)
+							PART(chanz, "I'm leaviiiing", tmp_user);
+						else if (std::string(buffer).find("TOPIC") != std::string::npos)
+							ret = TOPIC(topic, "#test", tmp_user);
+						else if (std::string(buffer).find("NAMES") != std::string::npos)
+							ret = NAMES(chanz, tmp_user);
+						std::cout << "ret: " << ret << std::endl;*/
+						
 						/*****************************************************/
 						/* Echo the data back to the client                  */
 						/*****************************************************/

@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/21 12:23:57 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/21 12:54:34 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/27 14:17:26 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,4 +43,15 @@ void print_str_vec(std::vector<std::string> v, std::string info)
 void printer(std::string s)
 {
 	std::cout << s << std::endl;
+}
+
+//pretty printer
+void pp(std::string s)
+{
+	for (size_t i = 0; i < s.size() + 4; i++)
+		std::cout << "*";
+	std::cout << '\n' << "* " << s << " *" <<std::endl;
+	for (size_t i = 0; i < s.size() + 4; i++)
+		std::cout << "*";
+	std::cout << std::endl;
 }

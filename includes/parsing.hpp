@@ -73,7 +73,7 @@ class Command
 		}*/
 		void	parse(pollfd *fds, int *nfds, user* user, const std::string &serv_pass, int *restart)
 		{
-			printer("entering pasrer: " + this->_command);
+			pp("entering parser: " + this->_command);
 			//****client cmds
 			if (_command == "PASS")
 			{
