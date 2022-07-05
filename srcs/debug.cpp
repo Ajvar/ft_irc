@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/21 12:23:57 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/27 14:17:26 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/29 21:40:13 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,6 @@
 
 extern channel* channels;
 extern user* users;
-
-void print_user(user *user)
-{
-	if (user)
-	{
-		std::cout << "nickname: " << user->next << " username: " << user->username << " realname: " << user->realname << std::endl;
-	}
-}
 
 void print_channels()
 {
@@ -54,4 +46,16 @@ void pp(std::string s)
 	for (size_t i = 0; i < s.size() + 4; i++)
 		std::cout << "*";
 	std::cout << std::endl;
+}
+
+void print_user(user *u)
+{
+	std::cout << "+++\nUSER:\n" << "nick: " << u->nickname << " hostname: " << u->hostname << " username: " << u->username << " realname: " << u->realname << std::endl;
+	std::cout << "MODES: "
+	<< (u->modes[AWAY_MODE] ? "away " : "")
+	<< (u->modes[INVISIBLE_MODE] ? "invisible " : "")
+	<< (u->modes[WALLOPS_MODE] ? "wallops " : "")
+	<< (u->modes[RESTRICTED_MODE] ? "restricted " : "")
+	<< (u->modes[OPERATOR_MODE] ? "operator " : "")
+	<< "+++" << std::endl;
 }

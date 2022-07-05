@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 00:03:44 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/21 12:01:55 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/30 16:01:43 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, const std
 			{
 					send_message(create_msg(ERR_BANNEDFROMCHAN, u, tmp->name, "", "", ""), u, ERR_BANNEDFROMCHAN);
 					continue;
-			}	
+			}
 		}
 		if (tmp->modes[INVITE_ONLY_MODE])
 		{
@@ -104,9 +104,6 @@ int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, const std
 				if ((int)tmp->users.size() >= tmp->user_limit)
 					return send_message(create_msg(ERR_CHANNELISFULL, u, tmp->name,"", "", ""), u, ERR_CHANNELISFULL);
 		}
-		for (std::vector<std::string>::iterator ban = tmp->banned.begin(); ban != tmp->banned.end(); ban++)
-			if ((*ban) == u->nickname)
-				return send_message(create_msg(ERR_BANNEDFROMCHAN, u, tmp->name,"", "", ""), u, ERR_BANNEDFROMCHAN);
 		if (tmp->key != "" && tmp->key != (*k))
 			return send_message(create_msg(ERR_BADCHANNELKEY, u, tmp->name,"", "", ""), u, ERR_BADCHANNELKEY);	
 		k++;
@@ -280,6 +277,7 @@ int LIST(const std::vector<std::string> c, user *u)
  */
 int WHO(const std::string &mask, user *u)
 {
+	pp("in WHO");
 	if (mask != "" && (mask[0] == '#' || mask[0] == '&'))
 	{
 		const channel *tmp = find_channel_by_name(mask);
@@ -287,7 +285,28 @@ int WHO(const std::string &mask, user *u)
 			return send_message(create_msg(ERR_NOSUCHSERVER, u, mask, "", "", ""), u, ERR_NOSUCHSERVER);
 		std::vector<user *>::const_iterator it = tmp->users.begin();
 		for (; it != tmp->users.end(); it++)
-			send_message(create_msg(RPL_WHOREPLY, u, (*it)->nickname, "", "", ""), u, RPL_WHOREPLY);
+		{
+			std::string str;
+			str += tmp->name + " ";
+			str += (*it)->username + " ";
+			str += (*it)->hostname + " ";
+			str += (*it)->hostname + " ";
+			str += (*it)->nickname + " ";
+			if ((*it)->modes[AWAY_MODE])
+				str += "G";
+			else
+				str += "H";
+			if ((*it)->modes[OPERATOR_MODE])
+				str += "*";
+			if (is_chan_ope(tmp, (*it)))
+				str += "@";
+			else if (is_chan_voice(tmp, (*it)))
+				str += "+";
+			str += " ";
+			str += ":0 ";
+			str += (*it)->realname;
+			send_message(create_msg(RPL_WHOREPLY, u, str, "", "", ""), u, RPL_WHOREPLY);
+		}
 
 	}
 	else
@@ -295,8 +314,22 @@ int WHO(const std::string &mask, user *u)
 		const user * tmp = find_user_by_nickname(mask);
 		if (!tmp)
 			return send_message(create_msg(ERR_NOSUCHSERVER, u, mask, "", "", ""), u, ERR_NOSUCHSERVER);
-		send_message(create_msg(RPL_WHOREPLY, u, tmp->nickname, "", "", ""), u, RPL_WHOREPLY);
-
+					std::string str;
+		str += "* ";
+		str += (tmp)->username + " ";
+		str += (tmp)->hostname + " ";
+		str += (tmp)->hostname + " ";
+		str += (tmp)->nickname + " ";
+		if ((tmp)->modes[AWAY_MODE])
+			str += "G";
+		else
+			str += "H";
+		if ((tmp)->modes[OPERATOR_MODE])
+			str += "*";
+		str += " ";
+		str += ":0 ";
+		str += (tmp)->realname;
+		send_message(create_msg(RPL_WHOREPLY, u, str, "", "", ""), u, RPL_WHOREPLY);
 	}
 	return send_message(create_msg(RPL_ENDOFWHO, u, "", "", "", ""), u, RPL_ENDOFWHO);
 }
@@ -348,127 +381,6 @@ int KICK(const std::vector<std::string> &c, std::vector<std::string> us, const s
 			}
 		}
 		
-	}
-	return 0;
-}
-
-int CHAN_PRIVMSG(const std::string& c, const std::string &text, user *u)
-{
-	channel *tmp = find_channel_by_name((c[0] == '@' || c[0] == '+') ? c.substr(1) : c);
-	
-	if (!tmp)
-		return send_message(create_msg(ERR_NOSUCHNICK, u, c, "", "", ""), u, ERR_NOSUCHNICK);
-	if (is_banned(tmp, u))
-		return send_message(create_msg(ERR_CANNOTSENDTOCHAN, u, c, "", "", ""), u, ERR_CANNOTSENDTOCHAN);
-	if (!(find_u_in_chan(u->nickname, tmp)) && tmp->modes[NO_EXTERN_MSG_MODE])
-		return send_message(create_msg(ERR_CANNOTSENDTOCHAN, u, c, "", "", ""), u, ERR_CANNOTSENDTOCHAN);
-	if (c[0] == '@' || c[0] == '+')
-	{
-		std::vector<user *>::iterator it = tmp->users.begin();
-		for (; it != tmp->users.end(); it++)
-		{
-			if ((c[0] == '+' && (is_chan_ope(tmp, (*it)) || is_chan_voice(tmp, (*it)))) || (c[0] == '@' && is_chan_ope(tmp, (*it))))
-			{
-				if ((*it)->modes[AWAY_MODE])
-					send_message(create_msg(RPL_AWAY, u, (*it)->nickname, (*it)->away_msg, "", ""), u, RPL_AWAY);
-				else
-					send_message(channel_message(text, u), (*it), 0);
-			}
-		}
-	}
-	
-	return 0;
-}
-
-int USR_PRIVMSG(const std::string& us, const std::string &text, user *u)
-{
-	user *tmp = find_user_by_nickname(us);
-	
-	if (!tmp)
-		return send_message(create_msg(ERR_NOSUCHNICK, u, us, "", "", ""), u, ERR_NOSUCHNICK);
-	if (tmp->modes[AWAY_MODE])
-			send_message(create_msg(RPL_AWAY, u, tmp->nickname, tmp->away_msg, "", ""), u, RPL_AWAY);
-	else
-		send_message(channel_message(text, u), tmp, 0);
-	return 0;
-}
-
-int PRIVMSG(std::vector<std::string> targets, const std::string &text, user *u)
-{
-	std::vector<std::string>::iterator it = targets.begin();
-
-	if (targets.empty())
-		return send_message(create_msg(ERR_NORECIPIENT, u, "PRIVMSG ",  "", "", ""), u, ERR_NORECIPIENT);
-	if (text == "")
-		return send_message(create_msg(ERR_NOTEXTTOSEND, u, "", "", "", ""), u, ERR_NOTEXTTOSEND);
-	
-	for (; it != targets.end(); it++)
-	{
-		if ((*it)[0] == '#' || (*it)[0] == '&')
-			CHAN_PRIVMSG((*it), text, u);
-		else if ((*it)[1] == '#' || (*it)[1] == '&' )
-			CHAN_PRIVMSG((*it).substr(1), text, u);
-	else
-		USR_PRIVMSG((*it), text, u);
-	}
-	return 0;
-}
-
-int CHAN_NOTICE(const std::string& c, const std::string &text, user *u)
-{
-	channel *tmp = find_channel_by_name((c[0] == '@' || c[0] == '+') ? c.substr(1) : c);
-	
-	if (!tmp)
-		return 0;
-	if (is_banned(tmp, u))
-		return 0;
-	if (!(find_u_in_chan(u->nickname, tmp)) && tmp->modes[NO_EXTERN_MSG_MODE])
-		return 0;
-	if (c[0] == '@' || c[0] == '+')
-	{
-		std::vector<user *>::iterator it = tmp->users.begin();
-		for (; it != tmp->users.end(); it++)
-		{
-			if ((c[0] == '+' && (is_chan_ope(tmp, (*it)) || is_chan_voice(tmp, (*it)))) || (c[0] == '@' && is_chan_ope(tmp, (*it))))
-			{
-				if ((*it)->modes[AWAY_MODE])
-					return 0;
-				else
-					send_message(channel_message(text, u), (*it), 0);
-			}
-		}
-	}
-	
-	return 0;
-}
-
-int USR_NOTICE(const std::string& us, const std::string &text, user *u)
-{
-	user *tmp = find_user_by_nickname(us);
-	
-	if (!tmp)
-		return 1;
-	if (tmp->modes[AWAY_MODE])
-			return 2;
-	else
-		return send_message(channel_message(text, u), tmp, 0);
-}
-
-int NOTICE(std::vector<std::string> targets, const std::string &text, user *u)
-{
-	std::vector<std::string>::iterator it = targets.begin();
-
-	if (targets.empty() || text == "")
-		return send_message(create_msg(ERR_NEEDMOREPARAMS, u, "NOTICE ",  "", "", ""), u, ERR_NEEDMOREPARAMS);
-
-	for (; it != targets.end(); it++)
-	{
-		if ((*it)[0] == '#' || (*it)[0] == '&')
-			CHAN_NOTICE((*it), text, u);
-		else if ((*it)[1] == '#' || (*it)[1] == '&' )
-			CHAN_NOTICE((*it).substr(1), text, u);
-	else
-		USR_NOTICE((*it), text, u);
 	}
 	return 0;
 }

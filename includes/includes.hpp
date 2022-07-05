@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/23 19:26:03 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/30 18:52:14 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,8 @@
 #define FALSE 0
 #define TRUE 1
 # define PROTOCOL_VERSION "0210"
-#define VERSION "42IRC"
+#define SERVER_NAME "42IRC"
+#define VERSION "1.0.0"
 
 //modes
 enum e_user_mode {
@@ -107,8 +108,10 @@ int PASS(const std::string &server_password, const std::string &user_password, u
 int NICK(const std::string &nickname, user *user);
 int	USER(const std::string &username, const std::string &realname, user *user);
 int OPER(const std::string &username, const std::string &password, user *user);
-int MODE(const std::string &nickname, char sign, char mode, user *user);
 int QUIT(const std::string &msg, pollfd *fds, int *nfds, user *u);
+
+//mode
+int MODE(const std::string &target, const char &sign, const char &mode, user *user);
 
 //optionnal commands
 int AWAY(const std::string &away_msg, user *user);
@@ -143,9 +146,11 @@ int 		send_message(const std::string &s, user *user, int ret);
 void 		compress_array(pollfd *fds, int *nfds);
 std::string create_msg(int code, user *u, const std::string &arg1, const std::string &arg2, const std::string &arg3, const std::string &arg4);
 std::string	ft_to_string(int value);
-int	is_chan_ope(const channel *c, const user *u);
-int 	is_chan_voice(const channel* c, const user *u);
-int 	is_banned(const channel *c, const user *u);
+int			is_chan_ope(const channel *c, const user *u);
+int 		is_chan_voice(const channel* c, const user *u);
+int 		is_banned(const channel *c, const user *u);
+void		send_to_all_serv(const std::string &s);
+std::string channel_message(const std::string &msg, user *u);
 
 //exit
 void ft_exit(std::string s, int err, int *sock);
@@ -155,9 +160,9 @@ void free_users(void);
 void free_fds(pollfd *fds, int nfds);
 
 //debug
-void print_user(user *user);
 void print_channels();
 void print_str_vec(std::vector<std::string> v, std::string info);
 void printer(std::string s);
 void pp(std::string s);
+void print_user(user *u);
 #endif

@@ -219,6 +219,13 @@ class Command
 				else
 				KICK(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), _args[2], user);
 			}
+			else if (_command == "WHO")
+			{
+				if (_args.size() < 1)
+					WHO("", user);
+				else
+					WHO(_args[0], user);
+			}
 /*
 			****msg cmd
 			else if (_command == "NOTICE")

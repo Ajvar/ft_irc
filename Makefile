@@ -13,6 +13,8 @@ SRCS_FILES = \
 	$(SRCS_PATH)/utils.cpp \
 	$(SRCS_PATH)/exit.cpp \
 	$(SRCS_PATH)/debug.cpp \
+	$(SRCS_PATH)/messages.cpp \
+	$(SRCS_PATH)/mode.cpp
 
 HEADER_FILES = $(HEADER_PATH)/includes.hpp $(HEADER_PATH)/replies.hpp
 OBJS_PATH = ./obj/

@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 15:35:51 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/27 15:38:46 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/30 16:46:36 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ int NICK(const std::string &nickname, user *user)
 		tmp = tmp->next;
 	}
 	if (user->nickname.empty() == false)
-		send(user->fd->fd, buff.c_str(), buff.size(), 0);
+		send_to_all_serv(":" + user->nickname + " NICK " + nickname);
 	user->nickname = nickname;
 	return 0;
 }
@@ -91,6 +91,10 @@ int USER(const std::string &username, const std::string &realname, user *user)
 	}
 	user->username = username;
 	user->realname = realname;
+	send_message(create_msg(RPL_WELCOME, user, user->nickname, "", "", ""), user, 0);
+	send_message(create_msg(RPL_YOURHOST, user, "42irc.com", VERSION, "", ""), user, 0);
+	send_message(create_msg(RPL_CREATED, user, "today", "", "", ""), user, 0);
+	send_message(create_msg(RPL_INFO, user, SERVER_NAME, VERSION, "aiwroO", "qa@h+"), user, 0);
 	return 0;
 }
 
@@ -124,49 +128,7 @@ int OPER(const std::string &username, const std::string &password, user *user)
 	return send_message("ERR_PASSWDMISMATCH", user, ERR_PASSWDMISMATCH);
 }
 
-/**
- * * @brief Changes user modes
- * 
- * @param nickname the target's nickname
- * @param sign + or -
- * @param mode a, i, w, r, o
- * @param user 
- * @return 0 on success 
- */
-int MODE(const std::string &nickname, char sign, char mode, user *user)
-{
-	short local_sign;
 
-	sign == '+' ? local_sign = 1 : local_sign = 0;
-	if (nickname.empty() || !sign || !mode)
-		return send_message("ERR_NEEDMOREPARAMS", user, ERR_NEEDMOREPARAMS);
-	if (std::string(nickname) != user->nickname)
-		return send_message("ERR_USERSDONTMATCH", user, ERR_USERSDONTMATCH);
-	switch (mode)
-	{
-	case 'i' :
-		user->modes[INVISIBLE_MODE] = local_sign;
-		break;
-	case 'w' :
-		user->modes[WALLOPS_MODE] = local_sign;
-		break;
-	case 'r':
-		if (local_sign)
-			return 0;
-		user->modes[RESTRICTED_MODE] = local_sign;
-		break;
-	case 'o':
-		if (local_sign)
-			return 0;
-		user->modes[OPERATOR_MODE] = local_sign;
-		break;
-	
-	default:
-		return send_message("ERR_UMODEUNKNOWNFLAG", user, ERR_UMODEUNKNOWNFLAG);
-		break;
-	}
-	return 0;
-}
 
 /**
  * * @brief Closes user's connexion

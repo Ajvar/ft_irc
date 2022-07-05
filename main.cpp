@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/28 13:44:10 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/29 21:42:06 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,10 @@ int new_client(int id, struct pollfd *fd)
 	new_user->next = NULL;
 	new_user->id = id;
 	if (!users)
+	{
 		users = new_user;
+		new_user->modes[OPERATOR_MODE] = 1;
+	}
 	else
 	{
 		while (tmp->next != NULL)
@@ -362,19 +365,12 @@ int main (int argc, char *argv[])
 						int ret = 0;
 						chanz.push_back("#test");
 						tmp_user->modes[INVISIBLE_MODE] = 1;*/
-					//	std::size_t	pos;
+
 						pp("Line parse");
-						/*while ((pos = cmd.find(13)) != std::string::npos) 
-						{
-							std::string cmd_tmp = cmd.substr(1, pos);
-							std::cout << "------" << "\n" << cmd_tmp << "\n-----" << std::endl;
-							Command tmp_cmd(cmd.substr(0, pos));
-							tmp_cmd.parse(fds, &nfds, tmp_user, argv[2], &restart);
-							cmd.erase(0, pos + 1);
-						}*/
 						
 						std::stringstream ss(buffer);
 						std::string token;
+						print_user(tmp_user);
 						while (std::getline(ss, token, '\n')) {
 							Command tmp_cmd(token);
 							tmp_cmd.parse(fds, &nfds, tmp_user, argv[2], &restart);

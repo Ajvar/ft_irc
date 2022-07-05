@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 13:33:22 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/28 15:20:52 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/06/30 14:28:25 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -247,6 +247,14 @@ int is_banned(const channel *c, const user *u)
 	return FALSE;
 }
 
+void		send_to_all_serv(const std::string &s)
+{
+	user *tmp = users;
+	
+	for (; tmp ; tmp = tmp->next)
+		send_message(s, tmp, 0);
+}
+
 /**
  * @brief Create a message string according to numeric reply
  * 
@@ -267,7 +275,7 @@ std::string create_msg(int code, user *u, const std::string &arg1, const std::st
 		code_str.append("00");
 	else if (code < 100)
 		code_str.append("0");
-	reply = ":127.0.0.1 " + code_str + ft_to_string(code) + " " + u->nickname + " ";
+	reply = ":42irc.com " + code_str + ft_to_string(code) + " " + u->nickname + " ";
 	switch (code)
 	{
 		case 1:
