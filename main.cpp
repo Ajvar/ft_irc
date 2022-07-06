@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/29 21:42:06 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/07/07 00:03:25 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ int new_client(int id, struct pollfd *fd)
 	{
 		users = new_user;
 		new_user->modes[OPERATOR_MODE] = 1;
+		new_user->prev = NULL;
 	}
 	else
 	{
@@ -58,22 +59,24 @@ int new_client(int id, struct pollfd *fd)
 	
 }
 
-void delete_client(int id)
+void delete_client(user *u)
 {
-	user * tmp = users;
-	while (tmp != NULL)
+	if (users == u)
+		users = NULL;
+	if (u->next)
+		u->next->prev = u->prev;
+	if (u->prev)
+		u->prev->next = u->next;
+	for (std::vector<channel *>::iterator it = u->channels.begin(); it != u->channels.end(); it++)
 	{
-		if (tmp->id == id)
+		for (std::vector<user *>::iterator ite = (*it)->users.begin(); ite != (*it)->users.end(); ite++)
 		{
-			tmp->next->prev = tmp->prev;
-			tmp->prev->next = tmp->next;
-			std::vector<channel *>().swap(tmp->channels);
-			delete tmp;
-			return ;
+			if ((*ite) == u)
+				(*it)->users.erase(ite);
 		}
-		tmp = tmp->next;
 	}
-
+	std::vector<channel *>().swap(u->channels);
+	delete u;
 }
 
 void delete_channel(std::string name)
@@ -127,7 +130,7 @@ int main (int argc, char *argv[])
 	{
 		int    len, rc, on = 1, new_client_id = 0;
 		int    listen_sd = -1, new_sd = -1;
-		int    end_server = FALSE, compress = FALSE;
+		int    end_server = FALSE, compress = FALSE, client_running = TRUE;
 		int    close_conn;
 		char   buffer[513];
 		struct sockaddr_in6   addr;
@@ -345,37 +348,22 @@ int main (int argc, char *argv[])
 						std::cout << buffer << std::endl;
 						user *tmp_user = find_user_by_fd(fds[i].fd);
 						std::string cmd = buffer;
-						/*std::size_t	pos;
-					
-						//Iterates through line return
-						while ((pos = cmd.find(13)) != std::string::npos) 
-						{
-							std::string cmd_tmp = cmd.substr(1, pos);
-							std::cout << "------" << "\n" << cmd_tmp << "\n-----" << std::endl;
-							Command tmp_cmd(cmd.substr(0, pos));
-							tmp_cmd.parse(fds, &nfds, tmp_user, argv[2], &restart);
-							cmd.erase(0, pos + 1);
-						}*/
 
-						/*tmp_user->nickname = "another";
-						std::string topic = ":";
-			
-						std::vector<std::string> chanz;
-						std::vector<std::string> keys;
-						int ret = 0;
-						chanz.push_back("#test");
-						tmp_user->modes[INVISIBLE_MODE] = 1;*/
-
-						pp("Line parse");
+						pp("Line parse", GREEN);
 						
 						std::stringstream ss(buffer);
 						std::string token;
 						print_user(tmp_user);
 						while (std::getline(ss, token, '\n')) {
 							Command tmp_cmd(token);
-							tmp_cmd.parse(fds, &nfds, tmp_user, argv[2], &restart);
+							if (tmp_cmd.parse(fds, &nfds, tmp_user, argv[2], &restart))
+							{
+								delete_client(tmp_user);
+								close_conn = TRUE;
+								break ;
+							}
 						}
-						pp("end line parse");
+						pp("end line parse", GREEN);
 						/*if (std::string(buffer).find("AWAY") != std::string::npos)
 							AWAY("I'm away", tmp_user);
 						else if (std::string(buffer).find("OPER") != std::string::npos)
@@ -420,8 +408,8 @@ int main (int argc, char *argv[])
 						}
 						break;
 
-					} while(TRUE);
-
+					} while(client_running == TRUE);
+					pp("OUT", GREEN);
 					/*******************************************************/
 					/* If the close_conn flag was turned on, we need       */
 					/* to clean up this active connection. This            */
@@ -436,7 +424,7 @@ int main (int argc, char *argv[])
 					}
 
 
-					}  /* End of existing connection is readable             */
+				}  /* End of existing connection is readable             */
 			} /* End of loop through pollable descriptors              */
 
 			/***********************************************************/

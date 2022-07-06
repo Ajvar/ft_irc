@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/30 18:52:14 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/07/07 00:01:43 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ enum e_chan_mode {
 	INVITE_ONLY_MODE,
 	BAN_MODE,
     MODERATED_MODE,
-	OUTSIDE_PRIVMSG_MODE,
 	SECRET_MODE,
     TOPIC_LOCKED_MODE,
     KEY_LOCKED_MODE,
@@ -111,7 +110,7 @@ int OPER(const std::string &username, const std::string &password, user *user);
 int QUIT(const std::string &msg, pollfd *fds, int *nfds, user *u);
 
 //mode
-int MODE(const std::string &target, const char &sign, const char &mode, user *user);
+int MODE(const std::string &target, const std::string &mode, user *user);
 
 //optionnal commands
 int AWAY(const std::string &away_msg, user *user);
@@ -163,6 +162,24 @@ void free_fds(pollfd *fds, int nfds);
 void print_channels();
 void print_str_vec(std::vector<std::string> v, std::string info);
 void printer(std::string s);
-void pp(std::string s);
+void pp(std::string s, std::string color);
 void print_user(user *u);
+
+#define RESET   "\033[0m"
+#define BLACK   "\033[30m"      /* Black */
+#define RED     "\033[31m"      /* Red */
+#define GREEN   "\033[32m"      /* Green */
+#define YELLOW  "\033[33m"      /* Yellow */
+#define BLUE    "\033[34m"      /* Blue */
+#define MAGENTA "\033[35m"      /* Magenta */
+#define CYAN    "\033[36m"      /* Cyan */
+#define WHITE   "\033[37m"      /* White */
+#define BOLDBLACK   "\033[1m\033[30m"      /* Bold Black */
+#define BOLDRED     "\033[1m\033[31m"      /* Bold Red */
+#define BOLDGREEN   "\033[1m\033[32m"      /* Bold Green */
+#define BOLDYELLOW  "\033[1m\033[33m"      /* Bold Yellow */
+#define BOLDBLUE    "\033[1m\033[34m"      /* Bold Blue */
+#define BOLDMAGENTA "\033[1m\033[35m"      /* Bold Magenta */
+#define BOLDCYAN    "\033[1m\033[36m"      /* Bold Cyan */
+#define BOLDWHITE   "\033[1m\033[37m"      /* Bold White */
 #endif

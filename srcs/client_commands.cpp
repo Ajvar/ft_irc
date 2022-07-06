@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 15:35:51 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/30 16:46:36 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/07/07 00:02:58 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,21 +23,12 @@ extern channel *channels;
  * @param server_password 
  * @param user_password 
  * @param user 
- * @return 0 on success, 1 on failure. 
  */
-int PASS(const std::string &server_password, const std::string &user_password, user *user)
+int PASS(const std::string &server_password, const std::string &user_password, user *u)
 {
-	if (user_password.empty())
-	{
-		std::cout << "moreparam"<< user_password << std::endl;
-		return ERR_NEEDMOREPARAMS;
-	}
 	std::cout << "server pass : "<< server_password << " user pass :" << user_password << std::endl;
-	if (user_password.compare(server_password))
-	{
-		send(user->fd->fd, "Wrong password", 16, 0);
-		return 1;
-	}
+	if (user_password.compare(server_password) != 0)
+		return send_message(create_msg(ERR_PASSWDMISMATCH, u, "", "", "", ""), u, ERR_PASSWDMISMATCH);
 	return 0;
 }
 
@@ -53,7 +44,7 @@ int NICK(const std::string &nickname, user *user)
 	s_user *tmp = users;
 	std::string buff;
 	
-	pp("IN NICK");
+	pp("IN NICK", RED);
 
 	if (nickname.empty())
 		return send_message(create_msg(ERR_NONICKNAMEGIVEN, user,"", "", "", ""), user, ERR_NONICKNAMEGIVEN);
@@ -82,7 +73,7 @@ int USER(const std::string &username, const std::string &realname, user *user)
 {
 	struct s_user *tmp = users;
 	
-	pp("IN USER");
+	pp("IN USER", RED);
 	while (tmp)
 	{
 		if (tmp->username == username)

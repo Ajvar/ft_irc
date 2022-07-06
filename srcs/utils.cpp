@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 13:33:22 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/30 14:28:25 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/07/06 23:05:03 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -446,6 +446,8 @@ std::string create_msg(int code, user *u, const std::string &arg1, const std::st
 			return reply + MSG_ERR_NEEDMOREPARAMS(arg1);
 		case 462:
 			return reply + MSG_ERR_ALREADYREGISTRED();
+		case 464:
+			return reply + MSG_ERR_PASSWDMISMATCH();
 		case 471:
 			return reply + MSG_ERR_CHANNELISFULL(arg1);
 		case 472:

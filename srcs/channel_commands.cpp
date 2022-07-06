@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/03 00:03:44 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/30 16:01:43 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/07/07 00:02:24 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,6 @@ int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, const std
 	{
 		if (!(tmp = find_channel_by_name((*it))))
 		{
-			std::cout << "no channel "  << std::endl;
 			tmp = new_channel((*it));
 			if (!tmp)
 			{
@@ -277,7 +276,6 @@ int LIST(const std::vector<std::string> c, user *u)
  */
 int WHO(const std::string &mask, user *u)
 {
-	pp("in WHO");
 	if (mask != "" && (mask[0] == '#' || mask[0] == '&'))
 	{
 		const channel *tmp = find_channel_by_name(mask);

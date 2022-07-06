@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/21 12:23:57 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/29 21:40:13 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/07/07 00:47:19 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 extern channel* channels;
 extern user* users;
+
+
 
 void print_channels()
 {
@@ -38,14 +40,17 @@ void printer(std::string s)
 }
 
 //pretty printer
-void pp(std::string s)
+void pp(std::string s, std::string color)
 {
+	(void)color;
+
 	for (size_t i = 0; i < s.size() + 4; i++)
-		std::cout << "*";
+		std::cout <<"*";
 	std::cout << '\n' << "* " << s << " *" <<std::endl;
 	for (size_t i = 0; i < s.size() + 4; i++)
 		std::cout << "*";
 	std::cout << std::endl;
+
 }
 
 void print_user(user *u)
