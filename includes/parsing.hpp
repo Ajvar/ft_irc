@@ -73,7 +73,7 @@ class Command
 		}*/
 		int	parse(pollfd *fds, int *nfds, user* u, const std::string &serv_pass, int *restart)
 		{
-			pp("entering parser: " + this->_command, CYAN);
+			// pp("entering parser: " + this->_command, CYAN);
 			//****client cmds
 			if (_command == "PASS")
 			{
@@ -109,8 +109,8 @@ class Command
 
 			else if (_command == "MODE")
 			{
-				pp("arg0" + _args[0] + "arg1" + _args[1], CYAN);
-				if (_args.size() < 2)
+				//pp("arg0" + _args[0] + "arg1" + _args[1], CYAN);
+				if (_args.size() < 1)
 					MODE("", "", u);
 				else if (_args.size() == 1)
 					MODE(_args[0], "", u);

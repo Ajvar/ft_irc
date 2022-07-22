@@ -6,14 +6,14 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/30 16:46:15 by jcueille          #+#    #+#             */
-/*   Updated: 2022/07/07 00:03:07 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/07/22 17:11:15 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/includes.hpp"
-#include "../includes/replies.hpp"
+#include "../../includes/includes.hpp"
+#include "../../includes/replies.hpp"
 
-static int USR_MODE(const std::string &target, const char &sign, const char &mode, user *u)
+static int USR_MODE(const std::string &target, const char sign, const char mode, user *u)
 {
 	short local_sign;
 
@@ -67,14 +67,15 @@ static int USR_MODE(const std::string &target, const char &sign, const char &mod
 	return 0;
 }
 
-static int CHAN_MODE(const std::string &target, const char &sign, const char &mode, user *u)
+static int CHAN_MODE(const std::string &target, const char sign, const char mode, user *u)
 {
 	channel *c = find_channel_by_name(target);
 	short local_sign;
 
+	// pp("chan_mode", "");
 	if (!c)
 		return send_message(create_msg(ERR_NOSUCHCHANNEL, u, target, "", "", ""), u, ERR_NOSUCHCHANNEL);
-	if (!sign)
+	if (sign)
 	{
 		if (!is_chan_ope(c, u))
 			return send_message(create_msg(ERR_CHANOPRIVSNEEDED, u, target, "", "", ""), u, ERR_CHANOPRIVSNEEDED);
@@ -120,12 +121,13 @@ static int CHAN_MODE(const std::string &target, const char &sign, const char &mo
 			str += "k";
 		if (c->modes[USER_LIMIT_MODE])
 			str += "l";
+		send_message(create_msg(RPL_CHANNELMODEIS, u, c->name, str, "", ""), u, RPL_CHANNELMODEIS);
 	}
 	return 0;
 }
 
 /**
- * * @brief Changes user modes
+ * * @brief Changes user's or channel's modes
  * 
  * @param nickname the target's nickname
  * @param sign + or -
@@ -135,12 +137,17 @@ static int CHAN_MODE(const std::string &target, const char &sign, const char &mo
  */
 int MODE(const std::string &target, const std::string &mode, user *u)
 {
+	pp("MODE", "");
 	pp("target : " + target + "mode :" + mode, RED);
 	if (target.empty())
 		return send_message(create_msg(ERR_NEEDMOREPARAMS, u, "MODE", "", "", ""), u, ERR_NEEDMOREPARAMS);
-	
+
 	if (target[0] == '#' || target[0] == '&')
+	{
+		if (mode.empty())
+			return CHAN_MODE(target, 0, 0, u);
 		return CHAN_MODE(target, mode[0], mode[1],u);
+	}
 	else
 		return USR_MODE(target, mode[0], mode[1], u);
 	return 0;

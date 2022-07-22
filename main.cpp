@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/07/07 00:03:25 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/07/22 18:11:42 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ int new_client(int id, struct pollfd *fd)
 	new_user->nickname = "";
 	new_user->realname = "";
 	memset(new_user->modes, 0, sizeof(new_user->modes));
-	new_user->hostname = "42irc.com";
+	new_user->hostname = "127.0.0.1";
 	return 0;
 	
 }
@@ -100,6 +100,7 @@ void delete_channel(std::string name)
 channel *new_channel(std::string name)
 {
 	channel *tmp = channels;
+	pp("NEW_CHAN", "");
 	channel* new_channel = new channel();
 	if (new_channel == NULL)
 		return NULL;
@@ -118,6 +119,7 @@ channel *new_channel(std::string name)
 	new_channel->topic = "No topic"; 
 	memset(new_channel->modes, 0, sizeof(new_channel->modes));
 	time(&new_channel->creation);
+	// pp("END_NEW_CHAN", "");
 	return new_channel;
 	
 }
@@ -349,11 +351,11 @@ int main (int argc, char *argv[])
 						user *tmp_user = find_user_by_fd(fds[i].fd);
 						std::string cmd = buffer;
 
-						pp("Line parse", GREEN);
+						// pp("Line parse", GREEN);
 						
 						std::stringstream ss(buffer);
 						std::string token;
-						print_user(tmp_user);
+						//print_user(tmp_user);
 						while (std::getline(ss, token, '\n')) {
 							Command tmp_cmd(token);
 							if (tmp_cmd.parse(fds, &nfds, tmp_user, argv[2], &restart))
@@ -363,7 +365,7 @@ int main (int argc, char *argv[])
 								break ;
 							}
 						}
-						pp("end line parse", GREEN);
+						// pp("end line parse", GREEN);
 						/*if (std::string(buffer).find("AWAY") != std::string::npos)
 							AWAY("I'm away", tmp_user);
 						else if (std::string(buffer).find("OPER") != std::string::npos)
@@ -399,7 +401,7 @@ int main (int argc, char *argv[])
 						/*****************************************************/
 						/* Echo the data back to the client                  */
 						/*****************************************************/
-						rc = send(fds[i].fd, buffer, len, 0);
+						//rc = send(fds[i].fd, buffer, len, 0);
 						if (rc < 0)
 						{
 							perror("  send() failed");
@@ -409,7 +411,7 @@ int main (int argc, char *argv[])
 						break;
 
 					} while(client_running == TRUE);
-					pp("OUT", GREEN);
+					// pp("OUT", GREEN);
 					/*******************************************************/
 					/* If the close_conn flag was turned on, we need       */
 					/* to clean up this active connection. This            */

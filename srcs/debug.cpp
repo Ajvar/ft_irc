@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/21 12:23:57 by jcueille          #+#    #+#             */
-/*   Updated: 2022/07/07 00:47:19 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/07/07 17:12:04 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,12 +55,17 @@ void pp(std::string s, std::string color)
 
 void print_user(user *u)
 {
-	std::cout << "+++\nUSER:\n" << "nick: " << u->nickname << " hostname: " << u->hostname << " username: " << u->username << " realname: " << u->realname << std::endl;
-	std::cout << "MODES: "
+	std::cout << "+++\nUSER:\n" << "	nick: " << u->nickname << " hostname: " << u->hostname << " username: " << u->username << " realname: " << u->realname << std::endl;
+	std::cout << "	MODES: "
 	<< (u->modes[AWAY_MODE] ? "away " : "")
 	<< (u->modes[INVISIBLE_MODE] ? "invisible " : "")
 	<< (u->modes[WALLOPS_MODE] ? "wallops " : "")
 	<< (u->modes[RESTRICTED_MODE] ? "restricted " : "")
 	<< (u->modes[OPERATOR_MODE] ? "operator " : "")
-	<< "+++" << std::endl;
+	<< "\n+++" << std::endl;
+}
+
+void print_chan(channel *c)
+{
+	std::cout << "CHANNEL:\n" << "	name: " << c->name << " creator: " << c->creator <<std::endl;
 }

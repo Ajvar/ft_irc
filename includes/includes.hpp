@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/07/07 00:01:43 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/07/22 18:21:45 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ struct s_user {
 
 //create / delete
 int		new_client(int id, struct pollfd *fd);
-void	delete_client(int id);
+void delete_client(user *u);
 channel	*new_channel(std::string name);
 void	delete_channel(std::string name);
 

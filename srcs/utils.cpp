@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 13:33:22 by jcueille          #+#    #+#             */
-/*   Updated: 2022/07/06 23:05:03 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/07/22 16:36:42 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,22 @@
 
 extern struct s_user *users;
 extern struct s_channel *channels;
+
+/**
+ * @brief Creates a message that will be sent back to users on a channel
+ * 
+ * @param msg 
+ * @param u 
+ * @return std::string 
+ */
+std::string channel_message(const std::string &msg, user *u)
+{
+	std::string	full_msg;
+
+	full_msg = ":" + u->nickname + "!" + u->username +
+	 			"@" + u->hostname + " " + msg + "\r\n";
+	return full_msg;
+}
 
 /**
  * @brief Sends message to client
@@ -28,7 +44,7 @@ int send_message(const std::string &s, user *user, int ret)
 {
 	std::cout << "Send message: " << s << std::endl;
 	if (s.empty() == 0)
-		send(user->fd->fd, s.c_str(), s.size() + 1, MSG_NOSIGNAL);
+		send(user->fd->fd, s.c_str(), s.size(), MSG_NOSIGNAL);
 	return ret;
 }
 

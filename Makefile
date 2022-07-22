@@ -8,13 +8,13 @@ SRCS_PATH = ./srcs
 
 SRCS_FILES = \
 	main.cpp \
-	$(SRCS_PATH)/client_commands.cpp \
-	$(SRCS_PATH)/channel_commands.cpp \
+	$(SRCS_PATH)/client_commands/*.cpp \
+	$(SRCS_PATH)/channel_commands/*.cpp \
+	$(SRCS_PATH)/queries_commands/*.cpp \
 	$(SRCS_PATH)/utils.cpp \
 	$(SRCS_PATH)/exit.cpp \
 	$(SRCS_PATH)/debug.cpp \
 	$(SRCS_PATH)/messages.cpp \
-	$(SRCS_PATH)/mode.cpp
 
 HEADER_FILES = $(HEADER_PATH)/includes.hpp $(HEADER_PATH)/replies.hpp
 OBJS_PATH = ./obj/
