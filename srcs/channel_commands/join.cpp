@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 17:46:28 by jcueille          #+#    #+#             */
-/*   Updated: 2022/07/22 18:01:22 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/13 13:58:21 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,9 +95,8 @@ int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, const std
 		if (tmp->topic != "")
 			send_message(create_msg(RPL_TOPIC, u, tmp->topic, "", "", ""), u, 0);
 		for (std::vector<user *>::iterator uz = tmp->users.begin(); uz !=  tmp->users.end(); uz++)
-			nicks = nicks + (nicks == "" ? "" : " ") + (*uz)->nickname;
-		std::cout << create_msg(RPL_NAMREPLY, u, tmp->name, nicks, "", "") << std::endl;
-		send_message(create_msg(RPL_NAMREPLY, u, tmp->name, nicks, "", ""), u, 0);
+			nicks = nicks + (nicks == "" ? "" : " ") + "@" + (*uz)->nickname;
+		send_message(create_msg(RPL_NAMREPLY, u, tmp->modes[SECRET_MODE] ? "@ " : "= " + tmp->name, nicks, "", ""), u, 0);
 		send_message(create_msg(RPL_ENDOFNAMES, u, tmp->name, "", "", ""), u, 0);	
 	}
 	return 0;

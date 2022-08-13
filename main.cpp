@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/07/22 18:11:42 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/13 13:47:03 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ channel *new_channel(std::string name)
 		new_channel->prev = tmp;
 	}
 	new_channel->key = "";
-	new_channel->topic = "No topic"; 
+	new_channel->topic = ""; 
 	memset(new_channel->modes, 0, sizeof(new_channel->modes));
 	time(&new_channel->creation);
 	// pp("END_NEW_CHAN", "");

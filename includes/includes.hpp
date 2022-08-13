@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/07/22 18:21:45 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/13 14:13:31 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,7 @@ struct s_user {
 
 };
 
+int PONG(const std::string &token, user *u);
 
 //create / delete
 int		new_client(int id, struct pollfd *fd);
