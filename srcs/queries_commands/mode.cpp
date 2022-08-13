@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/30 16:46:15 by jcueille          #+#    #+#             */
-/*   Updated: 2022/07/22 17:11:15 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/13 14:28:21 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,7 @@ static int CHAN_MODE(const std::string &target, const char sign, const char mode
 int MODE(const std::string &target, const std::string &mode, user *u)
 {
 	pp("MODE", "");
-	pp("target : " + target + "mode :" + mode, RED);
+	pp("target : " + target + " mode :" + mode, RED);
 	if (target.empty())
 		return send_message(create_msg(ERR_NEEDMOREPARAMS, u, "MODE", "", "", ""), u, ERR_NEEDMOREPARAMS);
 

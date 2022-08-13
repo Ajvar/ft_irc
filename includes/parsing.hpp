@@ -33,7 +33,7 @@ class Command
 		Command(const std::string cmd)
 		{
 			splitandsort(cmd, " ", _args, GEN_USE);
-			std::cout << "command " << _command << std::endl;
+			std::cout << "command : " << _command << std::endl;
 			print_str_vec(_args, "args: ");
 		}
 		~Command(){}
@@ -231,13 +231,13 @@ class Command
 				else
 					WHO(_args[0], u);
 			}
-			else if (_command == "PING")
+			/*else if (_command == "PING")
 			{
 				if (_args.size() < 1)
 					PONG("", u);
 				else
 					PONG(_args[0], u);
-			}
+			}*/
 /*
 			****msg cmd
 			else if (_command == "NOTICE")
