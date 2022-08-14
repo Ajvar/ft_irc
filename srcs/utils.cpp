@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 13:33:22 by jcueille          #+#    #+#             */
-/*   Updated: 2022/07/22 16:36:42 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/14 15:40:53 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ user *find_user_by_nickname(const std::string &nickname)
 		return NULL;
 	while (tmp)
 	{
-		if (std::string(nickname) == tmp->nickname)
+		if (nickname == tmp->nickname)
 			return tmp;
 		tmp = tmp->next;	
 	}
@@ -103,7 +103,7 @@ channel *find_channel_by_name(const std::string &name)
 		return NULL;
 	while (tmp)
 	{
-		if (std::string(name) == tmp->name)
+		if (name == tmp->name)
 			return tmp;
 		tmp = tmp->next;	
 	}
@@ -269,6 +269,16 @@ void		send_to_all_serv(const std::string &s)
 	
 	for (; tmp ; tmp = tmp->next)
 		send_message(s, tmp, 0);
+}
+
+template <typename T >
+int find_in_vector(std::vector<T> vec, T n)
+{
+	typename std::vector<T>::iterator it = vec.begin();
+	for (; it != vec.end(); it++)
+		if (n == (*it))
+			return TRUE;
+	return FALSE;
 }
 
 /**

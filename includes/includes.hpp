@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/13 14:13:31 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/14 15:39:49 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,7 @@ int OPER(const std::string &username, const std::string &password, user *user);
 int QUIT(const std::string &msg, pollfd *fds, int *nfds, user *u);
 
 //mode
-int MODE(const std::string &target, const std::string &mode, user *user);
+int MODE(const std::string &target, const std::string &mode, std::vector<std::string> args, user *user);
 
 //optionnal commands
 int AWAY(const std::string &away_msg, user *user);
@@ -140,6 +140,8 @@ user 		*find_user_by_nickname(const std::string &nickname);
 user 		*find_u_in_chan(const std::string &nickname, const channel *c);
 channel		*find_chan_in_u(const std::string &name, user *u);
 channel		*find_channel_by_name(const std::string &name);
+template <typename T >
+int			find_in_vector(std::vector<T> vec, T n);
 void		delete_chan_in_u(const std::string &name, user *u);
 void		delete_u_in_chan(const std::string &nickname, channel *c);
 int 		send_message(const std::string &s, user *user, int ret);

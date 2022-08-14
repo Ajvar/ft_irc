@@ -109,13 +109,14 @@ class Command
 
 			else if (_command == "MODE")
 			{
-				//pp("arg0" + _args[0] + "arg1" + _args[1], CYAN);
 				if (_args.size() < 1)
-					MODE("", "", u);
+					MODE("", "", std::vector<std::string>(), u);
 				else if (_args.size() == 1)
-					MODE(_args[0], "", u);
-				else 
-					MODE(_args[0], _args[1], u);
+					MODE(_args[0], "", std::vector<std::string>(), u);
+				else if (_args.size() == 2)
+					MODE(_args[0], _args[1], std::vector<std::string>(), u);
+				else
+					MODE(_args[0], _args[1], std::vector<std::string>(_args.begin() + 2, _args.end()), u);
 
 			}
 			else if (_command == "QUIT")

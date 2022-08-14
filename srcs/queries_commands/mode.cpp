@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/30 16:46:15 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/13 14:28:21 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/14 15:45:54 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ static int USR_MODE(const std::string &target, const char sign, const char mode,
 	return 0;
 }
 
-static int CHAN_MODE(const std::string &target, const char sign, const char mode, user *u)
+static int CHAN_MODE(const std::string &target, const char sign, const char mode, std::vector<std::string> args, user *u)
 {
 	channel *c = find_channel_by_name(target);
 	short local_sign;
@@ -84,22 +84,40 @@ static int CHAN_MODE(const std::string &target, const char sign, const char mode
 		sign == '+' ? local_sign = 1 : local_sign = 0;
 		switch (mode)
 		{
-		case 'i' :
-			c->modes[INVITE_ONLY_MODE] = local_sign;
-			break;
-		case 'b' :
-			c->modes[BAN_MODE] = local_sign;
-			break;
-		case 'm':
-			c->modes[RESTRICTED_MODE] = local_sign;
-			break;
-		case 'o':
-			c->modes[OPERATOR_MODE] = local_sign;
-			break;
-		
-		default:
-			return send_message("ERR_UMODEUNKNOWNFLAG", u, ERR_UMODEUNKNOWNFLAG);
-			break;
+			case 'l' :
+				if (local_sign)
+				{
+					if (args.empty())
+						break ;
+					sscanf(args[0].c_str(), "%d", &c->user_limit);
+				}
+				c->modes[USER_LIMIT_MODE] = local_sign;
+			case 'i' :
+				c->modes[INVITE_ONLY_MODE] = local_sign;
+				break;
+			case 'b' :
+				if (local_sign && args.empty() == false)
+				{
+					std::vector<std::string>::iterator it = args.begin();
+					for (; it != args.end(); it++)
+					{
+						if (!find_in_vector(c->banned, args[0]))
+							c->banned.push_back(args[0]);
+					}
+				}
+				
+				c->modes[BAN_MODE] = local_sign;
+				break;
+			case 'm':
+				c->modes[RESTRICTED_MODE] = local_sign;
+				break;
+			case 'o':
+				c->modes[OPERATOR_MODE] = local_sign;
+				break;
+			
+			default:
+				return send_message(create_msg(ERR_UMODEUNKNOWNFLAG, u, "", "", "" ,""), u, ERR_UMODEUNKNOWNFLAG);
+				break;
 		}
 	}
 	else
@@ -135,17 +153,17 @@ static int CHAN_MODE(const std::string &target, const char sign, const char mode
  * @param u 
  * @return 0 on success 
  */
-int MODE(const std::string &target, const std::string &mode, user *u)
+int MODE(const std::string &target, const std::string &mode, const std::vector<std::string> &args, user *u)
 {
 	pp("MODE", "");
-	pp("target : " + target + " mode :" + mode, RED);
+	pp("target : " + target + " mode :" + mode,  RED);
 	if (target.empty())
 		return send_message(create_msg(ERR_NEEDMOREPARAMS, u, "MODE", "", "", ""), u, ERR_NEEDMOREPARAMS);
 
 	if (target[0] == '#' || target[0] == '&')
 	{
 		if (mode.empty())
-			return CHAN_MODE(target, 0, 0, u);
+			return CHAN_MODE(target, 0, 0, args, u);
 		return CHAN_MODE(target, mode[0], mode[1],u);
 	}
 	else
