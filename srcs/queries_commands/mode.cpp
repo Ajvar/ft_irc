@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/30 16:46:15 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/14 15:45:54 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/15 16:32:00 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,8 @@ static int CHAN_MODE(const std::string &target, const char sign, const char mode
 		sign == '+' ? local_sign = 1 : local_sign = 0;
 		switch (mode)
 		{
+			case 'n' :
+				c->modes[NO_EXTERN_MSG_MODE] = local_sign;
 			case 'l' :
 				if (local_sign)
 				{
@@ -92,29 +94,36 @@ static int CHAN_MODE(const std::string &target, const char sign, const char mode
 					sscanf(args[0].c_str(), "%d", &c->user_limit);
 				}
 				c->modes[USER_LIMIT_MODE] = local_sign;
+				break ;
 			case 'i' :
 				c->modes[INVITE_ONLY_MODE] = local_sign;
 				break;
 			case 'b' :
 				if (local_sign && args.empty() == false)
 				{
-					std::vector<std::string>::iterator it = args.begin();
-					for (; it != args.end(); it++)
-					{
-						if (!find_in_vector(c->banned, args[0]))
-							c->banned.push_back(args[0]);
-					}
+					if (!is_banned(c, args[0]))
+						c->banned.push_back(make_pair(args[0], current_time()));
+					else
+						break ;
 				}
-				
-				c->modes[BAN_MODE] = local_sign;
+				{
+					std::vector<std::pair<std::string,std::string> >::iterator it = c->banned.begin();
+					for(; it != c->banned.end(); it++)
+						send_message(create_msg(RPL_BANLIST, u, c->name, current_time(), (*it).first + "!*@*",   ""), u, RPL_BANLIST);
+					send_message(create_msg(RPL_ENDOFBANLIST, u, c->name, "", "", ""), u, RPL_ENDOFBANLIST);
+					c->modes[BAN_MODE] = local_sign;
+				}
 				break;
 			case 'm':
-				c->modes[RESTRICTED_MODE] = local_sign;
+				c->modes[MODERATED_MODE] = local_sign;
 				break;
-			case 'o':
-				c->modes[OPERATOR_MODE] = local_sign;
-				break;
-			
+			case 't':
+				c->modes[TOPIC_LOCKED_MODE] = local_sign;
+			case 'k':
+				if (args.empty() && local_sign)
+					break ;
+				c->modes[KEY_LOCKED_MODE] = local_sign;
+				local_sign ? c->key = args[0] : c->key = "";
 			default:
 				return send_message(create_msg(ERR_UMODEUNKNOWNFLAG, u, "", "", "" ,""), u, ERR_UMODEUNKNOWNFLAG);
 				break;
@@ -139,7 +148,7 @@ static int CHAN_MODE(const std::string &target, const char sign, const char mode
 			str += "k";
 		if (c->modes[USER_LIMIT_MODE])
 			str += "l";
-		send_message(create_msg(RPL_CHANNELMODEIS, u, c->name, str, "", ""), u, RPL_CHANNELMODEIS);
+		send_message(create_msg(RPL_CHANNELMODEIS, u, c->name, "+" + str, "", ""), u, RPL_CHANNELMODEIS);
 	}
 	return 0;
 }
@@ -153,7 +162,7 @@ static int CHAN_MODE(const std::string &target, const char sign, const char mode
  * @param u 
  * @return 0 on success 
  */
-int MODE(const std::string &target, const std::string &mode, const std::vector<std::string> &args, user *u)
+int MODE(const std::string &target, const std::string &mode, std::vector<std::string> args, user *u)
 {
 	pp("MODE", "");
 	pp("target : " + target + " mode :" + mode,  RED);
@@ -164,7 +173,7 @@ int MODE(const std::string &target, const std::string &mode, const std::vector<s
 	{
 		if (mode.empty())
 			return CHAN_MODE(target, 0, 0, args, u);
-		return CHAN_MODE(target, mode[0], mode[1],u);
+		return CHAN_MODE(target, mode[0], mode[1],args, u);
 	}
 	else
 		return USR_MODE(target, mode[0], mode[1], u);

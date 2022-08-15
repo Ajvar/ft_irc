@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 13:33:22 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/14 15:40:53 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/15 15:38:23 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,27 @@
 
 extern struct s_user *users;
 extern struct s_channel *channels;
+
+std::string current_time(void)
+{
+	/*time_t rawtime;
+	struct tm * timeinfo;
+
+	time ( &rawtime );
+	timeinfo = localtime ( &rawtime );
+	return std::string(asctime(timeinfo));
+	*/
+
+	  time_t rawtime;
+	struct tm * timeinfo;
+	char buffer [80];
+
+	time (&rawtime);
+	timeinfo = localtime (&rawtime);
+
+	strftime (buffer,80,"%a %b %d %T",timeinfo);
+	return std::string(buffer);
+}
 
 /**
  * @brief Creates a message that will be sent back to users on a channel
@@ -252,12 +273,12 @@ int is_chan_voice(const channel* c, const user *u)
 	return FALSE;	
 }
 
-int is_banned(const channel *c, const user *u)
+int is_banned(const channel *c, const std::string &nickname)
 {
-	std::vector<std::string>::const_iterator ban = c->banned.begin();
+	std::vector<std::pair<std::string, std::string> >::const_iterator ban = c->banned.begin();
 	for (; ban != c->banned.end(); ban++)
 	{
-		if ((*ban) == u->nickname)
+		if ((*ban).first == nickname)
 			return TRUE;
 	}
 	return FALSE;
@@ -405,7 +426,7 @@ std::string create_msg(int code, user *u, const std::string &arg1, const std::st
 		case 366:
 			return reply + MSG_RPL_ENDOFNAMES(arg1);
 		case 367:
-			return reply + MSG_RPL_BANLIST(arg1);
+			return reply + MSG_RPL_BANLIST(arg1, arg2, arg3);
 		case 368:
 			return reply + MSG_RPL_ENDOFBANLIST(arg1);
 		case 369:

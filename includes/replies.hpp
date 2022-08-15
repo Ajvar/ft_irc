@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 14:02:54 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/03 14:33:42 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/15 15:41:31 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -245,7 +245,7 @@
 # define MSG_RPL_ENDOFNAMES(channel) (channel + " :End of NAMES list\r\n")
 # define MSG_RPL_LINKS(mask, server_name, hopcount, info) (mask + " " + server_name + " " + hopcount + " " + info + "\r\n")
 # define MSG_RPL_ENDOFLINKS(mask) (mask + " :End of LINKS list\r\n")
-# define MSG_RPL_BANLIST(mssg) (mssg + "\r\n")
+# define MSG_RPL_BANLIST(channel, c_time, name) (channel  + " " + name + "\r\n")
 # define MSG_RPL_ENDOFBANLIST(channel) (channel + " :End of list\r\n")
 # define MSG_RPL_INFO(info) (":" + info + "\r\n")
 # define MSG_RPL_ENDOFINFO() (":End of INFO list\r\n")
@@ -291,7 +291,7 @@
 # define MSG_RPL_ADMINLOC1(info) (":" + info + "\r\n")
 # define MSG_RPL_ADMINLOC2(info) (":" + info + "\r\n")
 # define MSG_RPL_ADMINEMAIL(info) (":" + info + "\r\n")
-# define MSG_RPL_CREATIONTIME(channel, c_time) (channel + " " + c_time + "\r\n")
+# define MSG_RPL_CREATIONTIME(channel, c_time) ("Channel " + channel + " created on " + c_time + "\r\n")
 # define MSG_RPL_YOURESERVICE(servicename) (":You are service " + servicename + "\r\n")
 
 #endif

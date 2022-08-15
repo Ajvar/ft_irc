@@ -180,14 +180,17 @@ class Command
 			}
 
 			else if (_command == "TOPIC")
+			{
 				if (_args.size() < 1)
 					TOPIC("", "", u);
 				else if (_args.size() < 2)
-					TOPIC(_args[0], NULL, u);
+					TOPIC(_args[0], "", u);
 				else
 					TOPIC(_args[0], _args[1], u);
+			}
 
 			else if (_command == "NAMES")
+			{	
 				if (_args.size() < 1)
 					NAMES(std::vector<std::string>(), u);
 				else
@@ -195,7 +198,7 @@ class Command
 					std::vector<std::string>	v1;
 					NAMES(splitandsort(_args[0], ",", v1, 0), u);
 				}
-
+			}
 			else if (_command == "LIST")
 			{
 				std::vector<std::string>	v1, v2;

@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/13 13:47:03 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/15 13:10:43 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,6 @@ void delete_channel(std::string name)
 channel *new_channel(std::string name)
 {
 	channel *tmp = channels;
-	pp("NEW_CHAN", "");
 	channel* new_channel = new channel();
 	if (new_channel == NULL)
 		return NULL;
@@ -117,9 +116,8 @@ channel *new_channel(std::string name)
 	}
 	new_channel->key = "";
 	new_channel->topic = ""; 
+	new_channel->creation = current_time();
 	memset(new_channel->modes, 0, sizeof(new_channel->modes));
-	time(&new_channel->creation);
-	// pp("END_NEW_CHAN", "");
 	return new_channel;
 	
 }

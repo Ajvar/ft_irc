@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 17:46:28 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/13 13:58:21 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/15 12:54:03 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, const std
 				continue ;
 		if (tmp->modes[BAN_MODE])
 		{
-			if (is_banned(tmp, u))
+			if (is_banned(tmp, u->nickname))
 			{
 					send_message(create_msg(ERR_BANNEDFROMCHAN, u, tmp->name, "", "", ""), u, ERR_BANNEDFROMCHAN);
 					continue;

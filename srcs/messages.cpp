@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/30 16:01:24 by jcueille          #+#    #+#             */
-/*   Updated: 2022/06/30 16:03:32 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/15 12:53:52 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static int CHAN_PRIVMSG(const std::string& c, const std::string &text, user *u)
 	
 	if (!tmp)
 		return send_message(create_msg(ERR_NOSUCHNICK, u, c, "", "", ""), u, ERR_NOSUCHNICK);
-	if (is_banned(tmp, u))
+	if (is_banned(tmp, u->nickname))
 		return send_message(create_msg(ERR_CANNOTSENDTOCHAN, u, c, "", "", ""), u, ERR_CANNOTSENDTOCHAN);
 	if (!(find_u_in_chan(u->nickname, tmp)) && tmp->modes[NO_EXTERN_MSG_MODE])
 		return send_message(create_msg(ERR_CANNOTSENDTOCHAN, u, c, "", "", ""), u, ERR_CANNOTSENDTOCHAN);
@@ -81,7 +81,7 @@ static int CHAN_NOTICE(const std::string& c, const std::string &text, user *u)
 	
 	if (!tmp)
 		return 0;
-	if (is_banned(tmp, u))
+	if (is_banned(tmp, u->nickname))
 		return 0;
 	if (!(find_u_in_chan(u->nickname, tmp)) && tmp->modes[NO_EXTERN_MSG_MODE])
 		return 0;

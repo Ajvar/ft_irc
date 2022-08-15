@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/14 15:39:49 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/15 16:20:53 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@
 #define FALSE 0
 #define TRUE 1
 # define PROTOCOL_VERSION "0210"
-#define SERVER_NAME "42IRC"
+#define SERVER_NAME "42IRC.com"
 #define VERSION "1.0.0"
 
 //modes
@@ -64,15 +64,15 @@ typedef struct s_channel {
 	std::string						name; //includes #, &
 	std::string 					key;
 	std::string						topic;
-	time_t							creation;
+	std::string						creation;
 	int								user_limit;
 	unsigned						modes[9];
-	user							*creator;
-	std::vector<std::string>		banned;
+	user							*creator;	
 	std::vector<std::string>		invites;
 	std::vector<struct s_user *>	operators;
 	std::vector<struct s_user *>	voice;
 	std::vector<struct s_user *>	users;
+	std::vector<std::pair<std::string,std::string> >	banned;
 	
 	struct s_channel				*next;
 	struct s_channel				*prev;
@@ -111,7 +111,7 @@ int OPER(const std::string &username, const std::string &password, user *user);
 int QUIT(const std::string &msg, pollfd *fds, int *nfds, user *u);
 
 //mode
-int MODE(const std::string &target, const std::string &mode, std::vector<std::string> args, user *user);
+int MODE(const std::string &target, const std::string &mode, std::vector<std::string> args, user *u);
 
 //optionnal commands
 int AWAY(const std::string &away_msg, user *user);
@@ -150,9 +150,10 @@ std::string create_msg(int code, user *u, const std::string &arg1, const std::st
 std::string	ft_to_string(int value);
 int			is_chan_ope(const channel *c, const user *u);
 int 		is_chan_voice(const channel* c, const user *u);
-int 		is_banned(const channel *c, const user *u);
+int 		is_banned(const channel *c, const std::string &u);
 void		send_to_all_serv(const std::string &s);
 std::string channel_message(const std::string &msg, user *u);
+std::string current_time(void);
 
 //exit
 void ft_exit(std::string s, int err, int *sock);
