@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/30 16:46:15 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/15 16:32:00 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/16 16:16:36 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,8 @@ static int CHAN_MODE(const std::string &target, const char sign, const char mode
 		{
 			case 'n' :
 				c->modes[NO_EXTERN_MSG_MODE] = local_sign;
+				send_message(channel_message("MODE " + c->name + " " + (local_sign ? "+" : "-") +"n", u), u, 0);
+				break ;
 			case 'l' :
 				if (local_sign)
 				{
@@ -94,9 +96,12 @@ static int CHAN_MODE(const std::string &target, const char sign, const char mode
 					sscanf(args[0].c_str(), "%d", &c->user_limit);
 				}
 				c->modes[USER_LIMIT_MODE] = local_sign;
+				send_message(channel_message("MODE " + c->name + " " + (local_sign ? "+" : "-") +"l", u), u, 0);
 				break ;
 			case 'i' :
 				c->modes[INVITE_ONLY_MODE] = local_sign;
+				send_message(channel_message("MODE " + c->name + " " + (local_sign ? "+" : "-") +"i", u), u, 0);
+
 				break;
 			case 'b' :
 				if (local_sign && args.empty() == false)
@@ -116,14 +121,20 @@ static int CHAN_MODE(const std::string &target, const char sign, const char mode
 				break;
 			case 'm':
 				c->modes[MODERATED_MODE] = local_sign;
+				send_message(channel_message("MODE " + c->name + " " + (local_sign ? "+" : "-") +"m", u), u, 0);
 				break;
 			case 't':
 				c->modes[TOPIC_LOCKED_MODE] = local_sign;
+				send_message(channel_message("MODE " + c->name + " " + (local_sign ? "+" : "-") +"t", u), u, 0);
+				break ;
 			case 'k':
 				if (args.empty() && local_sign)
 					break ;
 				c->modes[KEY_LOCKED_MODE] = local_sign;
+				send_message(channel_message("MODE " + c->name + " " + (local_sign ? "+" : "-") +"k", u), u, 0);
+
 				local_sign ? c->key = args[0] : c->key = "";
+				break ;
 			default:
 				return send_message(create_msg(ERR_UMODEUNKNOWNFLAG, u, "", "", "" ,""), u, ERR_UMODEUNKNOWNFLAG);
 				break;

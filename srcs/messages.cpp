@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/30 16:01:24 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/15 12:53:52 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/17 16:44:57 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,9 @@
 
 static int CHAN_PRIVMSG(const std::string& c, const std::string &text, user *u)
 {
-	channel *tmp = find_channel_by_name((c[0] == '@' || c[0] == '+') ? c.substr(1) : c);
+	pp("CHAN NAME: " + c + " text is  " + text, "");
+	channel *tmp = find_channel_by_name(c);
+	// find_channel_by_name((c[0] == '@' || c[0] == '+') ? c.substr(1) : c);
 	
 	if (!tmp)
 		return send_message(create_msg(ERR_NOSUCHNICK, u, c, "", "", ""), u, ERR_NOSUCHNICK);
@@ -23,21 +25,17 @@ static int CHAN_PRIVMSG(const std::string& c, const std::string &text, user *u)
 		return send_message(create_msg(ERR_CANNOTSENDTOCHAN, u, c, "", "", ""), u, ERR_CANNOTSENDTOCHAN);
 	if (!(find_u_in_chan(u->nickname, tmp)) && tmp->modes[NO_EXTERN_MSG_MODE])
 		return send_message(create_msg(ERR_CANNOTSENDTOCHAN, u, c, "", "", ""), u, ERR_CANNOTSENDTOCHAN);
-	if (c[0] == '@' || c[0] == '+')
+	std::vector<user *>::iterator it = tmp->users.begin();
+	for (; it != tmp->users.end(); it++)
 	{
-		std::vector<user *>::iterator it = tmp->users.begin();
-		for (; it != tmp->users.end(); it++)
+		if ((c[0] == '+' && (is_chan_ope(tmp, (*it)) || is_chan_voice(tmp, (*it)))) || (c[0] == '@' && is_chan_ope(tmp, (*it))))
 		{
-			if ((c[0] == '+' && (is_chan_ope(tmp, (*it)) || is_chan_voice(tmp, (*it)))) || (c[0] == '@' && is_chan_ope(tmp, (*it))))
-			{
-				if ((*it)->modes[AWAY_MODE])
-					send_message(create_msg(RPL_AWAY, u, (*it)->nickname, (*it)->away_msg, "", ""), u, RPL_AWAY);
-				else
-					send_message(channel_message(text, u), (*it), 0);
-			}
+			if ((*it)->modes[AWAY_MODE])
+				send_message(create_msg(RPL_AWAY, u, (*it)->nickname, (*it)->away_msg, "", ""), u, RPL_AWAY);
+			else
+				send_message(channel_message(text, u), (*it), 0);
 		}
 	}
-	
 	return 0;
 }
 
@@ -63,7 +61,7 @@ int PRIVMSG(std::vector<std::string> targets, const std::string &text, user *u)
 	if (text == "")
 		return send_message(create_msg(ERR_NOTEXTTOSEND, u, "", "", "", ""), u, ERR_NOTEXTTOSEND);
 	
-	for (; it != targets.end(); it++)
+	for (; it != targets.end() - 1; it++)
 	{
 		if ((*it)[0] == '#' || (*it)[0] == '&')
 			CHAN_PRIVMSG((*it), text, u);

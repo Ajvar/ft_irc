@@ -73,7 +73,7 @@ class Command
 		}*/
 		int	parse(pollfd *fds, int *nfds, user* u, const std::string &serv_pass, int *restart)
 		{
-			// pp("entering parser: " + this->_command, CYAN);
+				pp("entering parser: " + this->_command, CYAN);
 			//****client cmds
 			if (_command == "PASS")
 			{
@@ -242,24 +242,24 @@ class Command
 				else
 					PONG(_args[0], u);
 			}*/
-/*
-			****msg cmd
+
+		
 			else if (_command == "NOTICE")
 			{	if (_args.size() < 2)
-					NOTICE(std::vector<std::string>(), NULL, user);
+					NOTICE(std::vector<std::string>(), NULL, u);
 				else
-				NOTICE(_args[0], _args[1], user);
+				NOTICE(_args, _args.back(), u);
 			}
 			else if (_command == "PRIVMSG")
 			{
 				if (_args.size() < 2)
-					PRIVMSG(std::vector<std::string>(), "", user);
+					PRIVMSG(std::vector<std::string>(), "", u);
 				else
-					PRIVMSG(_args[0], _args[1], user);
+					PRIVMSG(_args, _args.back(), u);
 			}
 			else
-				send_message(create_msg(ERR_UNKNOWNCOMMAND, user, _command, "", "", ""), user, ERR_UNKNOWNCOMMAND);
-		*/
+				send_message(create_msg(ERR_UNKNOWNCOMMAND, u, _command, "", "", ""), u, ERR_UNKNOWNCOMMAND);
+		
 		return 0;
 	}
 

@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 13:33:22 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/15 15:38:23 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/17 15:25:32 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,13 +78,13 @@ int send_message(const std::string &s, user *user, int ret)
 user *find_user_by_fd(int fd)
 {
 	user *tmp = users;
-
 	if (!tmp)
 		return NULL;
 	while (tmp)
 	{
 		if (tmp->fd->fd == fd)
 			return tmp;
+		tmp = tmp->next;
 	}
 	return NULL;
 }
@@ -290,6 +290,12 @@ void		send_to_all_serv(const std::string &s)
 	
 	for (; tmp ; tmp = tmp->next)
 		send_message(s, tmp, 0);
+}
+
+void send_to_all_chan(const std::string &s, const channel *c)
+{
+	for (std::vector<struct s_user *>::const_iterator it = c->users.begin(); it != c->users.end(); it++)
+		send_message(s, (*it), 0);
 }
 
 template <typename T >

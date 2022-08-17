@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/15 16:20:53 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/17 14:55:06 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,6 +151,7 @@ std::string	ft_to_string(int value);
 int			is_chan_ope(const channel *c, const user *u);
 int 		is_chan_voice(const channel* c, const user *u);
 int 		is_banned(const channel *c, const std::string &u);
+void 		send_to_all_chan(const std::string &s, const channel *c);
 void		send_to_all_serv(const std::string &s);
 std::string channel_message(const std::string &msg, user *u);
 std::string current_time(void);

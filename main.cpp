@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/15 13:10:43 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/17 13:41:01 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -347,13 +347,13 @@ int main (int argc, char *argv[])
 						printf("  %d bytes received\n", len);
 						std::cout << buffer << std::endl;
 						user *tmp_user = find_user_by_fd(fds[i].fd);
+						//print_user(tmp_user);
+						//pp("Line parse", GREEN);
 						std::string cmd = buffer;
 
-						// pp("Line parse", GREEN);
 						
 						std::stringstream ss(buffer);
 						std::string token;
-						//print_user(tmp_user);
 						while (std::getline(ss, token, '\n')) {
 							Command tmp_cmd(token);
 							if (tmp_cmd.parse(fds, &nfds, tmp_user, argv[2], &restart))
