@@ -73,7 +73,7 @@ class Command
 		}*/
 		int	parse(pollfd *fds, int *nfds, user* u, const std::string &serv_pass, int *restart)
 		{
-				pp("entering parser: " + this->_command, CYAN);
+		//	pp("entering parser: " + this->_command, CYAN);
 			//****client cmds
 			if (_command == "PASS")
 			{
@@ -252,10 +252,11 @@ class Command
 			}
 			else if (_command == "PRIVMSG")
 			{
+				std::vector<std::string> v;
 				if (_args.size() < 2)
 					PRIVMSG(std::vector<std::string>(), "", u);
 				else
-					PRIVMSG(_args, _args.back(), u);
+					PRIVMSG(splitandsort(_args[0], ",", v, 0), concatenate_vector(_args.begin() + 1, _args.end()), u);
 			}
 			else
 				send_message(create_msg(ERR_UNKNOWNCOMMAND, u, _command, "", "", ""), u, ERR_UNKNOWNCOMMAND);

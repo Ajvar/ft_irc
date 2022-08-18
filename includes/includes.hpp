@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/17 14:55:06 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/18 16:24:51 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,13 +95,14 @@ struct s_user {
 
 };
 
-int PONG(const std::string &token, user *u);
 
 //create / delete
 int		new_client(int id, struct pollfd *fd);
 void delete_client(user *u);
 channel	*new_channel(std::string name);
 void	delete_channel(std::string name);
+
+int PONG(const std::string &token, user *u);
 
 //client commands
 int PASS(const std::string &server_password, const std::string &user_password, user *user);
@@ -155,7 +156,7 @@ void 		send_to_all_chan(const std::string &s, const channel *c);
 void		send_to_all_serv(const std::string &s);
 std::string channel_message(const std::string &msg, user *u);
 std::string current_time(void);
-
+std::string concatenate_vector(std::vector<std::string>::iterator start, std::vector<std::string>::iterator end);
 //exit
 void ft_exit(std::string s, int err, int *sock);
 void ft_free_exit(std::string s, int err, pollfd *fds, int nfds);

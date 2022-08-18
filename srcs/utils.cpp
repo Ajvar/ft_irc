@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 13:33:22 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/17 15:25:32 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/18 16:26:50 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -306,6 +306,15 @@ int find_in_vector(std::vector<T> vec, T n)
 		if (n == (*it))
 			return TRUE;
 	return FALSE;
+}
+
+std::string concatenate_vector(std::vector<std::string>::iterator start, std::vector<std::string>::iterator end)
+{
+	std::string res;
+
+	for (; start != end; start++)
+		res += (res.empty() ? "" : " ") + (*start);
+	return res;
 }
 
 /**
