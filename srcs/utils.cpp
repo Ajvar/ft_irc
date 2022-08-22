@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 13:33:22 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/18 16:26:50 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/23 00:25:33 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -298,15 +298,7 @@ void send_to_all_chan(const std::string &s, const channel *c)
 		send_message(s, (*it), 0);
 }
 
-template <typename T >
-int find_in_vector(std::vector<T> vec, T n)
-{
-	typename std::vector<T>::iterator it = vec.begin();
-	for (; it != vec.end(); it++)
-		if (n == (*it))
-			return TRUE;
-	return FALSE;
-}
+
 
 std::string concatenate_vector(std::vector<std::string>::iterator start, std::vector<std::string>::iterator end)
 {

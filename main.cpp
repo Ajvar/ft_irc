@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/22 17:04:39 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/22 19:59:57 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,10 @@ void delete_client(user *u)
 		for (std::vector<user *>::iterator ite = (*it)->users.begin(); ite != (*it)->users.end(); ite++)
 		{
 			if ((*ite) == u)
+			{
 				(*it)->users.erase(ite);
+				return ;
+			}
 		}
 	}
 	std::vector<channel *>().swap(u->channels);

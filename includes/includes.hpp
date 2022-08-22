@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/22 17:05:22 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/23 00:25:39 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,8 +99,8 @@ struct s_user {
 
 //create / delete
 int		new_client(int id, struct pollfd *fd);
-void delete_client(user *u);
 channel	*new_channel(std::string name);
+void 	delete_client(user *u);
 void	delete_channel(std::string name);
 
 int PONG(const std::string &token, user *u);
@@ -116,7 +116,7 @@ int QUIT(const std::string &msg, pollfd *fds, int *nfds, user *u);
 int MODE(const std::string &target, const std::string &mode, std::vector<std::string> args, user *u);
 
 //optionnal commands
-int AWAY(const std::string &away_msg, user *user);
+int AWAY(const std::string &away_msg, user *u);
 int	DIE(user *user, pollfd *fds, int nfds);
 int RESTART(user *user, pollfd *fds, int nfds, int *restart);
 int WALLOPS(const std::string &msg, user *u);
@@ -143,7 +143,14 @@ user 		*find_u_in_chan(const std::string &nickname, const channel *c);
 channel		*find_chan_in_u(const std::string &name, user *u);
 channel		*find_channel_by_name(const std::string &name);
 template <typename T >
-int			find_in_vector(std::vector<T> vec, T n);
+int find_in_vector(std::vector<T> vec, T n)
+{
+	typename std::vector<T>::iterator it = vec.begin();
+	for (; it != vec.end(); it++)
+		if (n == (*it))
+			return TRUE;
+	return FALSE;
+}
 void		delete_chan_in_u(const std::string &name, user *u);
 void		delete_u_in_chan(const std::string &nickname, channel *c);
 int 		send_message(const std::string &s, user *user, int ret);

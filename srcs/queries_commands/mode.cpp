@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/30 16:46:15 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/16 16:16:36 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/23 00:48:01 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,10 @@ static int CHAN_MODE(const std::string &target, const char sign, const char mode
 			case 'n' :
 				c->modes[NO_EXTERN_MSG_MODE] = local_sign;
 				send_message(channel_message("MODE " + c->name + " " + (local_sign ? "+" : "-") +"n", u), u, 0);
+				break ;
+			case 'v' :
+				if (find_u_in_chan(args[0], c))
+					c->voice.push_back(find_u_in_chan(args[0], c));
 				break ;
 			case 'l' :
 				if (local_sign)

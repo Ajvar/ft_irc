@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 15:35:51 by jcueille          #+#    #+#             */
-/*   Updated: 2022/07/13 14:22:12 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/22 20:46:00 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,19 +21,21 @@
  * @param user 
  * @return RPL_NOWAYWAY or RPL_UNAWAY on success, -1 on failure 
  */
-int AWAY(const std::string &away_msg, user *user)
+int AWAY(const std::string &away_msg, user *u)
 {
-	if (user && user->modes[AWAY_MODE] == 0)
+	if (u && u->modes[AWAY_MODE] == 0)
 	{
-		user->modes[AWAY_MODE] = 1;
-		user->away_msg = std::string(away_msg);
-		send_message(create_msg(RPL_NOWAWAY, user,"", "", "", ""), user, RPL_NOWAWAY);
+		u->modes[AWAY_MODE] = 1;
+		u->away_msg = std::string(away_msg);
+		send_message(create_msg(RPL_NOWAWAY, u,"", "", "", ""), u, RPL_NOWAWAY);
+		return 0;
 	}
-	if (user && user->modes[AWAY_MODE] == 1)
+	if (u && u->modes[AWAY_MODE] == 1)
 	{
-		user->modes[AWAY_MODE] = 0;
-		user->away_msg = "";
-		return send_message(create_msg(RPL_UNAWAY, user,"", "", "", ""), user, RPL_UNAWAY);
+		u->modes[AWAY_MODE] = 0;
+		u->away_msg = "";
+		return send_message(create_msg(RPL_UNAWAY, u,"", "", "", ""), u, RPL_UNAWAY);
+		return 0;
 	}
 	return -1;
 }

@@ -80,12 +80,12 @@ class Command
 				send_message(":" + std::string(SERVER_NAME) + " you must identify with a password.\r\n", u, 0);
 				return 0;
 			}
-			if (u->nickname.empty() && _command != "NICK" && _command != "PASS")
+			if (u->nickname.empty() && _command != "NICK" && _command != "PASS" && _command != "CAP")
 			{
 				send_message(":" + std::string(SERVER_NAME) + " you must register a nickname with NICK command.\r\n", u, 0);
 				return 0;
 			}
-			if (u->username.empty() && _command != "USER" && _command != "NICK" && _command != "PASS")
+			if (u->username.empty() && _command != "USER" && _command != "NICK" && _command != "PASS" && _command != "CAP")
 			{
 				send_message(":" + std::string(SERVER_NAME) + " you must you must register a username with USER command.\r\n", u, 0);
 				return 0;
@@ -274,6 +274,8 @@ class Command
 				else
 					PRIVMSG(splitandsort(_args[0], ",", v, 0), concatenate_vector(_args.begin() + 1, _args.end()), u);
 			}
+			else if (_command == "PING")
+				return 0;
 			else
 				send_message(create_msg(ERR_UNKNOWNCOMMAND, u, _command, "", "", ""), u, ERR_UNKNOWNCOMMAND);
 		

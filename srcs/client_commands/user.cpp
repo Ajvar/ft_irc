@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 15:35:51 by jcueille          #+#    #+#             */
-/*   Updated: 2022/07/22 17:28:50 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/22 20:22:10 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,10 @@ int USER(const std::string &username, const std::string &realname, user *u)
 	send_message(create_msg(RPL_YOURHOST, u, "42irc.com", VERSION, "", ""), u, 0);
 	send_message(create_msg(RPL_CREATED, u, "today", "", "", ""), u, 0);
 	send_message(create_msg(RPL_MYINFO, u, SERVER_NAME, VERSION, "aiwroO", "blikmstn"), u, 0);
+	send_message(create_msg(RPL_MOTDSTART, u, SERVER_NAME, "", "", ""), u, 0);
+	send_message(create_msg(RPL_MOTD, u, "********************************************", "", "", ""), u, 0);
+	send_message(create_msg(RPL_MOTD, u, "* Created by ede-banv and jcueille with <3 *", "", "", ""), u, 0);
+	send_message(create_msg(RPL_MOTD, u, "********************************************", "", "", ""), u, 0);
 	send_message(create_msg(RPL_ENDOFMOTD, u, "", "", "", ""), u, RPL_ENDOFMOTD);
 	return 0;
 }
