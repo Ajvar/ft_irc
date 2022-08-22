@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/18 16:24:51 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/22 17:05:22 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,7 @@ typedef struct s_channel {
 
 struct s_user {
 	int									id;
+	unsigned							auth;
 	unsigned							modes[5];
 	std::string							nickname;
 	std::string							username;

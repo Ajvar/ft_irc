@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/17 13:41:01 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/22 17:04:39 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ int new_client(int id, struct pollfd *fd)
 	new_user->fd = fd;
 	new_user->nickname = "";
 	new_user->realname = "";
+	new_user->auth = 0;
 	memset(new_user->modes, 0, sizeof(new_user->modes));
 	new_user->hostname = "127.0.0.1";
 	return 0;

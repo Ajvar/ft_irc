@@ -75,6 +75,22 @@ class Command
 		{
 		//	pp("entering parser: " + this->_command, CYAN);
 			//****client cmds
+			if (!u->auth && _command != "PASS")
+			{
+				send_message(":" + std::string(SERVER_NAME) + " you must identify with a password.\r\n", u, 0);
+				return 0;
+			}
+			if (u->nickname.empty() && _command != "NICK" && _command != "PASS")
+			{
+				send_message(":" + std::string(SERVER_NAME) + " you must register a nickname with NICK command.\r\n", u, 0);
+				return 0;
+			}
+			if (u->username.empty() && _command != "USER" && _command != "NICK" && _command != "PASS")
+			{
+				send_message(":" + std::string(SERVER_NAME) + " you must you must register a username with USER command.\r\n", u, 0);
+				return 0;
+			}
+
 			if (_command == "PASS")
 			{
 				if (_args.size() < 1)
