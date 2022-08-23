@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/23 00:25:39 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/23 15:08:00 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,8 +158,11 @@ void 		compress_array(pollfd *fds, int *nfds);
 std::string create_msg(int code, user *u, const std::string &arg1, const std::string &arg2, const std::string &arg3, const std::string &arg4);
 std::string	ft_to_string(int value);
 int			is_chan_ope(const channel *c, const user *u);
+void 		remove_chan_ope(channel *c, user *u);
 int 		is_chan_voice(const channel* c, const user *u);
 int 		is_banned(const channel *c, const std::string &u);
+void		unban(channel *c, const std::string &nickname);
+void		list_chan_users(channel *c, user *u);
 void 		send_to_all_chan(const std::string &s, const channel *c);
 void		send_to_all_serv(const std::string &s);
 std::string channel_message(const std::string &msg, user *u);

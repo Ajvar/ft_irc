@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 17:46:28 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/17 15:44:22 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/23 16:03:57 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,9 @@ int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, const std
 {
 	if (chan.empty() || !u)
 		return (send_message(create_msg(ERR_NEEDMOREPARAMS, u, "JOIN","", "", ""), u, ERR_NEEDMOREPARAMS));
-	std::vector<std::string>::iterator it = chan.begin();
-	std::vector<std::string>::iterator ite = chan.end();
-	std::vector<std::string>::iterator k = keys.begin();
+	std::vector<std::string>::iterator	it = chan.begin();
+	std::vector<std::string>::iterator	ite = chan.end();
+	std::vector<std::string>::iterator	k = keys.begin();
 	std::string							nicks;
 	channel *tmp = NULL;
 	
@@ -97,7 +97,7 @@ int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, const std
 		for (std::vector<user *>::iterator uz = tmp->users.begin(); uz !=  tmp->users.end(); uz++)
 			nicks = nicks + (nicks == "" ? "" : " ") + (is_chan_ope(tmp, (*uz)) ? "@" : "") + (*uz)->nickname;
 		send_to_all_chan(create_msg(RPL_NAMREPLY, u, tmp->modes[SECRET_MODE] ? "@ " : "= " + tmp->name, nicks, "", ""), tmp);
-		send_to_all_chan(create_msg(RPL_ENDOFNAMES, u, tmp->name, "", "", ""), tmp);	
+		send_to_all_chan(create_msg(RPL_ENDOFNAMES, u, tmp->name, "", "", ""), tmp);
 	}
 	return 0;
 }

@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/30 16:46:15 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/23 00:48:01 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/23 15:25:00 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,22 @@ static int CHAN_MODE(const std::string &target, const char sign, const char mode
 		sign == '+' ? local_sign = 1 : local_sign = 0;
 		switch (mode)
 		{
+			case 'o' :
+			{
+				user *tmp = find_u_in_chan(args[0], c);
+				if (!tmp)
+					return send_message(create_msg(ERR_USERNOTINCHANNEL, u, args[0], c->name, "", ""), u, 0);
+				if (local_sign && !args.empty())
+				{
+					if (!is_chan_ope(c, tmp))
+						c->operators.push_back(tmp);
+				}	
+				if (!local_sign && !args.empty())
+					remove_chan_ope(c, tmp);
+				list_chan_users(c, u);	
+				break;
+			}
+
 			case 'n' :
 				c->modes[NO_EXTERN_MSG_MODE] = local_sign;
 				send_message(channel_message("MODE " + c->name + " " + (local_sign ? "+" : "-") +"n", u), u, 0);
@@ -108,20 +124,26 @@ static int CHAN_MODE(const std::string &target, const char sign, const char mode
 
 				break;
 			case 'b' :
-				if (local_sign && args.empty() == false)
+				if (local_sign && !args.empty())
 				{
+					delete_u_in_chan(args[0], c);
 					if (!is_banned(c, args[0]))
 						c->banned.push_back(make_pair(args[0], current_time()));
-					else
-						break ;
+					list_chan_users(c, u);	
 				}
+				if (!local_sign && !args.empty())
+					unban(c, args[0]);
+				if (!c->banned.empty())
 				{
 					std::vector<std::pair<std::string,std::string> >::iterator it = c->banned.begin();
 					for(; it != c->banned.end(); it++)
 						send_message(create_msg(RPL_BANLIST, u, c->name, current_time(), (*it).first + "!*@*",   ""), u, RPL_BANLIST);
 					send_message(create_msg(RPL_ENDOFBANLIST, u, c->name, "", "", ""), u, RPL_ENDOFBANLIST);
-					c->modes[BAN_MODE] = local_sign;
+					
 				}
+				if ((!local_sign && (args.empty() || args[0] == "")) || local_sign)
+					c->modes[BAN_MODE] = local_sign;
+
 				break;
 			case 'm':
 				c->modes[MODERATED_MODE] = local_sign;

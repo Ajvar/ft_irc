@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/30 16:01:24 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/23 01:00:58 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/23 15:49:10 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static int CHAN_PRIVMSG(const std::string& c, const std::string &text, user *u)
 	
 	if (!tmp)
 		return send_message(create_msg(ERR_NOSUCHNICK, u, c, "", "", ""), u, ERR_NOSUCHNICK);
-	if (is_banned(tmp, u->nickname))
+	if (tmp->modes[BAN_MODE] && is_banned(tmp, u->nickname))
 		return send_message(create_msg(ERR_CANNOTSENDTOCHAN, u, c, "", "", ""), u, ERR_CANNOTSENDTOCHAN);
 	if (!(find_u_in_chan(u->nickname, tmp)) && tmp->modes[NO_EXTERN_MSG_MODE])
 		return send_message(create_msg(ERR_CANNOTSENDTOCHAN, u, c, "", "", ""), u, ERR_CANNOTSENDTOCHAN);

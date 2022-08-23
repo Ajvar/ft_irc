@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 13:33:22 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/23 00:25:33 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/23 15:07:48 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -264,6 +264,17 @@ int is_chan_ope(const channel *c, const user *u)
 	return FALSE;
 }
 
+void remove_chan_ope(channel *c, user *u)
+{
+	std::vector<user *>::iterator it = c->operators.begin();
+	for( ; it != c->operators.end(); it++)
+		if (u == (*it))
+		{
+			c->operators.erase(it);
+			return;
+		}
+}
+
 int is_chan_voice(const channel* c, const user *u)
 {
 	std::vector<user *>::const_iterator it = c->voice.begin();
@@ -284,6 +295,19 @@ int is_banned(const channel *c, const std::string &nickname)
 	return FALSE;
 }
 
+void unban(channel *c, const std::string &nickname)
+{
+	std::vector<std::pair<std::string, std::string> >::iterator ban = c->banned.begin();
+	for (; ban != c->banned.end(); ban++)
+	{
+		if ((*ban).first == nickname)
+		{
+			c->banned.erase(ban);
+			return ;
+		}
+	}
+}
+
 void		send_to_all_serv(const std::string &s)
 {
 	user *tmp = users;
@@ -298,7 +322,15 @@ void send_to_all_chan(const std::string &s, const channel *c)
 		send_message(s, (*it), 0);
 }
 
+void list_chan_users(channel *c, user *u)
+{
+	std::string nicks;
 
+	for (std::vector<user *>::iterator uz = c->users.begin(); uz !=  c->users.end(); uz++)
+		nicks = nicks + (nicks == "" ? "" : " ") + (is_chan_ope(c, (*uz)) ? "@" : "") + (*uz)->nickname;
+	send_to_all_chan(create_msg(RPL_NAMREPLY, u, c->modes[SECRET_MODE] ? "@ " : "= " + c->name, nicks, "", ""), c);
+	send_to_all_chan(create_msg(RPL_ENDOFNAMES, u, c->name, "", "", ""), c);
+}
 
 std::string concatenate_vector(std::vector<std::string>::iterator start, std::vector<std::string>::iterator end)
 {
