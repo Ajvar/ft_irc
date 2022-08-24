@@ -198,11 +198,11 @@ class Command
 			else if (_command == "TOPIC")
 			{
 				if (_args.size() < 1)
-					TOPIC("", "", u);
+					TOPIC("", std::vector<std::string>(), u);
 				else if (_args.size() < 2)
-					TOPIC(_args[0], "", u);
+					TOPIC(_args[0], std::vector<std::string>(), u);
 				else
-					TOPIC(_args[0], _args[1], u);
+					TOPIC(_args[0], _args, u);
 			}
 
 			else if (_command == "NAMES")
@@ -261,10 +261,12 @@ class Command
 
 		
 			else if (_command == "NOTICE")
-			{	if (_args.size() < 2)
-					NOTICE(std::vector<std::string>(), NULL, u);
+			{
+				std::vector<std::string> v;
+				if (_args.size() < 2)
+					NOTICE(std::vector<std::string>(), "", u);
 				else
-				NOTICE(_args, _args.back(), u);
+					NOTICE(splitandsort(_args[0], ",", v, 0), concatenate_vector(_args.begin() + 1, _args.end()), u);
 			}
 			else if (_command == "PRIVMSG")
 			{
@@ -278,7 +280,6 @@ class Command
 				return 0;
 			else
 				send_message(create_msg(ERR_UNKNOWNCOMMAND, u, _command, "", "", ""), u, ERR_UNKNOWNCOMMAND);
-		
 		return 0;
 	}
 

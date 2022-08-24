@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/23 15:08:00 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/24 11:08:11 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,7 @@ int ISON(std::vector<std::string> nicknames, user *user);
 //channel commands
 int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, const std::string &option, user *u, pollfd *fds, int nfds);
 int PART(std::vector<std::string> channels, const std::string &reason, user *u);
-int TOPIC(const std::string &topic, const std::string &chan, user *u);
+int TOPIC(const std::string &topic, std::vector<std::string> chan, user *u);
 int NAMES(std::vector<std::string>chan, user *u);
 int LIST(const std::vector<std::string> c, user *u);
 int INVITE(const std::string &us, const std::string &c, user *u);
