@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/24 13:10:53 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/25 00:26:39 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@
 
 user *users = NULL;
 channel *channels = NULL;
+struct pollfd fds[SOMAXCONN];
+int nfds = 1;
 
 static int check_args(int ac, char **av)
 {
@@ -126,8 +128,16 @@ channel *new_channel(std::string name)
 	
 }
 
+void signalHandler( int signum ) {
+   std::cout << "Interrupt signal (" << signum << ") received." << std::endl;
+	ft_free_exit("SIGINT", SIGINT);
+
+   exit(signum);  
+}
+
 int main (int argc, char *argv[])
 {
+	signal(SIGINT, signalHandler); 
 	int port = check_args(argc, argv);
 	int	restart; //set to 1 when RESTART is called
 	do
@@ -138,8 +148,7 @@ int main (int argc, char *argv[])
 		int    close_conn;
 		char   buffer[513];
 		struct sockaddr_in6   addr;
-		struct pollfd fds[SOMAXCONN];
-		int    nfds = 1, current_size = 0, i;
+		int    current_size = 0, i;
 
 		restart = 0;
 		/*************************************************************/
@@ -285,7 +294,7 @@ int main (int argc, char *argv[])
 						fds[nfds].fd = new_sd;
 						fds[nfds].events = POLLIN;
 						if (new_client(new_client_id, &fds[nfds]) == -1)
-							ft_free_exit(" user creation failed.", -1, fds, nfds);
+							ft_free_exit(" user creation failed.", -1);
 						nfds++;
 						new_client_id++;
 
@@ -410,7 +419,7 @@ int main (int argc, char *argv[])
 
 		} while (end_server == FALSE); /* End of serving running.    */
 
-		ft_free_exit("0", 0, fds, nfds);
+		ft_free_exit("0", 0);
 	} while (restart == 1);
 	
 

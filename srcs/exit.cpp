@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/24 12:30:02 by jcueille          #+#    #+#             */
-/*   Updated: 2022/05/24 13:54:38 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/25 00:20:21 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 extern struct s_user *users;
 extern struct s_channel *channels;
+extern struct pollfd fds[SOMAXCONN];
+extern int nfds;
 
 void ft_exit(std::string s, int err, int *sock)
 {
@@ -50,7 +52,7 @@ void free_channels(void)
 	}
 }
 
-void free_fds(pollfd *fds, int nfds)
+void free_fds(void)
 {
 	if (fds)
 	{
@@ -62,12 +64,12 @@ void free_fds(pollfd *fds, int nfds)
 	}
 }
 
-void ft_free_exit(std::string s, int err, pollfd *fds, int nfds)
+void ft_free_exit(std::string s, int err)
 {
 	if (err != 0)
 		std::cerr << "\033[1;31m" << "Error: " << s << "\033[0m" << std::endl;
 	free_users();
 	free_channels();
-	free_fds(fds, nfds);
+	free_fds();
 	exit(err);
 }

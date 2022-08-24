@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 17:46:28 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/24 22:14:10 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/25 00:23:49 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
  * @param nfds number of fds to exit if needed
  * @return int 
  */
-int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, const std::string &option, user *u, pollfd *fds, int nfds)
+int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, const std::string &option, user *u)
 {
 	if (chan.empty() || !u)
 		return (send_message(create_msg(ERR_NEEDMOREPARAMS, u, "JOIN","", "", ""), u, ERR_NEEDMOREPARAMS));
@@ -54,7 +54,7 @@ int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, const std
 			if (!tmp)
 			{
 				send_message("Error while creating new channel", u, -1);
-				ft_free_exit("Error creating channel", -1, fds, nfds);
+				ft_free_exit("Error creating channel", -1);
 			}
 			tmp->name = (*it);
 			tmp->creator = u;

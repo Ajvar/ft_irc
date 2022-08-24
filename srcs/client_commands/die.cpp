@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 15:35:51 by jcueille          #+#    #+#             */
-/*   Updated: 2022/07/13 14:23:17 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/25 00:22:18 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,11 @@
  * @param nfds the number of socket descriptors
  * @return ERR_NOPRIVILEGES on failure
  */
-int	DIE(user *u, pollfd *fds, int nfds)
+int	DIE(user *u)
 {
 	if (u->modes[OPERATOR_MODE] == 0)
 		return send_message(create_msg(ERR_NOPRIVILEGES, u,"", "", "", ""), u, ERR_NOPRIVILEGES);
 	send_message("Killing server.", u, 0);
-	ft_free_exit("Killing server", 0, fds, nfds);
+	ft_free_exit("Killing server", 0);
 	return 0;
 }

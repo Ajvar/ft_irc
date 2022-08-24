@@ -153,10 +153,10 @@ class Command
 			}
 			//*****channel cmds
 			else if (_command == "DIE")
-				DIE(u, fds, *nfds);
+				DIE(u);
 
 			else if (_command == "RESTART")
-				RESTART(u, fds, *nfds, restart);
+				RESTART(u, restart);
 
 			else if (_command == "WALLOPS")
 				if (_args.size() < 1)
@@ -176,15 +176,15 @@ class Command
 			{
 				std::vector<std::string>	v1, v2;
 				if (_args.size() < 1)
-					JOIN(std::vector<std::string>(), std::vector<std::string>(), "", u, fds, *nfds);
+					JOIN(std::vector<std::string>(), std::vector<std::string>(), "", u);
 				else if (_args.size() < 2)
 				{
-					JOIN(splitandsort(_args[0], ",", v1, 0), std::vector<std::string>(), "", u, fds, *nfds);
+					JOIN(splitandsort(_args[0], ",", v1, 0), std::vector<std::string>(), "", u);
 				}
 				else if (_args.size() < 3)
-					JOIN(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), "", u, fds, *nfds);
+					JOIN(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), "", u);
 				else
-					JOIN(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), _args[2], u, fds, *nfds);
+					JOIN(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), _args[2], u);
 			}
 			else if (_command == "PART")
 			{

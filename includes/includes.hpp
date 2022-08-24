@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/24 11:08:11 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/25 00:23:49 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,13 +117,13 @@ int MODE(const std::string &target, const std::string &mode, std::vector<std::st
 
 //optionnal commands
 int AWAY(const std::string &away_msg, user *u);
-int	DIE(user *user, pollfd *fds, int nfds);
-int RESTART(user *user, pollfd *fds, int nfds, int *restart);
+int	DIE(user *user);
+int RESTART(user *user, int *restart);
 int WALLOPS(const std::string &msg, user *u);
 int ISON(std::vector<std::string> nicknames, user *user);
 
 //channel commands
-int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, const std::string &option, user *u, pollfd *fds, int nfds);
+int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, const std::string &option, user *u);
 int PART(std::vector<std::string> channels, const std::string &reason, user *u);
 int TOPIC(const std::string &topic, std::vector<std::string> chan, user *u);
 int NAMES(std::vector<std::string>chan, user *u);
@@ -170,10 +170,10 @@ std::string current_time(void);
 std::string concatenate_vector(std::vector<std::string>::iterator start, std::vector<std::string>::iterator end);
 //exit
 void ft_exit(std::string s, int err, int *sock);
-void ft_free_exit(std::string s, int err, pollfd *fds, int nfds);
+void ft_free_exit(std::string s, int err);
 void free_channels(void);
 void free_users(void);
-void free_fds(pollfd *fds, int nfds);
+void free_fds(void);
 
 //debug
 void print_channels();

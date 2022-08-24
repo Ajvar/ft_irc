@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 15:35:51 by jcueille          #+#    #+#             */
-/*   Updated: 2022/07/13 14:15:37 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/25 00:23:11 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,13 @@ extern channel *channels;
  * @param restart pointer to restart from main
  * @return 0 on success, ERR_NOPRIVILEGES on failure.
  */
-int RESTART(user *user, pollfd *fds, int nfds, int *restart)
+int RESTART(user *user, int *restart)
 {
 	if (user->modes[OPERATOR_MODE] == 0)
 		return send_message(create_msg(ERR_NOPRIVILEGES, user,"", "", "", ""), user, ERR_NOPRIVILEGES);
 	free_users();
 	free_channels();
-	free_fds(fds, nfds);
+	free_fds();
 	users = NULL;
 	channels = NULL;
 	(*restart) = 1;
