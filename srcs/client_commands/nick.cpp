@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 15:35:51 by jcueille          #+#    #+#             */
-/*   Updated: 2022/07/13 14:17:14 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/24 22:14:14 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,6 @@ int NICK(const std::string &nickname, user *user)
 {
 	s_user *tmp = users;
 	std::string buff;
-	
-	// pp("IN NICK", RED);
 
 	if (nickname.empty())
 		return send_message(create_msg(ERR_NONICKNAMEGIVEN, user,"", "", "", ""), user, ERR_NONICKNAMEGIVEN);

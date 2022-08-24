@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 17:46:28 by jcueille          #+#    #+#             */
-/*   Updated: 2022/07/12 17:51:25 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/24 22:31:34 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int NAMES(std::vector<std::string>chan, user *u)
 	for (; it != chan.end(); it++)
 	{
 		if (!(c = find_channel_by_name((*it))))
-			return send_message(create_msg(RPL_ENDOFNAMES, u, (*it), "", "", ""), u, RPL_ENDOFNAMES);
+			return send_message(create_msg(ERR_NOSUCHCHANNEL, u, (*it), "", "", ""), u, ERR_NOSUCHCHANNEL);
 		else
 		{
 			std::string name_list = "";
@@ -50,7 +50,7 @@ int NAMES(std::vector<std::string>chan, user *u)
 			{
 				if (!part_of_c && (*us)->modes[INVISIBLE_MODE])
 					continue ;
-				name_list += names_and_modes(c, *us);
+				name_list += (name_list.empty() ? "" : " ") + names_and_modes(c, *us);
 			}
 			send_message(create_msg(RPL_NAMREPLY, u, c->name, name_list, "", ""), u, RPL_NAMREPLY);
 			send_message(create_msg(RPL_ENDOFNAMES, u, c->name, "", "", ""), u, RPL_ENDOFNAMES);

@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 15:35:51 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/22 20:22:10 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/24 22:14:19 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,7 @@ extern user *users;
 int USER(const std::string &username, const std::string &realname, user *u)
 {
 	struct s_user *tmp = users;
-	
-	// pp("IN USER", RED);
+
 	while (tmp)
 	{
 		if (tmp->username == username)

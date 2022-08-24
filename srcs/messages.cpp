@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/30 16:01:24 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/24 10:48:11 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/24 22:13:55 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,6 @@ int PRIVMSG(std::vector<std::string> targets, const std::string &msg, user *u)
 		u->modes[AWAY_MODE] = 0;
 	}
 	std::vector<std::string>::iterator it = targets.begin();
-	pp("target is: " + targets[0] + " test is: " + msg, "");
 	if (targets.empty())
 		return send_message(create_msg(ERR_NORECIPIENT, u, "PRIVMSG ",  "", "", ""), u, ERR_NORECIPIENT);
 	if (msg == "")

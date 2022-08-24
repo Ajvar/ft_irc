@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 17:46:28 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/24 13:19:08 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/24 22:13:39 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@
  */
 int PART(std::vector<std::string> chan, const std::string &reason, user *u)
 {
-	//pp("chan is: " + chan[0] + " reason is: " + reason, "");
 	if (chan.empty())
 		return send_message(create_msg(ERR_NEEDMOREPARAMS, u, "", "", "", ""), u, ERR_NEEDMOREPARAMS);
 	for (std::vector<std::string>::iterator it = chan.begin(); it != chan.end(); it++)
@@ -35,8 +34,9 @@ int PART(std::vector<std::string> chan, const std::string &reason, user *u)
 		{
 			if (!(tmp = find_chan_in_u((*it), u)))
 				return send_message(create_msg(ERR_NOTONCHANNEL, u, (*it), "", "", ""), u, ERR_NOTONCHANNEL);
-			delete_chan_in_u(*it, u);
 			send_to_all_chan(channel_message("PART " + (*it) + " " + reason, u), tmp);
+			delete_u_in_chan(u->nickname, tmp);
+			delete_chan_in_u(*it, u);
 		}
 	}
 	return 0;

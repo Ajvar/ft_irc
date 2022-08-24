@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/30 16:46:15 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/23 15:25:00 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/24 22:14:27 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,6 @@ static int CHAN_MODE(const std::string &target, const char sign, const char mode
 	channel *c = find_channel_by_name(target);
 	short local_sign;
 
-	// pp("chan_mode", "");
 	if (!c)
 		return send_message(create_msg(ERR_NOSUCHCHANNEL, u, target, "", "", ""), u, ERR_NOSUCHCHANNEL);
 	if (sign)
@@ -201,8 +200,6 @@ static int CHAN_MODE(const std::string &target, const char sign, const char mode
  */
 int MODE(const std::string &target, const std::string &mode, std::vector<std::string> args, user *u)
 {
-	pp("MODE", "");
-	pp("target : " + target + " mode :" + mode,  RED);
 	if (target.empty())
 		return send_message(create_msg(ERR_NEEDMOREPARAMS, u, "MODE", "", "", ""), u, ERR_NEEDMOREPARAMS);
 
