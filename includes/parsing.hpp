@@ -46,7 +46,7 @@ class Command
 
 				std::string token = cmd.substr(0, pos);
 				if (_command == "" && opt)
-					_command = token;
+					_command = token;	
 				else
 					cont.push_back(token);
 				cmd.erase(0, pos + 1);
@@ -57,7 +57,10 @@ class Command
 				cont.push_back(cmd);
 				return (cont);
 			}
-			cont.push_back(cmd);
+			if (_command == "")
+				_command = cmd;
+			else
+				cont.push_back(cmd);
 			return (cont);
 		}
 		/*bool	checkCommand()
@@ -73,7 +76,6 @@ class Command
 		}*/
 		int	parse(pollfd *fds, int *nfds, user* u, const std::string &serv_pass, int *restart)
 		{
-		//	pp("entering parser: " + this->_command, CYAN);
 			//****client cmds
 			if (!u->auth && _command != "PASS")
 			{
@@ -190,7 +192,7 @@ class Command
 				if (_args.size() < 1)
 					PART(std::vector<std::string>(), "", u);
 				else if (_args.size() < 2)
-					PART(splitandsort(_args[0], ",", v1, 0), NULL, u);
+					PART(splitandsort(_args[0], ",", v1, 0), "", u);
 				else
 					PART(splitandsort(_args[0], ",", v1, 0), _args[1], u);
 			}

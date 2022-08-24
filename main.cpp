@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/22 19:59:57 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/24 13:10:53 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -351,13 +351,10 @@ int main (int argc, char *argv[])
 						printf("  %d bytes received\n", len);
 						std::cout << buffer << std::endl;
 						user *tmp_user = find_user_by_fd(fds[i].fd);
-						//print_user(tmp_user);
-						//pp("Line parse", GREEN);
 						std::string cmd = buffer;
-
-						
 						std::stringstream ss(buffer);
 						std::string token;
+						
 						while (std::getline(ss, token, '\n')) {
 							Command tmp_cmd(token);
 							if (tmp_cmd.parse(fds, &nfds, tmp_user, argv[2], &restart))
@@ -367,38 +364,6 @@ int main (int argc, char *argv[])
 								break ;
 							}
 						}
-						// pp("end line parse", GREEN);
-						/*if (std::string(buffer).find("AWAY") != std::string::npos)
-							AWAY("I'm away", tmp_user);
-						else if (std::string(buffer).find("OPER") != std::string::npos)
-							OPER("nickname1", "password1", tmp_user);
-						else if (std::string(buffer).find("PASS") != std::string::npos)
-							PASS(argv[2], "lol", tmp_user);
-						else if (std::string(buffer).find("NICK") != std::string::npos)
-							NICK("testttt", tmp_user);
-						else if (std::string(buffer).find("USER") != std::string::npos)
-							USER("usertest", "realtest", tmp_user);
-						else if (std::string(buffer).find("MODE") != std::string::npos)
-							MODE(tmp_user->nickname, '+',  'i', tmp_user);
-						else if (std::string(buffer).find("QUIT") != std::string::npos)
-							QUIT("bye", fds, &nfds, tmp_user);
-						else if (std::string(buffer).find("DIE") != std::string::npos)
-							DIE(tmp_user, fds, nfds);
-						else if (std::string(buffer).find("RESTART") != std::string::npos)
-							RESTART(tmp_user, fds, nfds, &restart);
-						else if (std::string(buffer).find("WALLOPS") != std::string::npos)
-							WALLOPS("wallopstest", tmp_user);
-						else if (std::string(buffer).find("ISON") != std::string::npos)
-							ISON(nicknames, tmp_user);
-						else if (std::string(buffer).find("JOIN") != std::string::npos)
-							JOIN(chanz, keys, "", tmp_user, fds, nfds);
-						else if (std::string(buffer).find("PART") != std::string::npos)
-							PART(chanz, "I'm leaviiiing", tmp_user);
-						else if (std::string(buffer).find("TOPIC") != std::string::npos)
-							ret = TOPIC(topic, "#test", tmp_user);
-						else if (std::string(buffer).find("NAMES") != std::string::npos)
-							ret = NAMES(chanz, tmp_user);
-						std::cout << "ret: " << ret << std::endl;*/
 						
 						/*****************************************************/
 						/* Echo the data back to the client                  */
@@ -413,7 +378,6 @@ int main (int argc, char *argv[])
 						break;
 
 					} while(client_running == TRUE);
-					// pp("OUT", GREEN);
 					/*******************************************************/
 					/* If the close_conn flag was turned on, we need       */
 					/* to clean up this active connection. This            */
