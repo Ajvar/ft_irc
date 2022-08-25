@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/25 13:02:03 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/25 15:19:17 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ void delete_client(user *u)
 		{
 			if ((*ite) == u)
 			{
+				send_to_all_chan(channel_message("PART " + (*it)->name + " " + "connection closed", u), (*it));
 				(*it)->users.erase(ite);
 				return ;
 			}
@@ -392,6 +393,7 @@ int main (int argc, char *argv[])
 					/*******************************************************/
 					if (close_conn)
 					{
+						delete_client(find_user_by_fd(fds[i].fd));
 						close(fds[i].fd);
 						fds[i].fd = -1;
 						compress = TRUE;

@@ -34,7 +34,7 @@ class Command
 		{
 			splitandsort(cmd, " ", _args, GEN_USE);
 			//std::cout << "command : " << _command << std::endl;
-			print_str_vec(_args, "args: ");
+			//print_str_vec(_args, "args: ");
 		}
 		~Command(){}
 		std::vector<std::string>	splitandsort(std::string cmd, std::string delim, std::vector<std::string>	&cont, int opt)
