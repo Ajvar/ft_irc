@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 13:33:22 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/23 15:07:48 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/25 13:02:19 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ std::string channel_message(const std::string &msg, user *u)
  */
 int send_message(const std::string &s, user *user, int ret)
 {
-	std::cout << "Send message: " << s << std::endl;
+	//std::cout << "Send message: " << s << std::endl;
 	if (s.empty() == 0)
 		send(user->fd->fd, s.c_str(), s.size(), MSG_NOSIGNAL);
 	return ret;

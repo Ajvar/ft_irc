@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/30 16:46:15 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/24 22:14:27 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/25 12:40:03 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,11 @@
 static int USR_MODE(const std::string &target, const char sign, const char mode, user *u)
 {
 	short local_sign;
+	user *tmp;
 
-	if (!find_user_by_nickname(target))
+	if (!(tmp = find_user_by_nickname(target)))
 		return send_message(create_msg(ERR_NOSUCHNICK, u, target, "", "", ""), u, ERR_NOSUCHNICK);
-	if (target != u->nickname)
+	if (target != u->nickname && u->modes[OPERATOR_MODE] == 0)
 		return send_message(create_msg(ERR_USERSDONTMATCH, u, "", "", "", ""), u, ERR_USERSDONTMATCH);
 	if (sign)
 	{
@@ -29,20 +30,17 @@ static int USR_MODE(const std::string &target, const char sign, const char mode,
 		switch (mode)
 		{
 		case 'i' :
-			u->modes[INVISIBLE_MODE] = local_sign;
+			tmp->modes[INVISIBLE_MODE] = local_sign;
 			break;
 		case 'w' :
-			u->modes[WALLOPS_MODE] = local_sign;
+			tmp->modes[WALLOPS_MODE] = local_sign;
 			break;
 		case 'r':
-			if (local_sign)
-				return 0;
-			u->modes[RESTRICTED_MODE] = local_sign;
+			tmp->modes[RESTRICTED_MODE] = local_sign;
 			break;
 		case 'o':
-			if (local_sign)
-				return 0;
-			u->modes[OPERATOR_MODE] = local_sign;
+			tmp->modes[OPERATOR_MODE] = local_sign;
+			send_message(create_msg(RPL_YOUREOPER, tmp, "", "", "", ""), tmp, 0);
 			break;
 		
 		default:

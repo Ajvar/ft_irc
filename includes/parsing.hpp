@@ -33,7 +33,7 @@ class Command
 		Command(const std::string cmd)
 		{
 			splitandsort(cmd, " ", _args, GEN_USE);
-			std::cout << "command : " << _command << std::endl;
+			//std::cout << "command : " << _command << std::endl;
 			print_str_vec(_args, "args: ");
 		}
 		~Command(){}
@@ -134,7 +134,7 @@ class Command
 				else if (_args.size() == 2)
 					MODE(_args[0], _args[1], std::vector<std::string>(), u);
 				else
-					MODE(_args[0], _args[1], std::vector<std::string>(_args.begin() + 2, _args.end()), u);
+					MODE(_args[1], _args[2], std::vector<std::string>(_args.begin() + 3, _args.end()), u);
 
 			}
 			else if (_command == "QUIT")

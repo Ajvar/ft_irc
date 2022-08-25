@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/30 16:01:24 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/24 22:13:55 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/25 13:36:31 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,16 @@
 
 static int CHAN_PRIVMSG(const std::string& c, const std::string &text, user *u)
 {
-	channel *tmp = find_channel_by_name(c);
+	channel *tmp;
+	short f = 0;
 	
+	if (c[0] == '@')
+	{
+		f = 1;
+		tmp = find_channel_by_name(c.substr(1));
+	}
+	else
+		tmp = find_channel_by_name(c);
 	if (!tmp)
 		return send_message(create_msg(ERR_NOSUCHNICK, u, c, "", "", ""), u, ERR_NOSUCHNICK);
 	if (tmp->modes[BAN_MODE] && is_banned(tmp, u->nickname))
@@ -28,6 +36,8 @@ static int CHAN_PRIVMSG(const std::string& c, const std::string &text, user *u)
 	std::vector<user *>::iterator it = tmp->users.begin();
 	for (; it != tmp->users.end(); it++)
 	{
+		if (f && !is_chan_ope(tmp, (*it)))
+			continue ;
 		if ((*it) != u)
 			send_message(channel_message("PRIVMSG " + c + " :" + text, u), (*it), 0);
 	}
@@ -62,10 +72,10 @@ int PRIVMSG(std::vector<std::string> targets, const std::string &msg, user *u)
 	
 	for (; it != targets.end(); it++)
 	{
-		if ((*it)[0] == '#' || (*it)[0] == '&')
+		if ((*it)[0] == '#' || (*it)[0] == '&' || ((*it)[0] == '@' && (*it)[1] == '#'))
 			CHAN_PRIVMSG((*it), msg, u);
-		else if ((*it)[1] == '#' || (*it)[1] == '&' )
-			CHAN_PRIVMSG((*it).substr(1), msg, u);
+		//else if ((*it)[1] == '#' || (*it)[1] == '&' )
+		//	CHAN_PRIVMSG((*it).substr(1), msg, u);
 	else
 		USR_PRIVMSG((*it), msg, u);
 	}
@@ -75,6 +85,15 @@ int PRIVMSG(std::vector<std::string> targets, const std::string &msg, user *u)
 static int CHAN_NOTICE(const std::string& c, const std::string &text, user *u)
 {
 	channel *tmp = find_channel_by_name(c);
+	short f = 0;
+	
+	if (c[0] == '@')
+	{
+		f = 1;
+		tmp = find_channel_by_name(c.substr(1));
+	}
+	else
+		tmp = find_channel_by_name(c);
 	
 	if (!tmp)
 		return send_message(create_msg(ERR_NOSUCHCHANNEL, u, c, "", "", ""), u, ERR_NOSUCHCHANNEL);
@@ -87,6 +106,8 @@ static int CHAN_NOTICE(const std::string& c, const std::string &text, user *u)
 	std::vector<user *>::iterator it = tmp->users.begin();
 	for (; it != tmp->users.end(); it++)
 	{
+		if (f && !is_chan_ope(tmp, (*it)))
+			continue ;
 		if ((*it) != u)
 			send_message(channel_message("NOTICE " + c + " :" + text, u), (*it), 0);
 	}
@@ -119,10 +140,10 @@ int NOTICE(std::vector<std::string> targets, const std::string &text, user *u)
 
 	for (; it != targets.end(); it++)
 	{
-		if ((*it)[0] == '#' || (*it)[0] == '&')
+		if ((*it)[0] == '#' || (*it)[0] == '&' || ((*it)[0] == '@' && (*it)[1] == '#'))
 			CHAN_NOTICE((*it), text, u);
-		else if ((*it)[1] == '#' || (*it)[1] == '&' )
-			CHAN_NOTICE((*it).substr(1), text, u);
+		//else if ((*it)[1] == '#' || (*it)[1] == '&' )
+		//	CHAN_NOTICE((*it).substr(1), text, u);
 	else
 		USR_NOTICE((*it), text, u);
 	}

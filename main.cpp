@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/25 00:26:39 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/08/25 13:02:03 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,12 @@ int new_client(int id, struct pollfd *fd)
 		return -1;
 	new_user->next = NULL;
 	new_user->id = id;
+	new_user->fd = fd;
+	new_user->nickname = "";
+	new_user->realname = "";
+	new_user->auth = 0;
+	memset(new_user->modes, 0, sizeof(new_user->modes));
+	new_user->hostname = "127.0.0.1";
 	if (!users)
 	{
 		users = new_user;
@@ -52,12 +58,6 @@ int new_client(int id, struct pollfd *fd)
 		tmp->next = new_user;
 		new_user->prev = tmp;
 	}
-	new_user->fd = fd;
-	new_user->nickname = "";
-	new_user->realname = "";
-	new_user->auth = 0;
-	memset(new_user->modes, 0, sizeof(new_user->modes));
-	new_user->hostname = "127.0.0.1";
 	return 0;
 	
 }
@@ -350,15 +350,12 @@ int main (int argc, char *argv[])
 							close_conn = TRUE;
 							break;
 						}
-						std::vector<std::string> nicknames;
-						nicknames.push_back("test1");
-						nicknames.push_back("test2");
 						/*****************************************************/
 						/* Data was received                                 */
 						/*****************************************************/
 						len = rc;
 						printf("  %d bytes received\n", len);
-						std::cout << buffer << std::endl;
+						//std::cout << buffer << std::endl;
 						user *tmp_user = find_user_by_fd(fds[i].fd);
 						std::string cmd = buffer;
 						std::stringstream ss(buffer);
