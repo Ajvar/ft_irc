@@ -92,7 +92,7 @@ static int CHAN_MODE(const std::string &target, const char sign, const char mode
 				{
 					if (!is_chan_ope(c, tmp))
 						c->operators.push_back(tmp);
-				}	
+				}
 				if (!local_sign && !args.empty())
 					remove_chan_ope(c, tmp);
 				send_message(channel_message("MODE " + c->name + " " + (local_sign ? "+" : "-") +"o", u), u, 0);
