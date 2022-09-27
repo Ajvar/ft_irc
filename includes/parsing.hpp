@@ -63,33 +63,25 @@ class Command
 				cont.push_back(cmd);
 			return (cont);
 		}
-		/*bool	checkCommand()
-		{
-			//check length
-			//check syntax
-		}
-		bool	checkArgs()
-		{
-			//while
-			// check length
-			// check syntax
-		}*/
+
 		int	parse(pollfd *fds, int *nfds, user* u, const std::string &serv_pass, int *restart)
 		{
 			//****client cmds
+			if (_command == "CAP")
+				return 0;
 			if (!u->auth && _command != "PASS")
 			{
 				send_message(":" + std::string(SERVER_NAME) + " you must identify with a password.\r\n", u, 0);
 				return 0;
 			}
-			if (u->nickname.empty() && _command != "NICK" && _command != "PASS" && _command != "CAP")
-			{
-				send_message(":" + std::string(SERVER_NAME) + " you must register a nickname with NICK command.\r\n", u, 0);
-				return 0;
-			}
-			if (u->username.empty() && _command != "USER" && _command != "NICK" && _command != "PASS" && _command != "CAP")
+			if (u->username.empty() && _command != "USER" && _command != "NICK" && _command != "PASS")
 			{
 				send_message(":" + std::string(SERVER_NAME) + " you must you must register a username with USER command.\r\n", u, 0);
+				return 0;
+			}
+			if (u->nickname.empty() && _command != "NICK" && _command != "USER" && _command != "PASS")
+			{
+				send_message(":" + std::string(SERVER_NAME) + " you must register a nickname with NICK command.\r\n", u, 0);
 				return 0;
 			}
 
@@ -134,7 +126,7 @@ class Command
 				else if (_args.size() == 2)
 					MODE(_args[0], _args[1], std::vector<std::string>(), u);
 				else
-					MODE(_args[1], _args[2], std::vector<std::string>(_args.begin() + 3, _args.end()), u);
+					MODE(_args[0], _args[1], std::vector<std::string>(_args.begin() + 2, _args.end()), u);
 
 			}
 			else if (_command == "QUIT")
@@ -279,7 +271,7 @@ class Command
 					PRIVMSG(splitandsort(_args[0], ",", v, 0), concatenate_vector(_args.begin() + 1, _args.end()), u);
 			}
 			else if (_command == "PING")
-				return 0;
+				PONG(_args[0], u);
 			else
 				send_message(create_msg(ERR_UNKNOWNCOMMAND, u, _command, "", "", ""), u, ERR_UNKNOWNCOMMAND);
 		return 0;

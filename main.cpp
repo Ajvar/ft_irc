@@ -356,7 +356,8 @@ int main (int argc, char *argv[])
 						/*****************************************************/
 						len = rc;
 						printf("  %d bytes received\n", len);
-						//std::cout << buffer << std::endl;
+						if (DEBUG == 1)
+							pp(std::string(CYAN), std::string(buffer));
 						user *tmp_user = find_user_by_fd(fds[i].fd);
 						std::string cmd = buffer;
 						std::stringstream ss(buffer);

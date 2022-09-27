@@ -33,8 +33,8 @@
 
 #define FALSE 0
 #define TRUE 1
-# define PROTOCOL_VERSION "0210"
-#define SERVER_NAME "42IRC.com"
+#define PROTOCOL_VERSION "0210"
+#define SERVER_NAME "localhost"
 #define VERSION "1.0.0"
 
 //modes
@@ -179,7 +179,7 @@ void free_fds(void);
 void print_channels();
 void print_str_vec(std::vector<std::string> v, std::string info);
 void printer(std::string s);
-void pp(std::string s, std::string color);
+void pp(const std::string color, std::string s);
 void print_user(user *u);
 
 #define RESET   "\033[0m"

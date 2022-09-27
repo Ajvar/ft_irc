@@ -40,16 +40,15 @@ void printer(std::string s)
 }
 
 //pretty printer
-void pp(std::string s, std::string color)
+void pp(const std::string color, std::string s)
 {
-	(void)color;
-
+	std::cout << color;
 	for (size_t i = 0; i < s.size() + 4; i++)
 		std::cout <<"*";
 	std::cout << '\n' << "* " << s << " *" <<std::endl;
 	for (size_t i = 0; i < s.size() + 4; i++)
 		std::cout << "*";
-	std::cout << std::endl;
+	std::cout << RESET << std::endl;
 
 }
 

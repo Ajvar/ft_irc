@@ -20,7 +20,7 @@ extern int nfds;
 void ft_exit(std::string s, int err, int *sock)
 {
 	if (err != 0)
-		std::cerr << "\033[1;31m" << "Error: " << s << "\033[0m" << std::endl;
+		std::cerr << "	 " << "Error: " << s << "\033[0m" << std::endl;
 	if (sock)
 		close(*sock);
 	exit(err);

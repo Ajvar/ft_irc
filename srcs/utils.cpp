@@ -18,15 +18,7 @@ extern struct s_channel *channels;
 
 std::string current_time(void)
 {
-	/*time_t rawtime;
-	struct tm * timeinfo;
-
-	time ( &rawtime );
-	timeinfo = localtime ( &rawtime );
-	return std::string(asctime(timeinfo));
-	*/
-
-	  time_t rawtime;
+	time_t rawtime;
 	struct tm * timeinfo;
 	char buffer [80];
 
@@ -63,7 +55,8 @@ std::string channel_message(const std::string &msg, user *u)
  */
 int send_message(const std::string &s, user *user, int ret)
 {
-	//std::cout << "Send message: " << s << std::endl;
+	if (DEBUG == 1)
+		pp(std::string(GREEN), "Send message: " + s);
 	if (s.empty() == 0)
 		send(user->fd->fd, s.c_str(), s.size(), MSG_NOSIGNAL);
 	return ret;

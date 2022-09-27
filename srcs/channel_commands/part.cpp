@@ -37,6 +37,8 @@ int PART(std::vector<std::string> chan, const std::string &reason, user *u)
 			send_to_all_chan(channel_message("PART " + (*it) + " " + reason, u), tmp);
 			delete_u_in_chan(u->nickname, tmp);
 			delete_chan_in_u(*it, u);
+			/* if (tmp->users.empty())
+				delete_channel(tmp->name); */
 		}
 	}
 	return 0;

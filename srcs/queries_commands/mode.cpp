@@ -83,6 +83,8 @@ static int CHAN_MODE(const std::string &target, const char sign, const char mode
 		{
 			case 'o' :
 			{
+				if (DEBUG==1)
+					pp(WHITE, "here");
 				user *tmp = find_u_in_chan(args[0], c);
 				if (!tmp)
 					return send_message(create_msg(ERR_USERNOTINCHANNEL, u, args[0], c->name, "", ""), u, 0);
@@ -93,6 +95,7 @@ static int CHAN_MODE(const std::string &target, const char sign, const char mode
 				}	
 				if (!local_sign && !args.empty())
 					remove_chan_ope(c, tmp);
+				send_message(channel_message("MODE " + c->name + " " + (local_sign ? "+" : "-") +"o", u), u, 0);
 				list_chan_users(c, u);	
 				break;
 			}
@@ -200,7 +203,8 @@ int MODE(const std::string &target, const std::string &mode, std::vector<std::st
 {
 	if (target.empty())
 		return send_message(create_msg(ERR_NEEDMOREPARAMS, u, "MODE", "", "", ""), u, ERR_NEEDMOREPARAMS);
-
+	if (DEBUG==1)
+		pp(RED, "target: " + target + " mode: " + mode + " args: " + (args.empty() ? "" :  args[0]));
 	if (target[0] == '#' || target[0] == '&')
 	{
 		if (mode.empty())

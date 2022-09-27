@@ -1,7 +1,7 @@
 NAME = ircserv
 
 CC = c++
-CFLAGS = -Wall -g -Wextra -Werror -std=c++98  #-fsanitize=address
+CFLAGS = -Wall -g -Wextra -Werror -std=c++98  -MMD #-fsanitize=address
 
 HEADER_PATH = ./includes
 SRCS_PATH = ./srcs
@@ -24,8 +24,10 @@ OBJS = ${SRCS_FILES:.c=.o}
 all: ${NAME}
 
 $(NAME): ${OBJS_PATH} ${OBJS} ${HEADER_FILES}
-	${CC} ${CFLAGS} -o ${NAME} ${OBJS}
+	${CC} ${CFLAGS} -D DEBUG=0 -o ${NAME} ${OBJS}
 
+debug: ${OBJS_PATH} ${OBJS} ${HEADER_FILES}
+	${CC} ${CFLAGS} -D DEBUG=1 -o ${NAME} ${OBJS}
 ${OBJS_PATH}:
 	@mkdir -p $@
 
