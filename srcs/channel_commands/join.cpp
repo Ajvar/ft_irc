@@ -72,13 +72,15 @@ int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, const std
 		}
 		if (tmp->modes[INVITE_ONLY_MODE])
 		{
-			for (std::vector<std::string>::iterator inv = tmp->invites.begin(); inv != tmp->invites.end(); inv++)
+			pp(RED, "invite only");
+			std::vector<std::string>::iterator inv = tmp->invites.begin();
+			for (; inv != tmp->invites.end(); inv++)
 			{
 				if ((*inv) == u->nickname)
 					break;
-				else if (inv == tmp->invites.end() && (*inv) != u->nickname)
+				else if (inv + 1 == tmp->invites.end())
 					return send_message(create_msg(ERR_INVITEONLYCHAN, u, tmp->name,"", "", ""), u, ERR_INVITEONLYCHAN);
-			}
+			}	
 		}
 		if (tmp->modes[USER_LIMIT_MODE])
 		{

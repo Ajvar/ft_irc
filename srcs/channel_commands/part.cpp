@@ -13,12 +13,20 @@
 #include "../../includes/includes.hpp"
 #include "../../includes/replies.hpp"
 
+
+void print_array(std::vector<s_user *> array)
+{
+	typename std::vector<s_user *>::iterator it = array.begin();
+	for (; it != array.end(); it++)
+		std::cout << (*it)->nickname << std::endl;
+}
+
 /**
- * @brief Quit a server and sends a message with a reason why
+ * @brief Leave a channel
  * 
  * @param chan list of channels to leave
- * @param reasons list of reasons to leave
- * @param u the user leavinf the channels
+ * @param reasons optionnal reason to leave
+ * @param u the user leaving the channel(s)
  * @return int 
  */
 int PART(std::vector<std::string> chan, const std::string &reason, user *u)
@@ -39,6 +47,8 @@ int PART(std::vector<std::string> chan, const std::string &reason, user *u)
 			delete_chan_in_u(*it, u);
 			/* if (tmp->users.empty())
 				delete_channel(tmp->name); */
+			pp(RED, "array: ");
+			print_array(tmp->users);
 		}
 	}
 	return 0;

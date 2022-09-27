@@ -12,6 +12,7 @@
 
 #include "../../includes/includes.hpp"
 #include "../../includes/replies.hpp"
+#include <sstream>
 
 extern channel *channels;
 
@@ -25,6 +26,8 @@ extern channel *channels;
 int LIST(const std::vector<std::string> c, user *u)
 {
 	channel *tmp;
+	std::stringstream ss;
+
 	if (c.empty())
 	{
 		tmp = channels;
@@ -32,8 +35,10 @@ int LIST(const std::vector<std::string> c, user *u)
 			send_message(create_msg(RPL_LISTSTART, u, "", "", "", ""), u, RPL_LISTSTART);
 		while(tmp)
 		{
+			ss << tmp->users.size();
+			std::string count = ss.str();
 			if (!tmp->modes[SECRET_MODE])
-				send_message(create_msg(RPL_LIST, u, tmp->name, tmp->topic, "", ""), u, RPL_LIST);
+				send_message(create_msg(RPL_LIST, u, tmp->name, count,tmp->topic, ""), u, RPL_LIST);
 			tmp = tmp->next;
 		}
 	}
@@ -45,7 +50,11 @@ int LIST(const std::vector<std::string> c, user *u)
 		for (; it != c.end(); it++)
 		{
 			if ((tmp = find_channel_by_name((*it))))
-				send_message(create_msg(RPL_LIST, u, (*it), tmp->topic, "", ""), u, RPL_LIST);
+			{
+				ss << tmp->users.size();
+				std::string count = ss.str();
+				send_message(create_msg(RPL_LIST, u, (*it), count, tmp->topic, ""), u, RPL_LIST);
+			}
 		}
 	}
 	return send_message(create_msg(RPL_LISTEND, u, "", "", "", ""), u, RPL_LISTEND);

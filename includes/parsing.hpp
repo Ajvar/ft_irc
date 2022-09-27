@@ -90,10 +90,10 @@ class Command
 				if (_args.size() < 1)
 				{
 					send_message(create_msg(ERR_NEEDMOREPARAMS, u, "PASS", "", "", ""), u, ERR_NEEDMOREPARAMS);
-					return -1;
+					return 0;
 				}
 				if (PASS(serv_pass, _args[0], u))
-					return -1;
+					return 0;
 					
 			}
 			else if (_command == "NICK")
@@ -188,7 +188,7 @@ class Command
 				else
 					PART(splitandsort(_args[0], ",", v1, 0), _args[1], u);
 			}
-
+		//done
 			else if (_command == "TOPIC")
 			{
 				if (_args.size() < 1)
@@ -196,9 +196,13 @@ class Command
 				else if (_args.size() < 2)
 					TOPIC(_args[0], std::vector<std::string>(), u);
 				else
+				{
+					if (_args.size() > 2)
+						_args[1].erase(0,1);
 					TOPIC(_args[0], _args, u);
+				}
 			}
-
+		//done
 			else if (_command == "NAMES")
 			{	
 				if (_args.size() < 1)
@@ -209,6 +213,7 @@ class Command
 					NAMES(splitandsort(_args[0], ",", v1, 0), u);
 				}
 			}
+		//done
 			else if (_command == "LIST")
 			{
 				std::vector<std::string>	v1, v2;
@@ -217,14 +222,15 @@ class Command
 				else if (_args.size() < 2)
 					LIST(splitandsort(_args[0], ",", v1, 0), u);
 			}
+			//
 			else if (_command == "INVITE")
 			{
 				if (_args.size() < 1)
-					INVITE(NULL, NULL, u);
+					INVITE(std::string(), std::string(), u);
 				else if (_args.size() < 2)
-					INVITE(_args[0], NULL, u);
+					INVITE(_args[1], std::string(), u);
 				else
-					INVITE(_args[0], _args[1], u);
+					INVITE(_args[1], _args[0], u);
 			}
 
 			else if (_command == "KICK")
@@ -245,15 +251,6 @@ class Command
 				else
 					WHO(_args[0], u);
 			}
-			/*else if (_command == "PING")
-			{
-				if (_args.size() < 1)
-					PONG("", u);
-				else
-					PONG(_args[0], u);
-			}*/
-
-		
 			else if (_command == "NOTICE")
 			{
 				std::vector<std::string> v;

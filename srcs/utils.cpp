@@ -16,6 +16,8 @@
 extern struct s_user *users;
 extern struct s_channel *channels;
 
+
+
 std::string current_time(void)
 {
 	time_t rawtime;
@@ -432,7 +434,7 @@ std::string create_msg(int code, user *u, const std::string &arg1, const std::st
 		case 319:
 			return reply + MSG_RPL_WHOISCHANNELS(arg1, arg2);
 		case 322:
-			return reply + MSG_RPL_LIST(arg1, arg2);
+			return reply + MSG_RPL_LIST(arg1, arg2, arg3);
 		case 323:
 			return reply + MSG_RPL_LISTEND();
 		case 324:

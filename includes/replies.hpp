@@ -231,7 +231,7 @@
 # define MSG_RPL_WHOWASUSER(nick, user, host, realname) (nick + " " + user + " " + host + " * :" + realname + "\r\n")
 # define MSG_RPL_ENDOFWHOWAS(nick) (nick + " :End of WHOWAS\r\n")
 # define MSG_RPL_LISTSTART() ("Channel :Users Name\r\n")
-# define MSG_RPL_LIST(channel, topic) (channel + " :" + topic + "\r\n")
+# define MSG_RPL_LIST(channel, count, topic) (channel + " " + count + " :" + topic + "\r\n")
 # define MSG_RPL_LISTEND() (":End of LIST\r\n")
 # define MSG_RPL_CHANNELMODEIS(channel, mode, params) (channel + " " + mode + " " + params + "\r\n")
 # define MSG_RPL_NOTOPIC(channel) (channel + " :No topic is set\r\n")

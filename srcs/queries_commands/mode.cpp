@@ -83,8 +83,6 @@ static int CHAN_MODE(const std::string &target, const char sign, const char mode
 		{
 			case 'o' :
 			{
-				if (DEBUG==1)
-					pp(WHITE, "here");
 				user *tmp = find_u_in_chan(args[0], c);
 				if (!tmp)
 					return send_message(create_msg(ERR_USERNOTINCHANNEL, u, args[0], c->name, "", ""), u, 0);

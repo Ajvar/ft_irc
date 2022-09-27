@@ -12,7 +12,9 @@
 
 #ifndef INCLUDES_HPP
 # define INCLUDES_HPP
-
+#ifndef DEBUG
+#define DEBUG 0
+#endif
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -151,6 +153,7 @@ int find_in_vector(std::vector<T> vec, T n)
 			return TRUE;
 	return FALSE;
 }
+
 void		delete_chan_in_u(const std::string &name, user *u);
 void		delete_u_in_chan(const std::string &nickname, channel *c);
 int 		send_message(const std::string &s, user *user, int ret);
