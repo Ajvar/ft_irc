@@ -16,8 +16,6 @@
 extern struct s_user *users;
 extern struct s_channel *channels;
 
-
-
 std::string current_time(void)
 {
 	time_t rawtime;
@@ -356,7 +354,7 @@ std::string create_msg(int code, user *u, const std::string &arg1, const std::st
 		code_str.append("00");
 	else if (code < 100)
 		code_str.append("0");
-	reply = ":42irc.com " + code_str + ft_to_string(code) + " " + u->nickname + " ";
+	reply = ":" + std::string(SERVER_NAME) + " " + code_str + ft_to_string(code) + " " + u->nickname + " ";
 	switch (code)
 	{
 		case 1:
@@ -553,6 +551,8 @@ std::string create_msg(int code, user *u, const std::string &arg1, const std::st
 			return reply + MSG_ERR_UMODEUNKNOWNFLAG();
 		case 502:
 			return reply + MSG_ERR_USERSDONTMATCH();
+		case 525:
+			return reply + MSG_ERR_INVALIDKEY();
 		case 691:
 			return reply + MSG_ERR_ALREADYBAN(arg1, arg2);
 		case 692:

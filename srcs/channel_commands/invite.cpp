@@ -13,7 +13,6 @@
 #include "../../includes/includes.hpp"
 #include "../../includes/replies.hpp"
 
-
 /**
  * @brief Invite new user to channel
  * 
@@ -24,7 +23,7 @@
  */
 int INVITE(const std::string &us, const std::string &c, user *u)
 {
-	channel *tmp_chan = find_channel_by_name(us);
+	channel *tmp_chan = find_channel_by_name(c);
 	user *tmp_user;
 	
 	if (us.empty() || c.empty())
@@ -37,7 +36,9 @@ int INVITE(const std::string &us, const std::string &c, user *u)
 		return send_message(create_msg(ERR_CHANOPRIVSNEEDED, u, tmp_chan->name, "", "", ""), u, ERR_CHANOPRIVSNEEDED);
 	if (find_u_in_chan(us, tmp_chan))
 		return send_message(create_msg(ERR_USERONCHANNEL, u, u->nickname, tmp_chan->name, "", ""), u, ERR_USERONCHANNEL);
-	send_message(channel_message("INVITE ", u), tmp_user, 0);
+	if (!(tmp_user = find_user_by_nickname(us)))
+		return 0;
+	send_message(channel_message("INVITE " + us + " " +tmp_chan->name, u), tmp_user, 0);
 	tmp_chan->invites.push_back(tmp_user->nickname);
-	return send_message(create_msg(RPL_INVITING, u, tmp_chan->name, tmp_user->nickname, "", ""), u, RPL_INVITING);
+	return send_message(create_msg(RPL_INVITING, u, tmp_user->nickname, tmp_chan->name, "", ""), u, RPL_INVITING);
 }

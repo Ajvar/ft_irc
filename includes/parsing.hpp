@@ -9,21 +9,6 @@
 //command format
 //:<Prefix> <Command> <Space Separated Args> :Optional trailing content here, like a chat message.
 
-//commands tow do:
-// - pass: done
-// - nick: done
-// - user: done
-// - part
-// - join
-// - kick(op)
-// - list
-// - help
-// - error
-// - notice (->?)
-// - pv
-// - quit
-// - who
-
 # define GEN_USE	1
 
 class Command
@@ -64,7 +49,7 @@ class Command
 			return (cont);
 		}
 
-		int	parse(pollfd *fds, int *nfds, user* u, const std::string &serv_pass, int *restart)
+		int	parse(pollfd *fds, int *nfds, user* u, const std::string &serv_pass)
 		{
 			//****client cmds
 			if (_command == "CAP")
@@ -146,10 +131,6 @@ class Command
 			//*****channel cmds
 			else if (_command == "DIE")
 				DIE(u);
-
-			else if (_command == "RESTART")
-				RESTART(u, restart);
-
 			else if (_command == "WALLOPS")
 				if (_args.size() < 1)
 					WALLOPS(NULL, u);
@@ -168,16 +149,18 @@ class Command
 			{
 				std::vector<std::string>	v1, v2;
 				if (_args.size() < 1)
-					JOIN(std::vector<std::string>(), std::vector<std::string>(), "", u);
+					JOIN(std::vector<std::string>(), std::vector<std::string>(), u);
 				else if (_args.size() < 2)
 				{
-					JOIN(splitandsort(_args[0], ",", v1, 0), std::vector<std::string>(), "", u);
+					JOIN(splitandsort(_args[0], ",", v1, 0), std::vector<std::string>(), u);
 				}
 				else if (_args.size() < 3)
-					JOIN(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), "", u);
+					JOIN(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), u);
 				else
-					JOIN(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), _args[2], u);
+					send_message(":" + std::string(SERVER_NAME) + " " + "wrong number of arguments." + "\r\n", u, 0);
+
 			}
+		//done
 			else if (_command == "PART")
 			{
 				std::vector<std::string>	v1, v2;
@@ -222,27 +205,26 @@ class Command
 				else if (_args.size() < 2)
 					LIST(splitandsort(_args[0], ",", v1, 0), u);
 			}
-			//
+			//done
 			else if (_command == "INVITE")
 			{
 				if (_args.size() < 1)
 					INVITE(std::string(), std::string(), u);
 				else if (_args.size() < 2)
-					INVITE(_args[1], std::string(), u);
+					INVITE(_args[0], std::string(), u);
 				else
-					INVITE(_args[1], _args[0], u);
+					INVITE(_args[0], _args[1], u);
 			}
-
+		//done
 			else if (_command == "KICK")
 			{
 				std::vector<std::string>	v1, v2;
 				if (_args.size() < 2)
-					KICK(std::vector<std::string>(), std::vector<std::string>(), "", u);
-	
+					KICK(std::string(), std::vector<std::string>(), "", u);
 				else if (_args.size() < 3)
-					KICK(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), NULL, u);
+					KICK(_args[0], splitandsort(_args[1], ",", v2, 0), "", u);
 				else
-				KICK(splitandsort(_args[0], ",", v1, 0), splitandsort(_args[1], ",", v2, 0), _args[2], u);
+				KICK(_args[0], splitandsort(_args[1], ",", v2, 0), _args[2], u);
 			}
 			else if (_command == "WHO")
 			{
@@ -267,6 +249,7 @@ class Command
 				else
 					PRIVMSG(splitandsort(_args[0], ",", v, 0), concatenate_vector(_args.begin() + 1, _args.end()), u);
 			}
+		//done
 			else if (_command == "PING")
 				PONG(_args[0], u);
 			else

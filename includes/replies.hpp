@@ -63,6 +63,7 @@
 #define	ERR_NOOPERHOST	491
 #define	ERR_UMODEUNKNOWNFLAG	501
 #define	ERR_USERSDONTMATCH	502
+#define ERR_INVALIDKEY 525
 
 #define	RPL_NONE	300
 #define	RPL_CREATIONTIME 329
@@ -206,6 +207,7 @@
 # define MSG_ERR_ALREADYBAN(channel, user) (channel + " " + user + " b :Channel " + channel + " list already contains " + user + "\r\n")
 # define MSG_ERR_SERVERISFULL(serv_name) (serv_name + " Server is full\r\n");
 # define MSG_ERR_KILLDENY(mssg) (":" + mssg + "\r\n")
+# define MSG_ERR_INVALIDKEY(channel) (channel + ":Key is not well-formed\r\n") 
 
 /*
 **  reponse for command file

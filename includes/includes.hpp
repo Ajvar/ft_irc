@@ -120,18 +120,17 @@ int MODE(const std::string &target, const std::string &mode, std::vector<std::st
 //optionnal commands
 int AWAY(const std::string &away_msg, user *u);
 int	DIE(user *user);
-int RESTART(user *user, int *restart);
 int WALLOPS(const std::string &msg, user *u);
 int ISON(std::vector<std::string> nicknames, user *user);
 
 //channel commands
-int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, const std::string &option, user *u);
+int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, user *u);
 int PART(std::vector<std::string> channels, const std::string &reason, user *u);
 int TOPIC(const std::string &topic, std::vector<std::string> chan, user *u);
 int NAMES(std::vector<std::string>chan, user *u);
 int LIST(const std::vector<std::string> c, user *u);
 int INVITE(const std::string &us, const std::string &c, user *u);
-int KICK(const std::vector<std::string> &c, std::vector<std::string> us, const std::string &comment ,user *u);
+int KICK(const std::string &c, std::vector<std::string> us, const std::string &comment ,user *u);
 int WHO(const std::string &mask, user *u);
 
 //messages

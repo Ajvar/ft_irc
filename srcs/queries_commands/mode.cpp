@@ -153,9 +153,9 @@ static int CHAN_MODE(const std::string &target, const char sign, const char mode
 				break ;
 			case 'k':
 				if (args.empty() && local_sign)
-					break ;
+					return send_message(create_msg(ERR_INVALIDKEY, u, c->name, "", "", ""), u, ERR_INVALIDKEY);	
 				c->modes[KEY_LOCKED_MODE] = local_sign;
-				send_message(channel_message("MODE " + c->name + " " + (local_sign ? "+" : "-") +"k", u), u, 0);
+				send_message(channel_message("MODE " + c->name + " " + (local_sign ? "+" : "-") +"k " + args[0], u), u, 0);
 
 				local_sign ? c->key = args[0] : c->key = "";
 				break ;
@@ -201,8 +201,6 @@ int MODE(const std::string &target, const std::string &mode, std::vector<std::st
 {
 	if (target.empty())
 		return send_message(create_msg(ERR_NEEDMOREPARAMS, u, "MODE", "", "", ""), u, ERR_NEEDMOREPARAMS);
-	if (DEBUG==1)
-		pp(RED, "target: " + target + " mode: " + mode + " args: " + (args.empty() ? "" :  args[0]));
 	if (target[0] == '#' || target[0] == '&')
 	{
 		if (mode.empty())

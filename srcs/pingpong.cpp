@@ -13,17 +13,12 @@
 #include "../includes/includes.hpp"
 #include "../includes/replies.hpp"
 
-/* int PONG(const std::string &token, user *u)
-{
-	if (token == "")
-		return send_message(create_msg(ERR_NEEDMOREPARAMS, u, "PONG", "", "", ""), u, ERR_NEEDMOREPARAMS);
-	return send_message(":" + std::string(SERVER_NAME) + " PONG " + std::string(SERVER_NAME) + std::string(" :") + token, u, 0);
-} */
-
-//This version of PONG is specific to hexchat, use the one above for other clients
+/**
+ * Sends response to PING command
+**/
 int PONG(const std::string &token, user *u)
 {
 	if (token == "")
 		return send_message(create_msg(ERR_NEEDMOREPARAMS, u, "PONG", "", "", ""), u, ERR_NEEDMOREPARAMS);
-	return send_message("PONG :" + std::string(SERVER_NAME) , u, 0);
+	return send_message(":" + std::string(SERVER_NAME) + " PONG " + std::string(SERVER_NAME) + std::string(" :") + token + "\r\n", u, 0);
 }

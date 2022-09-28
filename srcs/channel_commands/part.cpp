@@ -41,14 +41,13 @@ int PART(std::vector<std::string> chan, const std::string &reason, user *u)
 		else
 		{
 			if (!(tmp = find_chan_in_u((*it), u)))
-				return send_message(create_msg(ERR_NOTONCHANNEL, u, (*it), "", "", ""), u, ERR_NOTONCHANNEL);
+			{
+				send_message(create_msg(ERR_NOTONCHANNEL, u, (*it), "", "", ""), u, ERR_NOTONCHANNEL);
+				continue ;
+			}
 			send_to_all_chan(channel_message("PART " + (*it) + " " + reason, u), tmp);
 			delete_u_in_chan(u->nickname, tmp);
 			delete_chan_in_u(*it, u);
-			/* if (tmp->users.empty())
-				delete_channel(tmp->name); */
-			pp(RED, "array: ");
-			print_array(tmp->users);
 		}
 	}
 	return 0;

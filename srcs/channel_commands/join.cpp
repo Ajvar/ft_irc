@@ -13,6 +13,18 @@
 #include "../../includes/includes.hpp"
 #include "../../includes/replies.hpp"
 
+static int is_invited(channel* tmp, user *u)
+{
+	pp(RED, "invite only");
+	std::vector<std::string>::iterator inv = tmp->invites.begin();
+	for (; inv != tmp->invites.end(); inv++)
+	{
+		if ((*inv) == u->nickname)
+			return 1;
+	}
+	return 0;
+}
+
 /**
  * @brief Join one or multiple servers using keys if necesary
  * 
@@ -24,7 +36,7 @@
  * @param nfds number of fds to exit if needed
  * @return int 
  */
-int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, const std::string &option, user *u)
+int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, user *u)
 {
 	if (chan.empty() || !u)
 		return (send_message(create_msg(ERR_NEEDMOREPARAMS, u, "JOIN","", "", ""), u, ERR_NEEDMOREPARAMS));
@@ -32,15 +44,14 @@ int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, const std
 	std::vector<std::string>::iterator	ite = chan.end();
 	std::vector<std::string>::iterator	k = keys.begin();
 	std::string							nicks;
-	channel *tmp = NULL;
+	channel 							*tmp = NULL;
 	
-	if (option == "0")
+	if ((*it) == "0")
 	{
-		for (std::vector<channel *>::iterator it = u->channels.begin(); it != u->channels.end(); it++)
+		while (!(u->channels.empty()))
 		{
 			std::vector<std::string> v;
-			std::vector<std::string> r;
-			v.push_back((*it)->name);
+			v.push_back(u->channels[0]->name);
 			PART(v, "", u);
 		}
 		return 0;
@@ -70,27 +81,25 @@ int JOIN(std::vector<std::string> chan, std::vector<std::string> keys, const std
 					continue;
 			}
 		}
-		if (tmp->modes[INVITE_ONLY_MODE])
-		{
-			pp(RED, "invite only");
-			std::vector<std::string>::iterator inv = tmp->invites.begin();
-			for (; inv != tmp->invites.end(); inv++)
-			{
-				if ((*inv) == u->nickname)
-					break;
-				else if (inv + 1 == tmp->invites.end())
-					return send_message(create_msg(ERR_INVITEONLYCHAN, u, tmp->name,"", "", ""), u, ERR_INVITEONLYCHAN);
-			}	
-		}
+		if (tmp->modes[INVITE_ONLY_MODE] && !is_invited(tmp, u))
+			return send_message(create_msg(ERR_INVITEONLYCHAN, u, tmp->name,"", "", ""), u, ERR_INVITEONLYCHAN);
 		if (tmp->modes[USER_LIMIT_MODE])
 		{
 			if (tmp->users.empty() == 1)
 				if ((int)tmp->users.size() >= tmp->user_limit)
 					return send_message(create_msg(ERR_CHANNELISFULL, u, tmp->name,"", "", ""), u, ERR_CHANNELISFULL);
 		}
-		if (tmp->key != "" && tmp->key != (*k))
-			return send_message(create_msg(ERR_BADCHANNELKEY, u, tmp->name,"", "", ""), u, ERR_BADCHANNELKEY);	
-		k++;
+		if (tmp->modes[KEY_LOCKED_MODE])
+		{
+			if (k == keys.end() || (tmp->key != "" && tmp->key != (*k)))
+			{
+				send_message(create_msg(ERR_BADCHANNELKEY, u, tmp->name,"", "", ""), u, ERR_BADCHANNELKEY);
+				if (k != keys.end())
+					k++;
+				continue;
+			}
+			k++;
+		}
 		tmp->users.push_back(u);
 		u->channels.push_back(tmp);
 		send_to_all_chan(channel_message("JOIN " + tmp->name, u), tmp);
