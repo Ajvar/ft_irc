@@ -129,11 +129,12 @@ class Command
 					AWAY(_args[0], u);
 			}
 			//*****channel cmds
+		//done
 			else if (_command == "DIE")
 				DIE(u);
 			else if (_command == "WALLOPS")
 				if (_args.size() < 1)
-					WALLOPS(NULL, u);
+					WALLOPS("", u);
 				else
 					WALLOPS(_args[0], u);
 

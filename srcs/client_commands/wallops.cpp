@@ -27,10 +27,12 @@ int WALLOPS(const std::string &msg, user *u)
 	user *tmp = users;
 	if (msg.empty())
 		return send_message(create_msg(ERR_NEEDMOREPARAMS, u, "WALLOPS","", "", ""), u, ERR_NEEDMOREPARAMS);
+	if (!u->modes[OPERATOR_MODE])
+		return send_message(create_msg(ERR_NOPRIVILEGES, u, "","", "", ""), u, ERR_NOPRIVILEGES);
 	while (tmp)
 	{
-		if (tmp != u && tmp->modes[WALLOPS_MODE] == 1)
-			send_message(msg, u, 0);
+		if (tmp != u && (tmp->modes[WALLOPS_MODE] == 1 || tmp->modes[OPERATOR_MODE]))
+			send_message(channel_message("WALLOPS :" + msg, u), tmp, 0);
 		tmp = tmp->next;
 	}
 	return 0;
