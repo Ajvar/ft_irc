@@ -18,8 +18,6 @@ class Command
 		Command(const std::string cmd)
 		{
 			splitandsort(cmd, " ", _args, GEN_USE);
-			//std::cout << "command : " << _command << std::endl;
-			//print_str_vec(_args, "args: ");
 		}
 		~Command(){}
 		std::vector<std::string>	splitandsort(std::string cmd, std::string delim, std::vector<std::string>	&cont, int opt)
@@ -59,14 +57,14 @@ class Command
 				send_message(":" + std::string(SERVER_NAME) + " you must identify with a password.\r\n", u, 0);
 				return 0;
 			}
-			if (u->username.empty() && _command != "USER" && _command != "NICK" && _command != "PASS")
-			{
-				send_message(":" + std::string(SERVER_NAME) + " you must you must register a username with USER command.\r\n", u, 0);
-				return 0;
-			}
 			if (u->nickname.empty() && _command != "NICK" && _command != "USER" && _command != "PASS")
 			{
 				send_message(":" + std::string(SERVER_NAME) + " you must register a nickname with NICK command.\r\n", u, 0);
+				return 0;
+			}
+			if (u->username.empty() && _command != "USER" && _command != "NICK" && _command != "PASS")
+			{
+				send_message(":" + std::string(SERVER_NAME) + " you must you must register a username with USER command.\r\n", u, 0);
 				return 0;
 			}
 
@@ -94,6 +92,7 @@ class Command
 				else
 					USER(_args[0], _args[3], u);
 			}
+		//done
 			else if (_command == "OPER")
 			{
 			if (_args.size() < 2)
@@ -117,18 +116,19 @@ class Command
 			else if (_command == "QUIT")
 			{
 				if (_args.size() < 1)
-					QUIT(NULL, fds, nfds, u);
+					QUIT(std::vector<std::string>(), fds, nfds, u);
 				else
-					QUIT(_args[0], fds, nfds, u);
+					QUIT(_args, fds, nfds, u);
 			}
+		//done
 			else if (_command == "AWAY")
 			{
 				if (_args.size() < 1)
-					AWAY(NULL, u);
+					AWAY(std::vector<std::string>(), u);
 				else
-					AWAY(_args[0], u);
+					AWAY(_args, u);
 			}
-			//*****channel cmds
+		//channel cmds
 		//done
 			else if (_command == "DIE")
 				DIE(u);

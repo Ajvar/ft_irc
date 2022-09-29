@@ -26,7 +26,6 @@ extern channel *channels;
 int LIST(const std::vector<std::string> c, user *u)
 {
 	channel *tmp;
-	std::stringstream ss;
 
 	if (c.empty())
 	{
@@ -35,6 +34,7 @@ int LIST(const std::vector<std::string> c, user *u)
 			send_message(create_msg(RPL_LISTSTART, u, "", "", "", ""), u, RPL_LISTSTART);
 		while(tmp)
 		{
+			std::stringstream ss;
 			ss << tmp->users.size();
 			std::string count = ss.str();
 			if (!tmp->modes[SECRET_MODE])
@@ -45,7 +45,8 @@ int LIST(const std::vector<std::string> c, user *u)
 	else
 	{
 		std::vector<std::string>::const_iterator it = c.begin();
-		
+		std::stringstream ss;
+
 		send_message(create_msg(RPL_LISTSTART, u, "", "", "", ""), u, RPL_LISTSTART);
 		for (; it != c.end(); it++)
 		{

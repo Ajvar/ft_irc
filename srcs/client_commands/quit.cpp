@@ -15,16 +15,15 @@
 
 /**
  * * @brief Closes user's connexion
- * ! Are we supposed to send the msg to every other users ?
  * @param msg
  * @param fds
  * @param nfds
  * @param u
  * @return int
  */
-int QUIT(const std::string &msg, pollfd *fds, int *nfds, user *u)
+int QUIT(std::vector<std::string> msg, pollfd *fds, int *nfds, user *u)
 {
-	send_message(msg, u, 0);
+	send_to_all_serv(channel_message("QUIT :Quit: " + concatenate_vector(msg.begin(), msg.end()), u));
 	close(u->fd->fd);
 	u->fd->fd = -1;
 	delete_client(u);

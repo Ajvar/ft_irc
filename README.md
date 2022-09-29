@@ -5,7 +5,7 @@ The server must implement basic irc functions such as sending private messages, 
 
 ## How to use
 
-```make && ./ft_irc <port_number> <password>```
+```make && ./ircserv <port_number> <password>```
 
 ### Disclaimer
 This is a school project, do not use as a real irc server.

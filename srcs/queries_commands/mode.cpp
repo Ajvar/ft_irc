@@ -38,10 +38,10 @@ static int USR_MODE(const std::string &target, const char sign, const char mode,
 		case 'r':
 			tmp->modes[RESTRICTED_MODE] = local_sign;
 			break;
-		case 'o':
+/* 		case 'o':
 			tmp->modes[OPERATOR_MODE] = local_sign;
 			send_message(create_msg(RPL_YOUREOPER, tmp, "", "", "", ""), tmp, 0);
-			break;
+			break; */
 		
 		default:
 			return send_message("ERR_UMODEUNKNOWNFLAG", u, ERR_UMODEUNKNOWNFLAG);

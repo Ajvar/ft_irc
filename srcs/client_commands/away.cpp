@@ -21,16 +21,16 @@
  * @param user 
  * @return RPL_NOWAYWAY or RPL_UNAWAY on success, -1 on failure 
  */
-int AWAY(const std::string &away_msg, user *u)
+int AWAY(std::vector<std::string> away_msg, user *u)
 {
-	if (u && u->modes[AWAY_MODE] == 0)
+	if (u && !away_msg.empty())
 	{
 		u->modes[AWAY_MODE] = 1;
-		u->away_msg = std::string(away_msg);
+		u->away_msg = std::string(concatenate_vector(away_msg.begin(), away_msg.end()));
 		send_message(create_msg(RPL_NOWAWAY, u,"", "", "", ""), u, RPL_NOWAWAY);
 		return 0;
 	}
-	if (u && u->modes[AWAY_MODE] == 1)
+	if (u && u->modes[AWAY_MODE] == 1 && away_msg.empty())
 	{
 		u->modes[AWAY_MODE] = 0;
 		u->away_msg = "";

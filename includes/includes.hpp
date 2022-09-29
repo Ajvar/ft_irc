@@ -112,13 +112,13 @@ int PASS(const std::string &server_password, const std::string &user_password, u
 int NICK(const std::string &nickname, user *user);
 int	USER(const std::string &username, const std::string &realname, user *user);
 int OPER(const std::string &username, const std::string &password, user *user);
-int QUIT(const std::string &msg, pollfd *fds, int *nfds, user *u);
+int QUIT(std::vector<std::string> msg, pollfd *fds, int *nfds, user *u);
 
 //mode
 int MODE(const std::string &target, const std::string &mode, std::vector<std::string> args, user *u);
 
 //optionnal commands
-int AWAY(const std::string &away_msg, user *u);
+int AWAY(std::vector<std::string> away_msg, user *u);
 int	DIE(user *user);
 int WALLOPS(const std::string &msg, user *u);
 int ISON(std::vector<std::string> nicknames, user *user);
