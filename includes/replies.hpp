@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   replies.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
+/*   By: anon <anon@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 14:02:54 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/15 15:41:31 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/10/03 15:36:05 by anon             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,6 +152,7 @@
 #define	RPL_CLOSING           	362  
 #define	RPL_CLOSEEND	363
 #define	RPL_INFOSTART         	373  
+#define RPL_WHOISMODES 379
 #define	RPL_MYPORTIS	384
 #define	ERR_YOUWILLBEBANNED   	466  
 #define	ERR_BADCHANMASK	476
@@ -230,6 +231,7 @@
 # define MSG_RPL_WHOREPLY(arg) (arg + "\r\n")
 # define MSG_RPL_ENDOFWHOIS(pseudo) (pseudo + " :End of /WHOIS list\r\n")
 # define MSG_RPL_WHOISCHANNELS(nick, chann_info) (nick + " :" + chann_info + "\r\n")
+# define MSG_RPL_WHOISMODES(nick, modes) (nick + " : is using modes " + modes + "\r\n")
 # define MSG_RPL_WHOWASUSER(nick, user, host, realname) (nick + " " + user + " " + host + " * :" + realname + "\r\n")
 # define MSG_RPL_ENDOFWHOWAS(nick) (nick + " :End of WHOWAS\r\n")
 # define MSG_RPL_LISTSTART() ("Channel :Users Name\r\n")

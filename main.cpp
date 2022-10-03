@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
+/*   By: anon <anon@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/08 13:42:50 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/25 15:19:17 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/10/03 14:53:02 by anon             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,8 @@ int new_client(int id, struct pollfd *fd)
 	new_user->next = NULL;
 	new_user->id = id;
 	new_user->fd = fd;
+	new_user->idle = 0;
+	time(&new_user->signon);
 	new_user->nickname = "";
 	new_user->realname = "";
 	new_user->auth = 0;

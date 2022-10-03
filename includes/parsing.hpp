@@ -49,6 +49,8 @@ class Command
 
 		int	parse(pollfd *fds, int *nfds, user* u, const std::string &serv_pass)
 		{
+			if (_command != "PING")
+				u->idle = time(&u->idle);
 			//****client cmds
 			if (_command == "CAP")
 				return 0;
@@ -233,6 +235,13 @@ class Command
 					WHO("", u);
 				else
 					WHO(_args[0], u);
+			}
+			else if (_command == "WHOIS")
+			{
+				if (_args.size() < 1)
+					WHOIS("", u);
+				else
+					WHOIS(_args[0], u);
 			}
 			else if (_command == "NOTICE")
 			{

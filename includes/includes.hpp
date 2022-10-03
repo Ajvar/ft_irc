@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   includes.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
+/*   By: anon <anon@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 16:17:45 by jcueille          #+#    #+#             */
-/*   Updated: 2022/08/25 00:23:49 by jcueille         ###   ########.fr       */
+/*   Updated: 2022/10/03 15:50:31 by anon             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,8 @@ struct s_user {
 	int									id;
 	unsigned							auth;
 	unsigned							modes[5];
+	time_t								idle;
+	time_t								signon;
 	std::string							nickname;
 	std::string							username;
 	std::string							realname;
@@ -131,6 +133,9 @@ int NAMES(std::vector<std::string>chan, user *u);
 int LIST(const std::vector<std::string> c, user *u);
 int INVITE(const std::string &us, const std::string &c, user *u);
 int KICK(const std::string &c, std::vector<std::string> us, const std::string &comment ,user *u);
+
+//queries
+int WHOIS(const std::string arg, user *u);
 int WHO(const std::string &mask, user *u);
 
 //messages
