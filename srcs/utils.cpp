@@ -55,10 +55,10 @@ std::string channel_message(const std::string &msg, user *u)
  */
 int send_message(const std::string &s, user *user, int ret)
 {
-	if (DEBUG == 1)
-		pp(std::string(GREEN), "Send message: " + s);
+	//if (DEBUG == 1)
+	//	pp(std::string(GREEN), "Send message: " + s);
 	if (s.empty() == 0)
-		send(user->fd->fd, s.c_str(), s.size(), MSG_NOSIGNAL);
+		send(user->fd, s.c_str(), s.size(), MSG_NOSIGNAL);
 	return ret;
 }
 
@@ -68,17 +68,25 @@ int send_message(const std::string &s, user *user, int ret)
  * @param fd 
  * @return user* 
  */
+#include <sstream>
 user *find_user_by_fd(int fd)
 {
 	user *tmp = users;
 	if (!tmp)
 		return NULL;
+	if (DEBUG)
+					{
+						std::stringstream ss;
+    					ss << "F:" << fd;
+						pp(std::string(CYAN), ss.str());
+					}
 	while (tmp)
 	{
-		if (tmp->fd->fd == fd)
+		if (tmp->fd == fd)
 			return tmp;
 		tmp = tmp->next;
 	}
+	pp(std::string(RED), "find by fd NULL ");
 	return NULL;
 }
 

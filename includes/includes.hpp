@@ -94,7 +94,7 @@ struct s_user {
 	std::string							hostname;
 	std::string							away_msg;
 	std::vector<struct s_channel *> 	channels;
-	struct pollfd						*fd;
+	int									fd;
 	struct s_user						*next;
 	struct s_user						*prev;
 

@@ -24,8 +24,8 @@
 int QUIT(std::vector<std::string> msg, pollfd *fds, int *nfds, user *u)
 {
 	send_to_all_serv(channel_message("QUIT :Quit: " + concatenate_vector(msg.begin(), msg.end()), u));
-	close(u->fd->fd);
-	u->fd->fd = -1;
+	close(u->fd);
+	u->fd = -1;
 	delete_client(u);
 	compress_array(fds, nfds);
 	return 0;

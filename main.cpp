@@ -39,7 +39,7 @@ int new_client(int id, struct pollfd *fd)
 		return -1;
 	new_user->next = NULL;
 	new_user->id = id;
-	new_user->fd = fd;
+	new_user->fd = fd->fd;
 	new_user->idle = 0;
 	time(&new_user->signon);
 	new_user->nickname = "";
@@ -47,6 +47,9 @@ int new_client(int id, struct pollfd *fd)
 	new_user->auth = 0;
 	memset(new_user->modes, 0, sizeof(new_user->modes));
 	new_user->hostname = "127.0.0.1";
+	std::stringstream ss;
+	ss << new_user->nickname << " id: " << new_user->id << " fd: " << new_user->fd;
+	pp(std::string(RED), ss.str());
 	if (!users)
 	{
 		users = new_user;
@@ -66,8 +69,10 @@ int new_client(int id, struct pollfd *fd)
 
 void delete_client(user *u)
 {
-	if (users == u)
+	if (users == u && u->next == NULL)
 		users = NULL;
+	else if (users == u && u->next)
+		users = u->next;
 	if (u->next)
 		u->next->prev = u->prev;
 	if (u->prev)
@@ -236,6 +241,12 @@ int main (int argc, char *argv[])
 		current_size = nfds;
 		for (i = 0; i < current_size; i++)
 		{
+			if (DEBUG)
+			{
+				std::stringstream ss;
+				ss << "nfds: " << nfds << "fd: " << fds[i].fd;
+				pp(std::string(CYAN), ss.str());
+			}
 			/*********************************************************/
 			/* Loop through to find the descriptors that returned    */
 			/* POLLIN and determine whether it's the listening       */
@@ -312,7 +323,7 @@ int main (int argc, char *argv[])
 
 			else
 			{
-				printf("  Descriptor %d is readable\n", fds[i].fd);
+				//printf("  Descriptor %d is readable\n", fds[i].fd);
 				close_conn = FALSE;
 				/*******************************************************/
 				/* Receive all incoming data on this socket            */
@@ -354,16 +365,32 @@ int main (int argc, char *argv[])
 					/* Data was received                                 */
 					/*****************************************************/
 					len = rc;
-					printf("  %d bytes received\n", len);
+					(void)len;
+					//printf("  %d bytes received\n", len);
 					if (DEBUG == 1)
-						pp(std::string(CYAN), std::string(buffer));
+					{
+						std::stringstream ss;
+    					ss << fds[i].fd;
+						pp(std::string(CYAN), ss.str());
+					}
 					user *tmp_user = find_user_by_fd(fds[i].fd);
+					if (DEBUG)
+					{
+						std::stringstream ss;
+    					ss << fds[i].fd << " " << ( tmp_user ? tmp_user->nickname : "NULL");
+						pp(std::string(CYAN), ss.str());
+					}
 					std::string cmd = buffer;
 					std::stringstream ss(buffer);
 					std::string token;
 					
 					while (std::getline(ss, token, '\n')) {
 						Command tmp_cmd(token);
+						if (DEBUG == 1)
+						{
+							pp(std::string(CYAN), tmp_user->nickname);
+							print_user(tmp_user);
+						}
 						if (tmp_cmd.parse(fds, &nfds, tmp_user, argv[2]))
 						{
 							delete_client(tmp_user);
@@ -393,9 +420,16 @@ int main (int argc, char *argv[])
 				/*******************************************************/
 				if (close_conn)
 				{
+					if (DEBUG)
+					{
+						std::stringstream ss;
+    					ss << "d:" << fds[i].fd;// << " " << ( tmp_user ? tmp_user->nickname : "NULL");
+						pp(std::string(CYAN), ss.str());
+					}
 					delete_client(find_user_by_fd(fds[i].fd));
 					close(fds[i].fd);
 					fds[i].fd = -1;
+					//current_size--;
 					compress = TRUE;
 				}
 
